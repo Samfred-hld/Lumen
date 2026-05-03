@@ -291,6 +291,7 @@ function parseCSV(text, cardClosingDay = null, existingTransactions = []) {
       installmentIndex,
       installmentTotal,
       _duplicate: false, // will be set later
+      _duplicateSeries: false, // will be set later
       _duplicateSuspect: false, // will be set later
     });
   }
@@ -333,13 +334,26 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
         const selectedCardId = selectedCard && selectedCard !== 'none' ? selectedCard : null;
         let isDupe = false;
         let isSuspect = false;
+        let isSeriesDuplicate = false;
+
+        // Para installments, compara pelo cleanTitle (sem sufixo N/M);
+        // para outros tipos, compara pela descrição exata
+        const descToCompare = row.txType === 'installment'
+          ? normalizeStr(row.cleanTitle)
+          : normalizeStr(row.description);
 
         for (const t of transactions) {
           // Se ambos têm cardId definido e são diferentes, NÃO é duplicata
           const differentCard = t.cardId && selectedCardId && t.cardId !== selectedCardId;
           if (differentCard) continue;
 
-          const matchDesc = normalizeStr(t.description) === normalizeStr(row.description);
+          // Para transações existentes que são parcelas, remove sufixo (N/M) para comparar
+          const tDescNorm = normalizeStr(
+            t.isInstallment
+              ? (t.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim()
+              : (t.description || '')
+          );
+          const matchDesc = tDescNorm === descToCompare;
           const matchValue = Math.round(Math.abs(t.value || 0) * 100) === Math.round(row.value * 100);
           if (!matchDesc || !matchValue) continue;
 
@@ -360,7 +374,25 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
           }
         }
 
-        return { ...row, _duplicate: isDupe, _duplicateSuspect: !isDupe && isSuspect };
+        // Verificação adicional: se é installment e já existe série com mesmo cleanTitle no banco
+        if (row.txType === 'installment' && !isDupe) {
+          const baseNorm = normalizeStr(row.cleanTitle);
+          isSeriesDuplicate = transactions.some(t => {
+            if (!t.isInstallment) return false;
+            const tBase = normalizeStr(
+              (t.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim()
+            );
+            return tBase === baseNorm &&
+              Math.round(Math.abs(t.value || 0) * 100) === Math.round(row.value * 100);
+          });
+        }
+
+        return {
+          ...row,
+          _duplicate: isDupe,
+          _duplicateSeries: isSeriesDuplicate,
+          _duplicateSuspect: !isDupe && !isSeriesDuplicate && isSuspect,
+        };
       });
 
       // Group installments by cleanTitle to find series
@@ -375,7 +407,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
       });
 
       const withSelection = enriched.map((row, idx) => {
-        if (row._duplicate) return { ...row, selected: false };
+        if (row._duplicate || row._duplicateSeries) return { ...row, selected: false };
         if (row.txType === 'refund') return { ...row, selected: true }; // estornos são receitas reais — selecionados por padrão
         if (row.txType === 'installment') {
           const key = row.cleanTitle.toLowerCase();
@@ -426,8 +458,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const toggleRow = (idx) => {
     setRows(prev => prev.map((r, i) => {
       if (i !== idx) return r;
-      // Don't allow toggling disabled rows (duplicatas e parcelas não-trigger)
-      if (r._duplicate) return r;
+      // Don't allow toggling disabled rows (duplicatas, séries duplicadas e parcelas não-trigger)
+      if (r._duplicate || r._duplicateSeries) return r;
       // For installments, only allow toggling the "trigger" row (first of series in CSV)
       if (r.txType === 'installment') {
         const key = r.cleanTitle.toLowerCase();
@@ -442,7 +474,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const toggleAll = () => {
     setRows(prev => {
       const selectable = prev.filter(r => {
-        if (r._duplicate) return false; // apenas duplicatas bloqueiam
+        if (r._duplicate || r._duplicateSeries) return false; // duplicatas e séries já existentes bloqueiam
         if (r.txType === 'installment') {
           const key = r.cleanTitle.toLowerCase();
           const isFirst = prev.filter(x => x.txType === 'installment' && x.cleanTitle.toLowerCase() === key)
@@ -584,13 +616,13 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   };
 
   const selectableRows = rows.filter(r => {
-    if (r._duplicate) return false; // apenas duplicatas bloqueiam
+    if (r._duplicate || r._duplicateSeries) return false; // duplicatas e séries já existentes bloqueiam
     if (r.txType === 'installment') return isSeriesTrigger(r, rows);
     return true; // refund, income, normal — todos selecionáveis
   });
   const selectedCount = selectableRows.filter(r => r.selected).length;
   const totalValue = rows.filter(r => r.selected).reduce((s, r) => s + r.value, 0);
-  const dupeCount = rows.filter(r => r._duplicate).length;
+  const dupeCount = rows.filter(r => r._duplicate || r._duplicateSeries).length;
   const suspectCount = rows.filter(r => r._duplicateSuspect).length;
   const instCount = rows.filter(r => r.txType === 'installment').length;
   const refundCount = rows.filter(r => r.txType === 'refund').length;
@@ -723,10 +755,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                 </thead>
                 <tbody>
                   {rows.map((r, i) => {
-                    const isDisabled = r._duplicate || (r.txType === 'installment' && !isSeriesTrigger(r, rows));
+                    const isDisabled = r._duplicate || r._duplicateSeries || (r.txType === 'installment' && !isSeriesTrigger(r, rows));
                     // refund NÃO é mais disabled — usuário pode desmarcar se quiser
                     let rowBg = '';
                     if (r._duplicate) rowBg = 'bg-red-50/50 dark:bg-red-950/20';
+                    else if (r._duplicateSeries) rowBg = 'bg-purple-50/50 dark:bg-purple-950/20';
                     else if (r._duplicateSuspect) rowBg = 'bg-yellow-50/50 dark:bg-yellow-950/20';
                     else if (r.txType === 'refund') rowBg = 'bg-emerald-50/50 dark:bg-emerald-950/20';
                     else if (r.txType === 'installment' && !isSeriesTrigger(r, rows)) rowBg = 'bg-blue-50/30 dark:bg-blue-950/10';
@@ -765,7 +798,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                               <AlertCircle size={9} /> Duplicada
                             </span>
                           )}
-                          {r._duplicateSuspect && !r._duplicate && (
+                          {r._duplicateSeries && !r._duplicate && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                              Série já existe
+                            </span>
+                          )}
+                          {r._duplicateSuspect && !r._duplicate && !r._duplicateSeries && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-700 border border-yellow-300">
                               <AlertTriangle size={9} /> Possível duplicata
                             </span>
