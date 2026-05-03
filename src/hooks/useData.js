@@ -14,7 +14,7 @@ import { base44 } from '@/api/base44Client';
  * @param {number} limit - Limite de registros por fetch
  * @param {React.RefObject|null} pauseSubscribeRef - Se .current === true, ignora invalidations (usado durante import em lote)
  */
-export function useTransactions(limit = 500, pauseSubscribeRef = null) {
+export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
   const qc = useQueryClient();
 
   const query = useQuery({

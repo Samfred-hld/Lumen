@@ -89,11 +89,24 @@ export default function Transactions() {
 
   const importingRef = useRef(false);
   const qc = useQueryClient();
-  const { data: transactions = [], refetch } = useTransactions(500, importingRef);
+  const { data: transactions = [], refetch } = useTransactions(2000, importingRef);
   const { data: goals = [] } = useGoals();
 
   const monthTx = filterByMonth(transactions, currentYear, currentMonth);
   const totals = calcTotals(monthTx);
+
+  // Meses com transações (para indicador visual)
+  const monthsWithData = React.useMemo(() => {
+    const set = new Set();
+    transactions.forEach(t => {
+      if (t.date) set.add(t.date.slice(0, 7)); // YYYY-MM
+    });
+    return set;
+  }, [transactions]);
+
+  // Transações fora do mês atual (aviso)
+  const currentMonthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+  const otherMonthsCount = transactions.length - transactions.filter(t => t.date?.startsWith(currentMonthKey)).length;
 
   const filtered = monthTx.filter(t => {
     const matchSearch = !search || t.description?.toLowerCase().includes(search.toLowerCase()) || t.category?.toLowerCase().includes(search.toLowerCase());
@@ -359,6 +372,33 @@ export default function Transactions() {
               {MONTH_NAMES[currentMonth]} {currentYear}
             </span>
             <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
+            {/* Indicador de meses com dados */}
+            <div className="flex gap-0.5 ml-1" title={`Dados em ${monthsWithData.size} mês(es)`}>
+              {Array.from(monthsWithData).sort().slice(-6).map(ym => {
+                const [y, m] = ym.split('-');
+                const isCurrent = ym === currentMonthKey;
+                return (
+                  <button
+                    key={ym}
+                    onClick={() => {
+                      const targetMonth = parseInt(m) - 1;
+                      const targetYear = parseInt(y);
+                      // Navega até o mês alvo
+                      const diff = (targetYear - currentYear) * 12 + (targetMonth - currentMonth);
+                      if (diff !== 0) navigate(diff);
+                    }}
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full transition-all",
+                      isCurrent ? "bg-primary scale-125" : "bg-primary/30 hover:bg-primary/60"
+                    )}
+                    title={`${MONTH_SHORT[parseInt(m) - 1]} ${y}`}
+                  />
+                );
+              })}
+              {monthsWithData.size > 6 && (
+                <span className="text-[8px] text-muted-foreground ml-0.5">+{monthsWithData.size - 6}</span>
+              )}
+            </div>
           </div>
           <Button size="sm" onClick={() => { setEditing(null); setShowModal(true); }}>
             <Plus size={14} className="mr-1" /> Novo
@@ -384,6 +424,17 @@ export default function Transactions() {
           ◆ Investido: {formatCurrency(totals.investment)}
         </span>
       </div>
+
+      {/* Aviso de transações em outros meses */}
+      {otherMonthsCount > 0 && monthTx.length === 0 && (
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300">
+          <span className="font-semibold">📅</span>
+          <span>
+            Nenhuma transação em {MONTH_NAMES[currentMonth]}, mas há <strong>{otherMonthsCount}</strong> transação(ões) em outros meses.
+            Use as setas ← → para navegar.
+          </span>
+        </div>
+      )}
 
       {/* Suggestion Banner */}
       <SuggestionBanner
