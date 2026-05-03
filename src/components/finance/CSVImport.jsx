@@ -96,13 +96,26 @@ function parseCSV(text, cardClosingDay = null, existingTransactions = []) {
   const seenInternally = new Set();
 
   for (let i = 1; i < lines.length; i++) {
-    // Handle quoted fields with commas inside
+    // Handle quoted fields with commas inside — preserva aspas internas
     const cells = [];
     let cell = '', inQ = false;
-    for (const ch of lines[i] + sep) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === sep && !inQ) { cells.push(cell.trim()); cell = ''; }
-      else { cell += ch; }
+    const line = lines[i] + sep;
+    for (let j = 0; j < line.length; j++) {
+      const ch = line[j];
+      if (ch === '"') {
+        if (inQ && line[j + 1] === '"') {
+          // Aspas escapadas ("") → preserva uma aspa literal
+          cell += '"';
+          j++; // pula a próxima aspa
+        } else {
+          inQ = !inQ; // abre/fecha campo quoted
+        }
+      } else if (ch === sep && !inQ) {
+        cells.push(cell.trim());
+        cell = '';
+      } else {
+        cell += ch;
+      }
     }
 
     if (cells.length < 2) continue;

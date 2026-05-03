@@ -59,6 +59,8 @@ export function detectInstallment(description) {
 export function isRefundOrPayment(description, value) {
   if (!description) return false;
   const s = description.toLowerCase();
+  // IOF é imposto, não estorno — nunca filtrar
+  if (/^\s*iof\b/.test(s)) return false;
   if (/\b(estorno|reembolso|cashback)\b/.test(s)) return true;
   if (/\b(pagamento)\b/.test(s) && /\b(cartão|fatura|crédito|credit)\b/.test(s)) return true;
   return false;
