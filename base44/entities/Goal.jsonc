@@ -1,0 +1,41 @@
+{
+  "name": "Goal",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da meta"
+    },
+    "targetValue": {
+      "type": "number",
+      "description": "Valor alvo da meta"
+    },
+    "currentValue": {
+      "type": "number",
+      "description": "Valor atual acumulado (usado quando progressMode é manual)"
+    },
+    "progressMode": {
+      "type": "string",
+      "enum": ["manual", "linked"],
+      "default": "linked",
+      "description": "Como o progresso é calculado"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Prazo da meta"
+    },
+    "color": {
+      "type": "string",
+      "description": "Cor de destaque da meta"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descrição da meta"
+    }
+  },
+  "required": [
+    "name",
+    "targetValue"
+  ]
+}

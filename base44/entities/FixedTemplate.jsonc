@@ -1,0 +1,44 @@
+{
+  "name": "FixedTemplate",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Descrição do lançamento fixo"
+    },
+    "value": {
+      "type": "number",
+      "description": "Valor do lançamento"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense",
+        "investment"
+      ],
+      "description": "Tipo: receita, despesa ou investimento"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categoria do lançamento"
+    },
+    "paymentMethod": {
+      "type": "string",
+      "description": "Forma de pagamento"
+    },
+    "dayOfMonth": {
+      "type": "number",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 31,
+      "description": "Dia do mês para gerar o lançamento (padrão 1)"
+    }
+  },
+  "required": [
+    "description",
+    "value",
+    "type",
+    "category"
+  ]
+}

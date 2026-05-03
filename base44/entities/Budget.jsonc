@@ -1,0 +1,28 @@
+{
+  "name": "Budget",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "description": "Categoria do orçamento"
+    },
+    "limit": {
+      "type": "number",
+      "description": "Limite de gasto"
+    },
+    "month": {
+      "type": "string",
+      "description": "Mês de referência (YYYY-MM)"
+    },
+    "isRecurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, replica automaticamente para o próximo mês"
+    }
+  },
+  "required": [
+    "category",
+    "limit",
+    "month"
+  ]
+}

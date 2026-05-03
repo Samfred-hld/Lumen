@@ -1,0 +1,96 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense",
+        "investment"
+      ],
+      "description": "Tipo da transação"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descrição da transação"
+    },
+    "value": {
+      "type": "number",
+      "description": "Valor da transação"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da transação (YYYY-MM-DD)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categoria da transação"
+    },
+    "paymentMethod": {
+      "type": "string",
+      "description": "Método de pagamento"
+    },
+    "isFixed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Despesa fixa mensal"
+    },
+    "cardId": {
+      "type": "string",
+      "description": "ID do cartão de crédito vinculado"
+    },
+    "isInstallment": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se é uma transação parcelada"
+    },
+    "installmentIndex": {
+      "type": "number",
+      "description": "Número da parcela atual (legado)"
+    },
+    "installmentTotal": {
+      "type": "number",
+      "description": "Total de parcelas (legado)"
+    },
+    "installmentSeriesId": {
+      "type": "string",
+      "description": "ID da série de parcelas"
+    },
+    "installmentCount": {
+      "type": "number",
+      "description": "Total de parcelas"
+    },
+    "installmentCurrent": {
+      "type": "number",
+      "description": "Número da parcela atual"
+    },
+    "installmentTotalValue": {
+      "type": "number",
+      "description": "Valor total da compra parcelada"
+    },
+    "invoiceMonth": {
+      "type": "string",
+      "description": "Mês de competência da fatura (YYYY-MM)"
+    },
+    "goalId": {
+      "type": "string",
+      "description": "ID da meta vinculada"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observações"
+    },
+    "source": {
+      "type": "string",
+      "description": "Origem da transação (ex: cron_salary, cron_recurring)"
+    }
+  },
+  "required": [
+    "type",
+    "description",
+    "value",
+    "date"
+  ]
+}

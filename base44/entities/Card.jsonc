@@ -1,0 +1,33 @@
+{
+  "name": "Card",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do cart\u00e3o"
+    },
+    "color": {
+      "type": "string",
+      "description": "Cor de destaque do cart\u00e3o"
+    },
+    "limit": {
+      "type": "number",
+      "description": "Limite do cart\u00e3o"
+    },
+    "closingDay": {
+      "type": "number",
+      "description": "Dia de fechamento da fatura"
+    },
+    "dueDay": {
+      "type": "number",
+      "description": "Dia de vencimento da fatura"
+    },
+    "brand": {
+      "type": "string",
+      "description": "Bandeira do cart\u00e3o (Visa, Mastercard, etc)"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
