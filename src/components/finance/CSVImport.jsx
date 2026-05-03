@@ -375,7 +375,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
       });
 
       const withSelection = enriched.map((row, idx) => {
-        if (row._duplicate || row.txType === 'refund') return { ...row, selected: false };
+        if (row._duplicate) return { ...row, selected: false };
+        if (row.txType === 'refund') return { ...row, selected: true }; // estornos são receitas reais — selecionados por padrão
         if (row.txType === 'installment') {
           const key = row.cleanTitle.toLowerCase();
           const isFirst = seriesMap[key]?.firstIdx === idx;
@@ -425,8 +426,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const toggleRow = (idx) => {
     setRows(prev => prev.map((r, i) => {
       if (i !== idx) return r;
-      // Don't allow toggling disabled rows
-      if (r._duplicate || r.txType === 'refund') return r;
+      // Don't allow toggling disabled rows (duplicatas e parcelas não-trigger)
+      if (r._duplicate) return r;
       // For installments, only allow toggling the "trigger" row (first of series in CSV)
       if (r.txType === 'installment') {
         const key = r.cleanTitle.toLowerCase();
@@ -441,7 +442,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const toggleAll = () => {
     setRows(prev => {
       const selectable = prev.filter(r => {
-        if (r._duplicate || r.txType === 'refund') return false;
+        if (r._duplicate) return false; // apenas duplicatas bloqueiam
         if (r.txType === 'installment') {
           const key = r.cleanTitle.toLowerCase();
           const isFirst = prev.filter(x => x.txType === 'installment' && x.cleanTitle.toLowerCase() === key)
@@ -500,8 +501,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
           });
         }
       } else {
-        // Mapeia txType para type da entidade
-        const txEntityType = r.txType === 'income' ? 'income' : 'expense';
+        // Mapeia txType para type da entidade — estornos/receitas viram income
+        const txEntityType = (r.txType === 'income' || r.txType === 'refund') ? 'income' : 'expense';
         transactionsToCreate.push({
           description: r.description,
           date: r.date,
@@ -583,9 +584,9 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   };
 
   const selectableRows = rows.filter(r => {
-    if (r._duplicate || r.txType === 'refund') return false;
+    if (r._duplicate) return false; // apenas duplicatas bloqueiam
     if (r.txType === 'installment') return isSeriesTrigger(r, rows);
-    return true;
+    return true; // refund, income, normal — todos selecionáveis
   });
   const selectedCount = selectableRows.filter(r => r.selected).length;
   const totalValue = rows.filter(r => r.selected).reduce((s, r) => s + r.value, 0);
@@ -693,8 +694,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                 </Badge>
               )}
               {refundCount > 0 && (
-                <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 gap-1">
-                  <AlertTriangle size={10} /> {refundCount} estorno(s)
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1">
+                  ↩ {refundCount} estorno(s)/receita(s)
                 </Badge>
               )}
               {seriesCount > 0 && (
@@ -722,11 +723,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                 </thead>
                 <tbody>
                   {rows.map((r, i) => {
-                    const isDisabled = r._duplicate || r.txType === 'refund' || (r.txType === 'installment' && !isSeriesTrigger(r, rows));
+                    const isDisabled = r._duplicate || (r.txType === 'installment' && !isSeriesTrigger(r, rows));
+                    // refund NÃO é mais disabled — usuário pode desmarcar se quiser
                     let rowBg = '';
                     if (r._duplicate) rowBg = 'bg-red-50/50 dark:bg-red-950/20';
                     else if (r._duplicateSuspect) rowBg = 'bg-yellow-50/50 dark:bg-yellow-950/20';
-                    else if (r.txType === 'refund') rowBg = 'bg-amber-50/50 dark:bg-amber-950/20';
+                    else if (r.txType === 'refund') rowBg = 'bg-emerald-50/50 dark:bg-emerald-950/20';
                     else if (r.txType === 'installment' && !isSeriesTrigger(r, rows)) rowBg = 'bg-blue-50/30 dark:bg-blue-950/10';
 
                     return (
@@ -769,8 +771,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                             </span>
                           )}
                           {r.txType === 'refund' && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 border border-amber-200">
-                              Estorno
+                            <span
+                              title="Detectado como estorno/receita — será importado como Receita. Desmarque se não quiser importar."
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200"
+                            >
+                              ↩ Estorno/Receita
                             </span>
                           )}
                           {r.txType === 'income' && (
