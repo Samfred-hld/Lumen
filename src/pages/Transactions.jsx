@@ -245,13 +245,20 @@ export default function Transactions() {
       }
 
       // Gap 3 — Filtragem final com normalizeStr
-      const deduped = valid.filter(newTx =>
-        !transactions.some(existing =>
-          normalizeStr(existing.description) === normalizeStr(newTx.description) &&
-          existing.date === newTx.date &&
-          Math.round(Math.abs(existing.value || 0) * 100) === Math.round(Math.abs(newTx.value || 0) * 100)
-        )
-      );
+      // Para parcelas: compara description + date + value + installmentCurrent
+      // Para normais: compara description + date + value
+      const deduped = valid.filter(newTx => {
+        return !transactions.some(existing => {
+          if (normalizeStr(existing.description) !== normalizeStr(newTx.description)) return false;
+          if (existing.date !== newTx.date) return false;
+          if (Math.round(Math.abs(existing.value || 0) * 100) !== Math.round(Math.abs(newTx.value || 0) * 100)) return false;
+          // Para parcelas, também comparar o índice
+          if (newTx.isInstallment && existing.isInstallment) {
+            return existing.installmentCurrent === newTx.installmentCurrent;
+          }
+          return true;
+        });
+      });
 
       const skipped = valid.length - deduped.length;
       if (skipped > 0) {
