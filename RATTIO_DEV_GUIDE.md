@@ -11,6 +11,7 @@
 **Branch:** `main`
 **Stack:** React + Vite + Tailwind CSS + Radix UI (shadcn/ui) + Base44 (backend + auth + storage + real-time)
 **Status:** ✅ Todas as fases (0–10) concluídas. Produção.
+**Última atualização:** 08/05/2026 — refatoração store.js + CSV import
 
 ### Entidades Base44
 
@@ -150,13 +151,25 @@ src/
 ├── lib/
 │   ├── utils.js                     # cn() helper (NÃO editar)
 │   ├── financeUtils.js              # Funções financeiras (re-exports de categories.js)
-│   ├── store.js                     # localStorage helpers + CRUD entidades + dedup automático
+│   ├── store.js                     # Barrel file — re-exports de store/ + initStore
+│   ├── store/
+│   │   ├── helpers.js               # LS_PREFIX, lsGet, lsSet, lsRemove, getLocal, setLocal, removeLocal, hasEntity, ensureEntity
+│   │   ├── cards.js                 # getCards, saveCards, fetchCards, addCard, updateCard, deleteCard
+│   │   ├── rules.js                 # getRules, saveRules, fetchRules, addRule, deleteRule, suggestCategoryFromRules
+│   │   ├── templates.js             # getTemplates, saveTemplates, fetchTemplates, addTemplate, deleteTemplate, syncTemplatesToCloud
+│   │   ├── settings.js              # Salary, theme, payment, changelog, dashboard, quickDraft, suggestions, financings, onboarded, recurringGen
+│   │   ├── clearAllData.js          # ENTITIES_TO_CLEAR, ALL_LS_KEYS, deleteEntityBatch, clearAllData, isClearingInProgress
+│   │   └── dedup.js                 # _dedupRanThisSession, _autoDeduplicate
 │   ├── categories.js                # Fonte única: categorias, ícones, cores, meses
 │   ├── autoCorrelations.js          # Auto-categorização (string + RegExp word boundaries)
 │   ├── constants.js                 # Constantes do app
 │   ├── notifications.js             # Browser Notification API para vencimentos
 │   ├── notificationStore.js         # Centro de notificações persistente (localStorage)
 │   ├── transactionDetectors.js      # Auto-detect parcelamento + estorno
+│   ├── csvParser.js                 # Engine de parsing CSV (encoding, separador, data, colunas, invoiceMonth, parcelas)
+│   ├── csvProfile.js                # Perfis de bancos (Nubank, Inter, Bradesco, Itaú, C6, XP)
+│   ├── csvDedup.js                  # Detecção de duplicatas (exata, fuzzy, séries de parcelas)
+│   ├── amountParser.js              # Parsing de valores monetários (BR, US, accounting)
 │   ├── query-client.js              # React Query config (staleTime: 30s)
 │   └── entitySetup.js               # Setup + migração + dedup manual (lumenSetup)
 │
@@ -169,7 +182,8 @@ src/
 │   ├── GlobalSearch.jsx             # Busca global ⌘K
 │   ├── finance/
 │   │   ├── TransactionModal.jsx     # Modal de transação (zod + react-hook-form)
-│   │   ├── CSVImport.jsx            # Import CSV (bulkCreate em lotes)
+│   │   ├── CSVImport.jsx            # Import CSV com séries de parcelas expandidas
+│   │   ├── ColumnMapper.jsx         # Mapeamento manual de colunas (single/split)
 │   │   ├── QuickEntry.jsx           # Lançamento rápido
 │   │   ├── InstallmentConfirm.jsx   # Confirmar exclusão de parcelas
 │   │   ├── DashCustomizeModal.jsx   # Personalizar seções do Dashboard
@@ -197,7 +211,7 @@ src/
 
 ## Padrões de Código
 
-### Fetch cloud-first (store.js)
+### Fetch cloud-first (store/cards.js — padrão para todos os módulos)
 
 ```javascript
 export async function fetchCards() {
@@ -221,6 +235,47 @@ export async function fetchCards() {
 1. Sucesso (mesmo `[]`) → nuvem é fonte de verdade → atualiza localStorage
 2. Falha → usa localStorage como fallback
 3. Nuvem vazia + localStorage tem dados → migra (first-time sync)
+
+### Store — Estrutura modular
+
+O `store.js` original (866 linhas) foi refatorado em módulos em `src/lib/store/`:
+
+```
+src/lib/
+├── store.js              ← barrel (re-exports + initStore)
+└── store/
+    ├── helpers.js         ← funções base (LS_PREFIX, getLocal, setLocal, hasEntity, ensureEntity)
+    ├── cards.js           ← CRUD de cartões
+    ├── rules.js           ← CRUD de regras + suggestCategoryFromRules
+    ├── templates.js       ← CRUD de templates + syncTemplatesToCloud
+    ├── settings.js        ← todas as configurações (salary, theme, payment, etc.)
+    ├── clearAllData.js    ← limpeza completa de dados
+    └── dedup.js           ← deduplicação automática por sessão
+```
+
+**Importar sempre de `@/lib/store`** (barrel) — todos os exports estão disponíveis via re-export.
+
+### Invoice Month — Cálculo do mês de fatura
+
+```javascript
+// csvParser.js — getInvoiceMonth(dateStr, closingDay)
+// closingDay = dia de fechamento do cartão
+// Regra: dia < closingDay → fatura do mês seguinte (M+1)
+//        dia >= closingDay → fatura de dois meses depois (M+2)
+// Exemplo (closingDay=26): 25/04 → fatura Mai, 26/04 → fatura Jun
+```
+
+### Expansão de séries de parcelas (csvParser.js)
+
+```javascript
+// expandInstallmentSeries(row, closingDay)
+// Ao detectar "Kabum 5/10" no CSV, gera as 10 parcelas:
+//   parcela 1: data retroativa (-4 meses), invoiceMonth calculado
+//   parcela 5: data original do CSV (esta fatura)
+//   parcela 10: data futura (+5 meses), invoiceMonth calculado
+// Cada parcela recebe _seriesLabel: 'retroativa' | 'esta_fatura' | 'futura'
+// Deduplicação marca parcelas já existentes como _duplicateSeries
+```
 
 ### Validação de formulário (zod + react-hook-form)
 
@@ -261,7 +316,7 @@ export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
 }
 ```
 
-### Setting key-value (store.js)
+### Setting key-value (store/settings.js)
 
 ```javascript
 async function getSettingFromCloud(key) {
@@ -339,6 +394,10 @@ git push origin main
 | Cartões duplicados | `fetchCards` sem dedup na migração | Deduplicação automática via `_autoDeduplicate()` |
 | `clearAllData` não limpava tudo | localStorage iteration bug + React Query cache | Coleta chaves antes de remover + `queryClient.clear()` |
 | `405 app-logs/*` | Logging do Base44 | Ignorar — não afeta o app |
+| `hasSplitColumns` nunca ativa | ColumnMapper split não definia `valIdx` | `valIdx = -1` no modo split (ColumnMapper + CSVImport) |
+| `skipPatterns` dos bancos ignorados | parseCSV não recebia skipPatterns | Parâmetro `skipPatterns` adicionado e passado do profile |
+| `detectInstallment` não pega "3/12" | Regex só aceitava `\d{2}` | Alterado para `\d{1,2}` |
+| `parseAmount("1,5")` = 15 | `afterComma.length === 2` não cobria 1 dígito | Alterado para `<= 2` |
 
 ---
 
