@@ -21,7 +21,7 @@ function getInvoiceMonth(dateStr, closingDay) {
   if (!closingDay || !dateStr) return null;
   const [y, m, d] = dateStr.split('-').map(Number);
   const closeDay = parseInt(closingDay);
-  if (d > closeDay) {
+  if (d >= closeDay) {
     const nextMonth = m === 12 ? 1 : m + 1;
     const nextYear = m === 12 ? y + 1 : y;
     return { year: nextYear, month: nextMonth - 1 };

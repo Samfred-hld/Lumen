@@ -378,7 +378,7 @@ export function getInvoiceMonth(dateStr, closingDay) {
   const day = parseInt(d);
   const closeDay = parseInt(closingDay);
 
-  if (day > closeDay) {
+  if (day >= closeDay) {
     const nextMonth = m === 12 ? 1 : m + 1;
     const nextYear = m === 12 ? y + 1 : y;
     return `${nextYear}-${String(nextMonth).padStart(2, '0')}`;
