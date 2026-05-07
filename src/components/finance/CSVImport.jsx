@@ -1,366 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2 } from 'lucide-react';
+import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
-import { getCards, suggestCategoryFromRules } from '@/lib/store';
-import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
-import { normalizeStr } from '@/lib/stringUtils';
-import { parseAmount, parseAmountWithSign } from '@/lib/amountParser';
-
-// ══════════════════════════════════════════
-// Date Utilities
-// ══════════════════════════════════════════
-
-/**
- * Determine the invoice month (YYYY-MM) for a transaction date based on the card's closing day.
- * - If the transaction day > closingDay → next month's invoice
- * - Otherwise → current month's invoice
- * Returns 'YYYY-MM' string.
- */
-function getInvoiceMonth(dateStr, closingDay) {
-  if (!closingDay || !dateStr) return null;
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const day = parseInt(d);
-  const closeDay = parseInt(closingDay);
-
-  if (day > closeDay) {
-    const nextMonth = m === 12 ? 1 : m + 1;
-    const nextYear = m === 12 ? y + 1 : y;
-    return `${nextYear}-${String(nextMonth).padStart(2, '0')}`;
-  }
-  return `${y}-${String(m).padStart(2, '0')}`;
-}
-
-// ══════════════════════════════════════════
-// Categorization
-// ══════════════════════════════════════════
-
-/**
- * Auto-categorize using rules + historical transactions.
- */
-function autoCategorize(description, existingTransactions = []) {
-  const suggested = suggestCategoryFromRules(description);
-  if (suggested) return suggested;
-
-  const descNorm = normalizeStr(description);
-  const similar = existingTransactions.filter(t => {
-    const tNorm = normalizeStr(t.description || '');
-    return tNorm === descNorm || tNorm.includes(descNorm) || descNorm.includes(tNorm);
-  });
-
-  if (similar.length) {
-    const freq = {};
-    similar.forEach(t => { if (t.category) freq[t.category] = (freq[t.category] || 0) + 1; });
-    const best = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
-    if (best) return best[0];
-  }
-
-  return '';
-}
-
-// ══════════════════════════════════════════
-// Duplicate Detection Helpers
-// ══════════════════════════════════════════
-
-/**
- * Build an index of existing installment transactions for fast lookup.
- * Returns Map<cleanTitle_norm, Set<installmentCurrent>>.
- */
-function buildInstallmentIndex(transactions) {
-  const index = new Map();
-  for (const t of transactions) {
-    if (!t.isInstallment) continue;
-    const base = normalizeStr(
-      (t.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim()
-    );
-    if (!index.has(base)) index.set(base, new Set());
-    index.get(base).add(t.installmentCurrent);
-  }
-  return index;
-}
-
-/**
- * Check if a transaction already exists (exact match).
- */
-function findExactDuplicate(row, transactions, selectedCardId) {
-  const descNorm = normalizeStr(
-    row.txType === 'installment' ? row.cleanTitle : row.description
-  );
-
-  for (const t of transactions) {
-    // Different card → skip
-    if (t.cardId && selectedCardId && t.cardId !== selectedCardId) continue;
-
-    const tDescNorm = normalizeStr(
-      t.isInstallment
-        ? (t.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim()
-        : (t.description || '')
-    );
-
-    if (tDescNorm !== descNorm) continue;
-    if (Math.round(Math.abs(t.value || 0) * 100) !== Math.round(row.value * 100)) continue;
-
-    // For installments, also match the installment index
-    if (row.txType === 'installment' && t.isInstallment) {
-      if (t.installmentCurrent !== row.installmentIndex) continue;
-    }
-
-    // Exact date match
-    if (t.date === row.date) return true;
-
-    // For installments, match by invoiceMonth if available
-    if (row.txType === 'installment' && t.invoiceMonth && row.invoiceMonth) {
-      if (t.invoiceMonth === row.invoiceMonth) return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Find a fuzzy duplicate (±3 days, same description + value).
- */
-function findSuspectDuplicate(row, transactions, selectedCardId) {
-  const descNorm = normalizeStr(
-    row.txType === 'installment' ? row.cleanTitle : row.description
-  );
-
-  for (const t of transactions) {
-    if (t.cardId && selectedCardId && t.cardId !== selectedCardId) continue;
-
-    const tDescNorm = normalizeStr(
-      t.isInstallment
-        ? (t.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim()
-        : (t.description || '')
-    );
-
-    if (tDescNorm !== descNorm) continue;
-    if (Math.round(Math.abs(t.value || 0) * 100) !== Math.round(row.value * 100)) continue;
-
-    // For installments, skip if different index
-    if (row.txType === 'installment' && t.isInstallment) {
-      if (t.installmentCurrent !== row.installmentIndex) continue;
-    }
-
-    // Fuzzy date: ±3 days
-    if (t.date && row.date) {
-      const tTime = new Date(t.date + 'T12:00:00').getTime();
-      const rTime = new Date(row.date + 'T12:00:00').getTime();
-      const diffDays = Math.abs(tTime - rTime) / (1000 * 60 * 60 * 24);
-      if (diffDays <= 3) return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Check if an installment already exists in the system by cleanTitle + index.
- */
-function isInstallmentAlreadyImported(row, installmentIndex) {
-  const base = normalizeStr(row.cleanTitle);
-  const indices = installmentIndex.get(base);
-  if (!indices) return false;
-  return indices.has(row.installmentIndex);
-}
-
-/**
- * Find which installments of a series are missing before the current one.
- */
-function findMissingInstallments(row, installmentIndex) {
-  if (row.txType !== 'installment') return [];
-  const base = normalizeStr(row.cleanTitle);
-  const indices = installmentIndex.get(base);
-  if (!indices) {
-    // No existing installments → all before current are missing
-    const missing = [];
-    for (let i = 1; i < row.installmentIndex; i++) missing.push(i);
-    return missing;
-  }
-  const missing = [];
-  for (let i = 1; i < row.installmentIndex; i++) {
-    if (!indices.has(i)) missing.push(i);
-  }
-  return missing;
-}
-
-// ══════════════════════════════════════════
-// CSV Parsing
-// ══════════════════════════════════════════
-
-function parseCSV(text, cardClosingDay = null, existingTransactions = []) {
-  const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
-  if (lines.length < 2) return [];
-
-  // Detect separator
-  let sep = ',';
-  if (lines[0].includes('\t')) sep = '\t';
-  else if (lines[0].includes(';')) sep = ';';
-
-  // Strip BOM and quotes from headers
-  const rawHeaders = lines[0].replace(/^\uFEFF/, '').split(sep)
-    .map(h => h.replace(/^["'\s]+|["'\s]+$/g, '').toLowerCase());
-
-  const dateIdx = rawHeaders.findIndex(h => /^(data|date|dt|fecha)/.test(h));
-  const descIdx = rawHeaders.findIndex(h => /descri|hist|memo|detail|lança|establ|comercio|title|name/.test(h));
-  const valIdx = rawHeaders.findIndex(h => /^(valor|value|amount|vl|importe|total|debit)/.test(h));
-
-  // Credit/Debit separate columns (Bradesco, Itaú)
-  const creditIdx = rawHeaders.findIndex(h => /crédito|credit|entrada/.test(h));
-  const debitIdx = rawHeaders.findIndex(h => /débito|debit|saída|saida/.test(h));
-  const hasSplitColumns = creditIdx !== -1 && debitIdx !== -1 && valIdx === -1;
-
-  // Validate required columns
-  if (descIdx === -1 && valIdx === -1) {
-    return { error: 'Colunas obrigatórias não encontradas. Verifique se o CSV tem colunas de Descrição e Valor.' };
-  }
-
-  const rows = [];
-  const seenInternally = new Set();
-
-  for (let i = 1; i < lines.length; i++) {
-    // Handle quoted fields with commas inside
-    const cells = [];
-    let cell = '', inQ = false;
-    const line = lines[i] + sep;
-    for (let j = 0; j < line.length; j++) {
-      const ch = line[j];
-      if (ch === '"') {
-        if (inQ && line[j + 1] === '"') {
-          cell += '"';
-          j++;
-        } else {
-          inQ = !inQ;
-        }
-      } else if (ch === sep && !inQ) {
-        cells.push(cell.trim());
-        cell = '';
-      } else {
-        cell += ch;
-      }
-    }
-
-    if (cells.length < 2) continue;
-    const date = (dateIdx >= 0 ? cells[dateIdx] : cells[0]) || '';
-    const desc = (descIdx >= 0 ? cells[descIdx] : cells[1]) || '';
-    if (!desc.trim()) continue;
-
-    // Skip total/saldo/subtotal lines
-    if (/^(total|saldo|subtotal|balance|sub\s*total|fechamento)/i.test(desc.trim())) continue;
-
-    // Extract value from split columns or single column
-    let rawV;
-    if (hasSplitColumns) {
-      const debitRaw = (debitIdx >= 0 ? cells[debitIdx] : '') || '';
-      const creditRaw = (creditIdx >= 0 ? cells[creditIdx] : '') || '';
-      const debitVal = parseAmount(debitRaw);
-      const creditVal = parseAmount(creditRaw);
-      rawV = String(debitVal - creditVal);
-    } else {
-      rawV = (valIdx >= 0 ? cells[valIdx] : cells[2]) || '';
-    }
-
-    // Parse value with sign detection
-    const { value: absValue, isNegative: isNegativeInSource } = parseAmountWithSign(rawV);
-
-    // Skip lines with zero value unless explicitly "0" or "0,00"
-    const isExplicitZero = /^\s*0([.,]0+)?\s*$/.test(rawV.replace(/[^\d.,]/g, ''));
-    if (absValue === 0 && !isExplicitZero) continue;
-
-    // Skip duplicate header rows
-    const dateCell = (dateIdx >= 0 ? cells[dateIdx] : cells[0]) || '';
-    if (/^(data|date|dt|fecha)/i.test(dateCell.trim())) continue;
-
-    // Date normalization
-    let isoDate = '';
-    const cleanDate = date.trim();
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(cleanDate)) {
-      const [d, m, y] = cleanDate.split('/');
-      isoDate = `${y}-${m}-${d}`;
-    } else if (/^\d{4}-\d{2}-\d{2}/.test(cleanDate)) {
-      isoDate = cleanDate.slice(0, 10);
-    } else if (/^\d{2}-\d{2}-\d{4}$/.test(cleanDate)) {
-      const [d, m, y] = cleanDate.split('-');
-      isoDate = `${y}-${m}-${d}`;
-    } else if (/^\d{2}\/\d{2}\/\d{2}$/.test(cleanDate)) {
-      const [d, m, y] = cleanDate.split('/');
-      const fullYear = parseInt(y) > 30 ? `19${y}` : `20${y}`;
-      isoDate = `${fullYear}-${m}-${d}`;
-    } else {
-      isoDate = new Date().toISOString().split('T')[0];
-    }
-
-    // Validate date
-    const testDate = new Date(isoDate + 'T12:00:00');
-    if (isNaN(testDate.getTime())) {
-      isoDate = new Date().toISOString().split('T')[0];
-    }
-
-    // Date range warning
-    let dateWarning = false;
-    const finalDateObj = new Date(isoDate + 'T12:00:00');
-    const limitFuture = new Date();
-    limitFuture.setFullYear(limitFuture.getFullYear() + 1);
-    if (finalDateObj < new Date('2000-01-01T12:00:00') || finalDateObj > limitFuture) {
-      dateWarning = true;
-    }
-
-    // Internal duplicate detection (within same CSV)
-    const dupeKey = `${isoDate}|${normalizeStr(desc)}|${Math.round(absValue * 100)}`;
-    if (seenInternally.has(dupeKey)) continue;
-    seenInternally.add(dupeKey);
-
-    // Detect transaction type
-    let txType = isNegativeInSource ? 'income' : 'normal';
-    let installmentIndex = null;
-    let installmentTotal = null;
-    let cleanTitle = desc;
-
-    const descLower = desc.toLowerCase();
-    if (!isNegativeInSource && isRefundOrPayment(desc, absValue)) {
-      txType = 'refund';
-    } else if (!isNegativeInSource) {
-      const inst = detectInstallment(desc);
-      if (inst) {
-        txType = 'installment';
-        installmentIndex = inst.index;
-        installmentTotal = inst.total;
-        cleanTitle = inst.cleanTitle;
-      }
-    }
-
-    // Auto-categorize
-    const category = autoCategorize(desc, existingTransactions);
-
-    // Invoice month: determine which billing cycle this belongs to
-    const invoiceMonth = getInvoiceMonth(isoDate, cardClosingDay);
-
-    rows.push({
-      date: isoDate,           // Original purchase date (preserved)
-      invoiceMonth,            // 'YYYY-MM' for billing cycle (null if no card)
-      description: desc,
-      cleanTitle,
-      value: absValue,
-      category,
-      selected: true,
-      _dateWarning: dateWarning,
-      _zeroValue: absValue === 0 && isExplicitZero,
-      txType,
-      installmentIndex,
-      installmentTotal,
-      _duplicate: false,
-      _duplicateSeries: false,
-      _duplicateSuspect: false,
-      _missingInstallments: [], // indices of installments missing before this one
-    });
-  }
-  return rows;
-}
+import { getCards, lsGet, lsSet } from '@/lib/store';
+import { readFileWithEncoding, parseCSV as parseCSVFull } from '@/lib/csvParser';
+import { enrichWithDedup } from '@/lib/csvDedup';
+import { detectBankProfile, getBankProfileNames } from '@/lib/csvProfile';
+import ColumnMapper from './ColumnMapper';
 
 // ══════════════════════════════════════════
 // Component
@@ -368,105 +21,137 @@ function parseCSV(text, cardClosingDay = null, existingTransactions = []) {
 
 export default function CSVImport({ open, onClose, onImport, transactions = [], importing = false }) {
   const navigate = useNavigate();
-  const [step, setStep] = useState('upload'); // upload | preview | done
+  const [step, setStep] = useState('upload'); // upload | mapping | preview | done
   const [rows, setRows] = useState([]);
-  const [selectedCard, setSelectedCard] = useState('');
+  const [selectedCard, setSelectedCard] = useState(() => lsGet('csvImport_lastCard', ''));
   const [importCount, setImportCount] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [isImportingLocal, setIsImportingLocal] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [importStats, setImportStats] = useState(null);
+  const [parseErrors, setParseErrors] = useState([]);
+  const [parseWarnings, setParseWarnings] = useState([]);
+  const [parseStats, setParseStats] = useState(null);
+  const [detectedBank, setDetectedBank] = useState(null);
+  const [showManualMapping, setShowManualMapping] = useState(false);
+  const [pendingText, setPendingText] = useState(null); // Store raw text for remapping
   const fileRef = useRef(null);
 
   const cards = getCards();
   const cats = getCategories();
 
-  const handleFile = (file) => {
+  // Persist card selection
+  const handleCardChange = useCallback((val) => {
+    setSelectedCard(val);
+    lsSet('csvImport_lastCard', val);
+  }, []);
+
+  const processText = useCallback((text, columnMapping = null) => {
+    const card = selectedCard && selectedCard !== 'none'
+      ? cards.find(c => c.id === selectedCard)
+      : null;
+    const closingDay = card?.closingDay || null;
+
+    // Auto-detect bank profile from headers
+    const firstLine = text.split(/\r?\n/)[0] || '';
+    const sep = firstLine.includes('\t') ? '\t' : firstLine.includes(';') ? ';' : ',';
+    const headers = firstLine.replace(/^\uFEFF/, '').split(sep).map(h => h.replace(/^["'\s]+|["'\s]+$/g, ''));
+
+    let profileMapping = null;
+    if (!columnMapping) {
+      const { key, profile } = detectBankProfile(headers);
+      setDetectedBank(key === 'generic' ? null : { key, name: profile.name });
+
+      if (key !== 'generic') {
+        // Use profile for column mapping
+        profileMapping = {};
+        if (profile.dateIdx >= 0) profileMapping.dateIdx = profile.dateIdx;
+        if (profile.descIdx >= 0) profileMapping.descIdx = profile.descIdx;
+        if (profile.valIdx >= 0) profileMapping.valIdx = profile.valIdx;
+        if (profile.hasSplitColumns) {
+          profileMapping.creditIdx = profile.creditIdx;
+          profileMapping.debitIdx = profile.debitIdx;
+        }
+      }
+    } else {
+      setDetectedBank(null);
+    }
+
+    const result = parseCSVFull(text, {
+      cardClosingDay: closingDay,
+      existingTransactions: transactions,
+      columnMapping: columnMapping || profileMapping,
+    });
+
+    // Handle errors
+    if (result.errors.length > 0) {
+      setParseErrors(result.errors);
+      setParseWarnings([]);
+      setParseStats(null);
+      return;
+    }
+
+    setParseErrors([]);
+    setParseWarnings(result.warnings);
+    setParseStats(result.stats);
+
+    // Enrich with duplicate detection
+    const selectedCardId = selectedCard && selectedCard !== 'none' ? selectedCard : null;
+    const enriched = enrichWithDedup(result.rows, transactions, selectedCardId);
+
+    if (enriched.length === 0) {
+      setParseErrors(['Nenhuma transação válida encontrada no CSV. Verifique o formato do arquivo.']);
+      return;
+    }
+
+    setRows(enriched);
+    setStep('preview');
+  }, [selectedCard, cards, transactions]);
+
+  const handleFile = useCallback(async (file) => {
     if (!file) return;
 
-    const processText = (text) => {
-      const card = selectedCard && selectedCard !== 'none'
-        ? cards.find(c => c.id === selectedCard)
-        : null;
-      const closingDay = card?.closingDay || null;
-      const parsed = parseCSV(text, closingDay, transactions);
+    setParseErrors([]);
+    setParseWarnings([]);
 
-      if (parsed && parsed.error) {
-        alert(parsed.error);
+    try {
+      const { text, encoding } = await readFileWithEncoding(file);
+
+      // Store text for potential remapping
+      setPendingText(text);
+
+      // Try auto-detect first; if it fails to find columns, show manual mapping
+      const firstLine = text.split(/\r?\n/)[0] || '';
+      const sep = firstLine.includes('\t') ? '\t' : firstLine.includes(';') ? ';' : ',';
+      const rawHeaders = firstLine.replace(/^\uFEFF/, '').split(sep).map(h => h.replace(/^["'\s]+|["'\s]+$/g, ''));
+
+      // Quick check: can we find essential columns?
+      const h = rawHeaders.map(x => (x || '').toLowerCase().trim());
+      const hasDate = h.some(x => /^(data|date|dt|fecha|posted)/.test(x));
+      const hasDesc = h.some(x => /descri|hist|memo|detail|lança|establ|comercio|title|name|merchant/.test(x));
+      const hasVal = h.some(x => /^(valor|value|amount|vl|importe|total|debit|débito)$/.test(x));
+      const hasCreditDebit = h.some(x => /crédito|credit|entrada/.test(x)) && h.some(x => /débito|debit|saída|saida/.test(x));
+
+      if (!hasDesc && !hasVal && !hasCreditDebit) {
+        // Can't auto-detect — show manual mapping
+        setPendingText(text);
+        setShowManualMapping(true);
+        setStep('mapping');
         return;
       }
 
-      // Build installment index for fast lookup
-      const installmentIdx = buildInstallmentIndex(transactions);
+      processText(text);
+    } catch (err) {
+      setParseErrors([`Erro ao ler arquivo: ${err.message || 'Formato desconhecido'}`]);
+    }
+  }, [processText]);
 
-      // Enrich with duplicate detection
-      const selectedCardId = selectedCard && selectedCard !== 'none' ? selectedCard : null;
-
-      const enriched = parsed.map(row => {
-        const isDupe = findExactDuplicate(row, transactions, selectedCardId);
-        const isSuspect = !isDupe && findSuspectDuplicate(row, transactions, selectedCardId);
-
-        // For installments: check if this specific installment already exists
-        let isSeriesDuplicate = false;
-        let missingInstallments = [];
-        if (row.txType === 'installment') {
-          isSeriesDuplicate = isInstallmentAlreadyImported(row, installmentIdx);
-          missingInstallments = findMissingInstallments(row, installmentIdx);
-        }
-
-        return {
-          ...row,
-          _duplicate: isDupe,
-          _duplicateSeries: isSeriesDuplicate,
-          _duplicateSuspect: !isDupe && !isSeriesDuplicate && isSuspect,
-          _missingInstallments: missingInstallments,
-        };
-      });
-
-      // Determine selection: duplicates disabled, installments with issues get warnings
-      const withSelection = enriched.map((row) => {
-        // Exact duplicate or already imported → disabled
-        if (row._duplicate || row._duplicateSeries) return { ...row, selected: false };
-
-        // Refund/income → selected by default
-        if (row.txType === 'refund' || row.txType === 'income') return { ...row, selected: true };
-
-        // Installment with missing predecessors → selected but with warning
-        if (row.txType === 'installment') {
-          return { ...row, selected: true };
-        }
-
-        return { ...row, selected: true };
-      });
-
-      setRows(withSelection);
-      setStep('preview');
-    };
-
-    // Encoding fallback: UTF-8 first, then ISO-8859-1
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const text = e.target.result;
-        if (text.includes('\uFFFD')) {
-          const reader2 = new FileReader();
-          reader2.onload = (e2) => {
-            try {
-              processText(e2.target.result);
-            } catch {
-              alert('Erro ao processar arquivo. Verifique o formato CSV.');
-            }
-          };
-          reader2.readAsText(file, 'ISO-8859-1');
-          return;
-        }
-        processText(text);
-      } catch {
-        alert('Erro ao processar arquivo. Verifique o formato CSV.');
-      }
-    };
-    reader.readAsText(file, 'UTF-8');
-  };
+  const handleManualMapping = useCallback((mapping) => {
+    setShowManualMapping(false);
+    if (pendingText) {
+      processText(pendingText, mapping);
+    }
+  }, [pendingText, processText]);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -507,9 +192,9 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
     for (const r of selected) {
       if (r.txType === 'installment') {
-        // Only create the single installment from the CSV row.
-        // Future installments will be imported from future CSVs.
-        const totalValue = r.value * r.installmentTotal; // best estimate
+        // Best estimate for total value: per-value × total installments
+        // (may differ by a few cents due to rounding — acceptable)
+        const totalValue = r.value * r.installmentTotal;
 
         transactionsToCreate.push({
           description: `${r.cleanTitle} (${r.installmentIndex}/${r.installmentTotal})`,
@@ -578,11 +263,16 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const reset = () => {
     setStep('upload');
     setRows([]);
-    setSelectedCard('');
     setImportCount(0);
     setProgress({ current: 0, total: 0 });
     setImportStats(null);
     setIsImportingLocal(false);
+    setParseErrors([]);
+    setParseWarnings([]);
+    setParseStats(null);
+    setDetectedBank(null);
+    setShowManualMapping(false);
+    setPendingText(null);
   };
 
   const handleClose = () => {
@@ -608,6 +298,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
           <DialogTitle className="flex items-center gap-2">
             <Upload size={18} />
             Importar Fatura de Cartão (CSV)
+            {detectedBank && (
+              <Badge variant="secondary" className="ml-2 text-[10px]">
+                {detectedBank.name} detectado
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -622,7 +317,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                 <p className="text-xs text-muted-foreground mb-1.5">
                   Selecione o cartão ANTES de fazer upload — isso ajusta as transações para o ciclo de fatura correto.
                 </p>
-                <Select value={selectedCard} onValueChange={setSelectedCard}>
+                <Select value={selectedCard} onValueChange={handleCardChange}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Selecione o cartão" />
                   </SelectTrigger>
@@ -667,19 +362,67 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={e => handleFile(e.target.files?.[0])} />
             </div>
 
+            {/* Parse errors */}
+            {parseErrors.length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded px-3 py-2 text-xs text-red-700">
+                {parseErrors.map((err, i) => (
+                  <p key={i} className="flex items-start gap-1.5">
+                    <AlertCircle size={12} className="mt-0.5 shrink-0" />
+                    {err}
+                  </p>
+                ))}
+              </div>
+            )}
+
             <div className="bg-muted/50 rounded p-3 text-xs text-muted-foreground">
               <p className="font-semibold mb-1">💡 Formato esperado:</p>
               <p>Colunas: <strong>Data</strong>, <strong>Descrição/Title</strong>, <strong>Valor/Amount</strong></p>
-              <p>Formatos de data aceitos: DD/MM/AAAA ou AAAA-MM-DD</p>
+              <p>Formatos aceitos: DD/MM/AAAA, AAAA-MM-DD, MM/DD/AAAA</p>
               <p>Separadores: vírgula (,), ponto e vírgula (;) ou TAB</p>
+              <p>Bancos detectados: Nubank, Inter, Bradesco, Itaú, C6 Bank, XP</p>
               <p className="mt-1 text-amber-600">⚠️ Valores positivos = despesas (fatura de cartão). Negativos = receitas/estornos.</p>
             </div>
+          </div>
+        )}
+
+        {/* ── Step: Manual Mapping ── */}
+        {step === 'mapping' && (
+          <div className="space-y-3">
+            {pendingText && (() => {
+              const firstLine = pendingText.split(/\r?\n/)[0] || '';
+              const sep = firstLine.includes('\t') ? '\t' : firstLine.includes(';') ? ';' : ',';
+              const headers = firstLine.replace(/^\uFEFF/, '').split(sep).map(h => h.replace(/^["'\s]+|["'\s]+$/g, ''));
+              return (
+                <ColumnMapper
+                  headers={headers}
+                  onApply={handleManualMapping}
+                  onCancel={() => { reset(); }}
+                />
+              );
+            })()}
           </div>
         )}
 
         {/* ── Step: Preview ── */}
         {step === 'preview' && (
           <div className="space-y-3 overflow-hidden flex flex-col flex-1">
+            {/* Parse stats */}
+            {parseStats && (
+              <div className="flex items-center gap-2 flex-wrap text-[10px] text-muted-foreground">
+                <span>📊 {parseStats.parsed}/{parseStats.totalRawRows} linhas</span>
+                <span>• Sep: {parseStats.separator}</span>
+                <span>• Data: {parseStats.dateDetected}</span>
+                {parseStats.skippedDupe > 0 && <span>• {parseStats.skippedDupe} dup internas</span>}
+              </div>
+            )}
+
+            {/* Warnings */}
+            {parseWarnings.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded px-3 py-1.5 text-[11px] text-amber-700">
+                {parseWarnings.map((w, i) => <p key={i}>⚠️ {w}</p>)}
+              </div>
+            )}
+
             {/* Summary badges */}
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="secondary">{selectedCount} selecionadas</Badge>
@@ -765,7 +508,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                           />
                         </td>
                         <td className="p-2 whitespace-nowrap text-xs">
-                          {r._dateWarning && <span title="Data fora do intervalo esperado">⚠️ </span>}
+                          {r._dateWarning && <span title={r._dateWarningReason || 'Data fora do intervalo esperado'}>⚠️ </span>}
                           {r.date?.split('-').reverse().join('/')}
                         </td>
                         <td className="p-2 whitespace-nowrap text-xs text-muted-foreground">
@@ -810,7 +553,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                             </span>
                           )}
                           {r.txType === 'installment' && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-600 border border-blue-200">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-600 border border-blue-200">
                               <Layers size={9} /> {r.installmentIndex}/{r.installmentTotal}
                             </span>
                           )}

@@ -18,7 +18,7 @@ import { formatCurrency, formatDate, filterByMonth, calcTotals, getTypeBg } from
 import { MONTH_NAMES, MONTH_SHORT, getCategories } from '@/lib/categories';
 import { getPaymentMethods } from '@/lib/store';
 import { getCategoryIcon, getCategoryColor } from '@/lib/categories';
-import { normalizeStr } from '@/lib/stringUtils';
+import { filterDuplicatesOnImport } from '@/lib/csvDedup';
 import { cn } from '@/lib/utils';
 import { addChangelogEntry, getCards } from '@/lib/store';
 import { toast } from '@/components/ui/use-toast';
@@ -244,35 +244,8 @@ export default function Transactions() {
         return;
       }
 
-      // Gap 3 — Filtragem final com normalizeStr
-      // Para parcelas: compara cleanTitle + date + value + installmentCurrent
-      // Para normais: compara description + date + value
-      // Suporta formatos antigos ("Title - Parcela 1/4") e novos ("Title (1/4)")
-      const stripInstallmentSuffix = (desc) =>
-        normalizeStr(desc).replace(/\s*[-–]\s*parcela\s+\d+\/\d+\s*$/, '').replace(/\s*\(\d+\/\d+\)\s*$/, '');
-
-      const deduped = valid.filter(newTx => {
-        return !transactions.some(existing => {
-          // Para parcelas, comparar pelo título base (sem sufixo de parcela)
-          const existingDesc = newTx.isInstallment
-            ? stripInstallmentSuffix(existing.description || '')
-            : normalizeStr(existing.description);
-          const newDesc = newTx.isInstallment
-            ? stripInstallmentSuffix(newTx.description || '')
-            : normalizeStr(newTx.description);
-
-          if (existingDesc !== newDesc) return false;
-          if (existing.date !== newTx.date) return false;
-          if (Math.round(Math.abs(existing.value || 0) * 100) !== Math.round(Math.abs(newTx.value || 0) * 100)) return false;
-          // Para parcelas, também comparar o índice
-          if (newTx.isInstallment && existing.isInstallment) {
-            return existing.installmentCurrent === newTx.installmentCurrent;
-          }
-          return true;
-        });
-      });
-
-      const skipped = valid.length - deduped.length;
+      // Dedup unified — uses csvDedup module (single source of truth)
+      const { deduped, skipped } = filterDuplicatesOnImport(valid, transactions);
       if (skipped > 0) {
         toast({ title: `${skipped} transação(ões) ignorada(s)`, description: 'Já existiam no sistema.' });
       }
