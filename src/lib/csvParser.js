@@ -350,6 +350,17 @@ export function validateColumns(colInfo) {
   return { valid: true, error: null };
 }
 
+/**
+ * Quick check: can we detect any essential columns from headers?
+ * Used before full parse to decide whether to show manual mapping UI.
+ * Returns boolean.
+ */
+export function hasEssentialColumns(headers) {
+  const colInfo = detectColumns(headers);
+  const validation = validateColumns(colInfo);
+  return validation.valid;
+}
+
 // ══════════════════════════════════════════
 // 5. Invoice Month Calculation
 // ══════════════════════════════════════════
@@ -465,16 +476,25 @@ export function parseCSV(text, options = {}) {
   // Header row
   const rawHeaders = rawRows[0].map(h => h.replace(/^["'\s]+|["'\s]+$/g, '').toLowerCase());
 
-  // Column detection
-  const colInfo = columnMapping
-    ? { ...detectColumns(rawHeaders), ...columnMapping, hasSplitColumns: false }
-    : detectColumns(rawHeaders);
-
-  // Re-validate hasSplitColumns if manual mapping provided credit/debit
-  if (columnMapping?.creditIdx !== undefined && columnMapping?.debitIdx !== undefined && columnMapping?.valIdx === undefined) {
-    colInfo.hasSplitColumns = true;
-    colInfo.creditIdx = columnMapping.creditIdx;
-    colInfo.debitIdx = columnMapping.debitIdx;
+  // Column detection — manual mapping takes full precedence over auto-detection
+  let colInfo;
+  if (columnMapping) {
+    // Start with auto-detection as base, then override with manual mapping
+    const auto = detectColumns(rawHeaders);
+    colInfo = {
+      dateIdx: columnMapping.dateIdx ?? auto.dateIdx,
+      descIdx: columnMapping.descIdx ?? auto.descIdx,
+      valIdx: columnMapping.valIdx ?? auto.valIdx,
+      creditIdx: columnMapping.creditIdx ?? auto.creditIdx,
+      debitIdx: columnMapping.debitIdx ?? auto.debitIdx,
+      hasSplitColumns: false,
+    };
+    // Determine split columns from the final resolved indices
+    if (colInfo.creditIdx !== -1 && colInfo.debitIdx !== -1 && colInfo.valIdx === -1) {
+      colInfo.hasSplitColumns = true;
+    }
+  } else {
+    colInfo = detectColumns(rawHeaders);
   }
 
   const colValidation = validateColumns(colInfo);

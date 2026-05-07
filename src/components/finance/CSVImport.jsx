@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2, Settings2 } from 'lucide-react';
+import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
 import { getCards, lsGet, lsSet } from '@/lib/store';
-import { readFileWithEncoding, parseCSV as parseCSVFull } from '@/lib/csvParser';
+import { readFileWithEncoding, parseCSV as parseCSVFull, hasEssentialColumns } from '@/lib/csvParser';
 import { enrichWithDedup } from '@/lib/csvDedup';
-import { detectBankProfile, getBankProfileNames } from '@/lib/csvProfile';
+import { detectBankProfile } from '@/lib/csvProfile';
 import ColumnMapper from './ColumnMapper';
 
 // ══════════════════════════════════════════
@@ -120,19 +120,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
       // Store text for potential remapping
       setPendingText(text);
 
-      // Try auto-detect first; if it fails to find columns, show manual mapping
+      // Quick check: can we find essential columns? (uses same logic as full parser)
       const firstLine = text.split(/\r?\n/)[0] || '';
       const sep = firstLine.includes('\t') ? '\t' : firstLine.includes(';') ? ';' : ',';
       const rawHeaders = firstLine.replace(/^\uFEFF/, '').split(sep).map(h => h.replace(/^["'\s]+|["'\s]+$/g, ''));
 
-      // Quick check: can we find essential columns?
-      const h = rawHeaders.map(x => (x || '').toLowerCase().trim());
-      const hasDate = h.some(x => /^(data|date|dt|fecha|posted)/.test(x));
-      const hasDesc = h.some(x => /descri|hist|memo|detail|lança|establ|comercio|title|name|merchant/.test(x));
-      const hasVal = h.some(x => /^(valor|value|amount|vl|importe|total|debit|débito)$/.test(x));
-      const hasCreditDebit = h.some(x => /crédito|credit|entrada/.test(x)) && h.some(x => /débito|debit|saída|saida/.test(x));
-
-      if (!hasDesc && !hasVal && !hasCreditDebit) {
+      if (!hasEssentialColumns(rawHeaders)) {
         // Can't auto-detect — show manual mapping
         setPendingText(text);
         setShowManualMapping(true);
