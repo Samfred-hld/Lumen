@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight, Plus, X, CreditCard, Calendar, Download, Pencil, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import TransactionModal from '@/components/finance/TransactionModal';
 import { cn } from '@/lib/utils';
 import { getCards } from '@/lib/store';
 import { getCategoryIcon } from '@/lib/categories';
+import { useTransactions, useGoals } from '@/hooks/useData';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -65,7 +65,6 @@ function exportCalendarCSV(transactions, cards, month, year) {
 }
 
 export default function CalendarPage() {
-  const qc = useQueryClient();
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
   const [selectedDay, setSelectedDay] = useState(null);
   const [showTxModal, setShowTxModal] = useState(false);
@@ -75,26 +74,8 @@ export default function CalendarPage() {
   const isMobile = useIsMobile();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const { data: transactions = [], refetch } = useQuery({
-    queryKey: ['transactions'],
-    queryFn: () => base44.entities.Transaction.list('-date', 500),
-  });
-
-  const { data: goals = [] } = useQuery({
-    queryKey: ['goals'],
-    queryFn: () => base44.entities.Goal.list(),
-  });
-
-  // Real-time subscriptions
-  useEffect(() => {
-    const unsubTx = base44.entities.Transaction.subscribe(() => {
-      qc.invalidateQueries({ queryKey: ['transactions'] });
-    });
-    const unsubGoal = base44.entities.Goal.subscribe(() => {
-      qc.invalidateQueries({ queryKey: ['goals'] });
-    });
-    return () => { unsubTx(); unsubGoal(); };
-  }, [qc]);
+  const { data: transactions = [], refetch } = useTransactions(500);
+  const { data: goals = [] } = useGoals();
 
   const cards = getCards();
 

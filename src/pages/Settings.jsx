@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   CreditCard, Tag, FileText, Download, Upload, Plus, Trash2, Pencil,
   Moon, Sun, Wand2, DollarSign, Check, AlertCircle, X, ChevronDown, ChevronRight, History,
@@ -19,7 +18,7 @@ import { formatCurrency, formatDate } from '@/lib/financeUtils';
 import { CAT_COLORS, DEFAULT_CATEGORIES, MONTH_NAMES } from '@/lib/categories';
 import { lsSet, lsGet, addCard, updateCard, deleteCard, getExtraCats, saveExtraCats, getRules, saveRules, addRule, deleteRule, getChangelog, addChangelogEntry, getSalaryConfig, saveSalaryConfig, getCustomPaymentMethods, saveCustomPaymentMethods, getTemplates, saveTemplates, addTemplate, deleteTemplate, syncTemplatesToCloud, clearAllData } from '@/lib/store';
 import { getCategories } from '@/lib/categories';
-import { useCards } from '@/hooks/useData';
+import { useCards, useTransactions, useBudgets, useGoals } from '@/hooks/useData';
 
 // ═══ Section wrapper ═══
 function Section({ icon: Icon, title, children, actions }) {
@@ -236,18 +235,9 @@ export default function SettingsPage() {
     { id: 'backup', label: 'Backup & Dados', icon: '💾' },
   ];
 
-  const { data: transactions = [] } = useQuery({ queryKey:['transactions'], queryFn:()=>base44.entities.Transaction.list('-date',500) });
-  const { data: budgets = [] } = useQuery({ queryKey:['budgets'], queryFn:()=>base44.entities.Budget.list() });
-  const { data: goals = [] } = useQuery({ queryKey:['goals'], queryFn:()=>base44.entities.Goal.list() });
-
-  // Real-time subscriptions (SYNC-01)
-  const qc = useQueryClient();
-  useEffect(() => {
-    const unsubTx = base44.entities.Transaction.subscribe(() => qc.invalidateQueries({ queryKey: ['transactions'] }));
-    const unsubBudget = base44.entities.Budget.subscribe(() => qc.invalidateQueries({ queryKey: ['budgets'] }));
-    const unsubGoal = base44.entities.Goal.subscribe(() => qc.invalidateQueries({ queryKey: ['goals'] }));
-    return () => { unsubTx(); unsubBudget(); unsubGoal(); };
-  }, [qc]);
+  const { data: transactions = [] } = useTransactions(500);
+  const { data: budgets = [] } = useBudgets();
+  const { data: goals = [] } = useGoals();
 
   const allCategories = [...DEFAULT_CATEGORIES, ...extraCats];
 

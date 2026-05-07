@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, Pencil, Target, CheckCircle2, Clock, AlertTriangle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatDate, getGoalProgress } from '@/lib/financeUtils';
 import { cn } from '@/lib/utils';
+import { useTransactions, useGoals } from '@/hooks/useData';
 
 const GOAL_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316'];
 
@@ -353,32 +353,13 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
 }
 
 export default function Goals() {
-  const qc = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [depositGoal, setDepositGoal] = useState(null);
   const [historyGoal, setHistoryGoal] = useState(null);
 
-  const { data: goals = [], refetch } = useQuery({
-    queryKey: ['goals'],
-    queryFn: () => base44.entities.Goal.list(),
-  });
-
-  const { data: transactions = [], refetch: refetchTx } = useQuery({
-    queryKey: ['transactions'],
-    queryFn: () => base44.entities.Transaction.list('-date', 500),
-  });
-
-  // Real-time subscriptions (SYNC-01)
-  useEffect(() => {
-    const unsubGoal = base44.entities.Goal.subscribe(() => {
-      qc.invalidateQueries({ queryKey: ['goals'] });
-    });
-    const unsubTx = base44.entities.Transaction.subscribe(() => {
-      qc.invalidateQueries({ queryKey: ['transactions'] });
-    });
-    return () => { unsubGoal(); unsubTx(); };
-  }, [qc]);
+  const { data: goals = [], refetch } = useGoals();
+  const { data: transactions = [], refetch: refetchTx } = useTransactions(500);
 
   const handleSave = async (data) => {
     if (editing) await base44.entities.Goal.update(editing.id, data);

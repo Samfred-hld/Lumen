@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
 import { Search, ArrowRight, TrendingUp, TrendingDown, Gem } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/financeUtils';
+import { useTransactions } from '@/hooks/useData';
 
 export default function GlobalSearch({ open, onClose }) {
   const [query, setQuery] = useState('');
@@ -13,11 +12,7 @@ export default function GlobalSearch({ open, onClose }) {
   const listRef = useRef(null);
   const navigate = useNavigate();
 
-  const { data: transactions = [] } = useQuery({
-    queryKey: ['transactions'],
-    queryFn: () => base44.entities.Transaction.list('-date', 500),
-    enabled: open,
-  });
+  const { data: transactions = [] } = useTransactions(500);
 
   const results = query.trim().length < 2
     ? transactions.slice(0, 8) // show recent when no query

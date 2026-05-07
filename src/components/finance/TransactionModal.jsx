@@ -17,7 +17,7 @@ import { getCards, suggestCategoryFromRules, getTemplates, getPaymentMethods } f
 import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
 import { Checkbox } from '@/components/ui/checkbox';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useTransactions } from '@/hooks/useData';
 
 // ═══ Zod Validation Schema ═══
 const transactionSchema = z.object({
@@ -108,12 +108,8 @@ export default function TransactionModal({ open, onClose, onSave, transaction, g
   const watchedCardId = watch('cardId');
   const watchedPaymentMethod = watch('paymentMethod', 'Pix');
 
-  // Autocomplete: fetch recent descriptions
-  const { data: recentTx = [] } = useQuery({
-    queryKey: ['transactions'],
-    queryFn: () => base44.entities.Transaction.list('-date', 200),
-    enabled: open,
-  });
+  // Autocomplete: recent descriptions (data already cached from Transactions page)
+  const { data: recentTx = [] } = useTransactions(200);
 
   const [showAuto, setShowAuto] = useState(false);
   const [autoIdx, setAutoIdx] = useState(0);
