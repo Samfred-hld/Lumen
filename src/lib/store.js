@@ -634,8 +634,16 @@ async function _autoDeduplicate() {
       for (const [, group] of groups) {
         if (group.length <= 1) continue;
         group.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
-        for (const dup of group.slice(1)) {
-          try { await base44.entities[entity].delete(dup.id); removed++; } catch {}
+        const toDelete = group.slice(1);
+        try {
+          // Tentar deleteMany com IDs específicos
+          await base44.entities[entity].deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+          removed += toDelete.length;
+        } catch {
+          // Fallback: deletar um por um
+          for (const dup of toDelete) {
+            try { await base44.entities[entity].delete(dup.id); removed++; } catch {}
+          }
         }
       }
 
@@ -704,16 +712,26 @@ const ENTITIES_TO_CLEAR = [
 ];
 
 /**
- * Deleta todos os itens de uma entidade em lotes para evitar rate limit.
- * Usa paginação para garantir que todos os itens sejam encontrados.
+ * Deleta todos os itens de uma entidade.
+ * Tenta deleteMany({}) primeiro (1 request). Fallback para delete sequencial se não suportado.
  * Retorna { deleted, errors }.
  */
 async function deleteEntityBatch(entity, name) {
+  // Tentar deleteMany nativo — muito mais rápido
+  try {
+    const result = await entity.deleteMany({});
+    const deleted = result?.deleted ?? result?.count ?? 0;
+    return { deleted, errors: [] };
+  } catch (e) {
+    // deleteMany pode não estar disponível ou falhar — fallback sequencial
+    console.warn(`[deleteEntityBatch] ${name}: deleteMany falhou, usando fallback sequencial:`, e.message);
+  }
+
+  // Fallback: paginação + delete sequencial
   const PAGE_SIZE = 500;
   let allItems = [];
   let offset = 0;
 
-  // Paginar para buscar TODOS os itens (list com limit pode ter ceiling interno)
   while (true) {
     let page;
     try {
@@ -723,7 +741,7 @@ async function deleteEntityBatch(entity, name) {
     }
     if (!page?.length) break;
     allItems.push(...page);
-    if (page.length < PAGE_SIZE) break; // última página
+    if (page.length < PAGE_SIZE) break;
     offset += PAGE_SIZE;
   }
 
@@ -732,7 +750,6 @@ async function deleteEntityBatch(entity, name) {
   const errors = [];
   let deleted = 0;
 
-  // Deletar sequencialmente para não estourar o rate limit
   for (const item of allItems) {
     try {
       await entity.delete(item.id);

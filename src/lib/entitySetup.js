@@ -384,12 +384,18 @@ async function deduplicateCards(b44) {
     const toDelete = cards.slice(1);
     console.log(`[deduplicateCards] "${name}": ${cards.length} cópias — mantendo ${keep.id}, deletando ${toDelete.length}`);
 
-    for (const card of toDelete) {
-      try {
-        await client.entities.Card.delete(card.id);
-        removed++;
-      } catch (e) {
-        errors.push(`Card[${card.id}]: ${e.message}`);
+    try {
+      await client.entities.Card.deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+      removed += toDelete.length;
+    } catch {
+      // Fallback: um por um
+      for (const card of toDelete) {
+        try {
+          await client.entities.Card.delete(card.id);
+          removed++;
+        } catch (e) {
+          errors.push(`Card[${card.id}]: ${e.message}`);
+        }
       }
     }
   }
@@ -432,11 +438,14 @@ async function deduplicateRules(b44) {
   for (const [keyword, rules] of groups) {
     if (rules.length <= 1) continue;
     rules.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
-    for (const rule of rules.slice(1)) {
-      try {
-        await client.entities.Rule.delete(rule.id);
-        removed++;
-      } catch {}
+    const toDelete = rules.slice(1);
+    try {
+      await client.entities.Rule.deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+      removed += toDelete.length;
+    } catch {
+      for (const rule of toDelete) {
+        try { await client.entities.Rule.delete(rule.id); removed++; } catch {}
+      }
     }
   }
 
@@ -476,11 +485,14 @@ async function deduplicateTemplates(b44) {
   for (const [desc, tpls] of groups) {
     if (tpls.length <= 1) continue;
     tpls.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
-    for (const tpl of tpls.slice(1)) {
-      try {
-        await client.entities.Template.delete(tpl.id);
-        removed++;
-      } catch {}
+    const toDelete = tpls.slice(1);
+    try {
+      await client.entities.Template.deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+      removed += toDelete.length;
+    } catch {
+      for (const tpl of toDelete) {
+        try { await client.entities.Template.delete(tpl.id); removed++; } catch {}
+      }
     }
   }
 
