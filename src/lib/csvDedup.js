@@ -18,9 +18,7 @@ export function buildInstallmentIndex(transactions) {
   const index = new Map();
   for (const t of transactions) {
     if (!t.isInstallment) continue;
-    const base = normalizeStr(
-      (t.description || '').replace(/\s*\(\d+\/\d+\)\s*$/, '').trim()
-    );
+    const base = stripInstallmentSuffix(t.description || '');
     if (!index.has(base)) index.set(base, new Set());
     index.get(base).add(t.installmentCurrent);
   }
