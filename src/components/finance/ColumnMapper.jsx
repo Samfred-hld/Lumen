@@ -39,6 +39,7 @@ export default function ColumnMapper({ headers, onApply, onCancel }) {
     } else {
       mapping.creditIdx = parseInt(creditIdx);
       mapping.debitIdx = parseInt(debitIdx);
+      mapping.valIdx = -1; // força hasSplitColumns no parseCSV
     }
     onApply(mapping);
   };

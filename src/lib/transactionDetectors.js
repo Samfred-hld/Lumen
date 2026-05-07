@@ -21,8 +21,8 @@ export function detectInstallment(description) {
     }
   }
 
-  // Pattern: "Title 03/12"
-  m = s.match(/^(.*?)\s+(\d{2})\/(\d{2})$/);
+  // Pattern: "Title 03/12" or "Title 3/12"
+  m = s.match(/^(.*?)\s+(\d{1,2})\/(\d{1,2})$/);
   if (m) {
     const idx = parseInt(m[2]), total = parseInt(m[3]);
     if (total > 1 && idx >= 1 && idx <= total) {

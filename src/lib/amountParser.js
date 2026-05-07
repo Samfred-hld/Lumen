@@ -32,7 +32,7 @@ export function parseAmount(raw) {
   } else if (hasComma && !hasDot) {
     // 2 digits after comma → decimal (BR), 3 digits → thousands (US)
     const afterComma = clean.split(',').pop() || '';
-    num = afterComma.length === 2
+    num = afterComma.length <= 2
       ? clean.replace(',', '.')
       : clean.replace(',', '');
   } else {
@@ -71,7 +71,7 @@ export function parseAmountWithSign(raw) {
       : absClean.replace(/,/g, '');
   } else if (hasComma && !hasDot) {
     const afterComma = absClean.split(',').pop() || '';
-    num = afterComma.length === 2
+    num = afterComma.length <= 2
       ? absClean.replace(',', '.')
       : absClean.replace(',', '');
   } else {

@@ -366,6 +366,65 @@ export function hasEssentialColumns(headers) {
 // ══════════════════════════════════════════
 
 /**
+ * Shift a date by N months. Positive = forward, negative = backward.
+ * Keeps the day as close as possible (e.g., Jan 31 + 1 month = Feb 28).
+ * @param {string} isoDate - 'YYYY-MM-DD'
+ * @param {number} offset - months to shift
+ * @returns {string} 'YYYY-MM-DD'
+ */
+export function shiftMonths(isoDate, offset) {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  let newMonth = m + offset;
+  let newYear = y;
+  while (newMonth > 12) { newMonth -= 12; newYear++; }
+  while (newMonth < 1) { newMonth += 12; newYear--; }
+  // Clamp day to max days in target month
+  const maxDay = new Date(newYear, newMonth, 0).getDate();
+  const newDay = Math.min(d, maxDay);
+  return `${newYear}-${String(newMonth).padStart(2, '0')}-${String(newDay).padStart(2, '0')}`;
+}
+
+/**
+ * Expand a single installment row into the full series (all installments 1..total).
+ * Each generated row gets the correct date, invoiceMonth, and installment index.
+ *
+ * @param {object} row - Parsed CSV row with txType='installment'
+ * @param {number|null} closingDay - Card closing day for invoiceMonth calc
+ * @returns {object[]} - Array of all installments in the series
+ */
+export function expandInstallmentSeries(row, closingDay) {
+  const { installmentIndex, installmentTotal, cleanTitle, value, date, category } = row;
+  const series = [];
+
+  for (let i = 1; i <= installmentTotal; i++) {
+    const offset = i - installmentIndex; // negative = past, positive = future
+    const installmentDate = shiftMonths(date, offset);
+    const invMonth = getInvoiceMonth(installmentDate, closingDay);
+
+    series.push({
+      ...row,
+      date: installmentDate,
+      invoiceMonth: invMonth,
+      description: `${cleanTitle} (${i}/${installmentTotal})`,
+      cleanTitle,
+      installmentIndex: i,
+      installmentTotal,
+      value,
+      category,
+      selected: true,
+      _isGenerated: i !== installmentIndex, // true for retroactive/future, false for the one from CSV
+      _seriesLabel: i < installmentIndex ? 'retroativa' : i === installmentIndex ? 'esta_fatura' : 'futura',
+      _duplicate: false,
+      _duplicateSeries: false,
+      _duplicateSuspect: false,
+      _missingInstallments: [],
+    });
+  }
+
+  return series;
+}
+
+/**
  * Determine the invoice month (YYYY-MM) for a transaction date based on the card's closing day.
  *
  * The billing cycle runs from closingDay of month M to closingDay-1 of month M+1.
@@ -461,6 +520,7 @@ function buildDedupeKey(isoDate, description, value) {
  * @param {Array} options.existingTransactions - Existing transactions for auto-categorization
  * @param {string|null} options.dateFormatOverride - Force date format ('DMY'|'MDY'|'YMD'), skip auto-detect
  * @param {object|null} options.columnMapping - Manual column mapping { dateIdx, descIdx, valIdx }
+ * @param {RegExp[]} options.skipPatterns - Row description patterns to skip (from bank profiles)
  * @returns {{ rows: Array, errors: string[], warnings: string[], stats: object }}
  */
 export function parseCSV(text, options = {}) {
@@ -469,6 +529,7 @@ export function parseCSV(text, options = {}) {
     existingTransactions = [],
     dateFormatOverride = null,
     columnMapping = null,
+    skipPatterns = [],
   } = options;
 
   const errors = [];
@@ -554,6 +615,12 @@ export function parseCSV(text, options = {}) {
 
     // Skip total/saldo/subtotal lines
     if (/^(total|saldo|subtotal|balance|sub\s*total|fechamento|abertura)/i.test(desc.trim())) {
+      skippedTotal++;
+      continue;
+    }
+
+    // Skip bank-specific patterns (e.g. Nubank "Pagamento de fatura")
+    if (skipPatterns.some(rx => rx.test(desc.trim()))) {
       skippedTotal++;
       continue;
     }
@@ -662,10 +729,23 @@ export function parseCSV(text, options = {}) {
     });
   }
 
+  // ── Expand installment series ──
+  // For each detected installment, generate all installments in the series (1..total)
+  const expandedRows = [];
+  for (const row of rows) {
+    if (row.txType === 'installment' && row.installmentTotal > 1) {
+      const series = expandInstallmentSeries(row, cardClosingDay);
+      expandedRows.push(...series);
+    } else {
+      expandedRows.push(row);
+    }
+  }
+
   // Summary stats
   const stats = {
     totalRawRows: dataRows.length,
-    parsed: rows.length,
+    parsed: expandedRows.length,
+    originalParsed: rows.length,
     skippedEmpty,
     skippedTotal,
     skippedDupe,
@@ -679,5 +759,5 @@ export function parseCSV(text, options = {}) {
   if (skippedDupe > 0) warnings.push(`${skippedDupe} linha(s) duplicada(s) dentro do CSV foram ignoradas.`);
   if (skippedInvalidDate > 0 && warnings.length === 0) warnings.push(`${skippedInvalidDate} linha(s) com data inválida.`);
 
-  return { rows, errors, warnings, stats };
+  return { rows: expandedRows, errors, warnings, stats };
 }

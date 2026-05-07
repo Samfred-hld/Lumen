@@ -58,9 +58,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
     const headers = firstLine.replace(/^\uFEFF/, '').split(sep).map(h => h.replace(/^["'\s]+|["'\s]+$/g, ''));
 
     let profileMapping = null;
+    let profileSkipPatterns = [];
     if (!columnMapping) {
       const { key, profile } = detectBankProfile(headers);
       setDetectedBank(key === 'generic' ? null : { key, name: profile.name });
+      profileSkipPatterns = profile.skipPatterns || [];
 
       if (key !== 'generic') {
         // Use profile for column mapping
@@ -71,6 +73,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
         if (profile.hasSplitColumns) {
           profileMapping.creditIdx = profile.creditIdx;
           profileMapping.debitIdx = profile.debitIdx;
+          profileMapping.valIdx = -1; // força hasSplitColumns no parseCSV
         }
       }
     } else {
@@ -81,6 +84,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
       cardClosingDay: closingDay,
       existingTransactions: transactions,
       columnMapping: columnMapping || profileMapping,
+      skipPatterns: columnMapping ? [] : profileSkipPatterns,
     });
 
     // Handle errors
@@ -185,10 +189,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
     for (const r of selected) {
       if (r.txType === 'installment') {
-        // Best estimate for total value: per-value × total installments
-        // (may differ by a few cents due to rounding — acceptable)
-        const totalValue = r.value * r.installmentTotal;
-
+        // Each row is already a single installment from the expanded series
         transactionsToCreate.push({
           description: `${r.cleanTitle} (${r.installmentIndex}/${r.installmentTotal})`,
           date: r.date,
@@ -202,7 +203,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
           isInstallment: true,
           installmentCount: r.installmentTotal,
           installmentCurrent: r.installmentIndex,
-          installmentTotalValue: totalValue,
+          installmentTotalValue: r.value * r.installmentTotal,
         });
       } else {
         const txEntityType = (r.txType === 'income' || r.txType === 'refund') ? 'income' : 'expense';
@@ -283,6 +284,41 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const instCount = rows.filter(r => r.txType === 'installment').length;
   const refundCount = rows.filter(r => r.txType === 'refund' || r.txType === 'income').length;
   const missingCount = rows.filter(r => r._missingInstallments?.length > 0).length;
+
+  // Group installment rows by series for preview display
+  const groupedRows = React.useMemo(() => {
+    const groups = [];
+    let i = 0;
+    while (i < rows.length) {
+      const r = rows[i];
+      if (r.txType === 'installment') {
+        // Find all consecutive rows with the same cleanTitle (they form a series)
+        const seriesRows = [];
+        const seriesTitle = r.cleanTitle;
+        while (i < rows.length && rows[i].txType === 'installment' && rows[i].cleanTitle === seriesTitle) {
+          seriesRows.push({ row: rows[i], globalIdx: i });
+          i++;
+        }
+        const totalSeriesValue = seriesRows.reduce((s, sr) => s + sr.row.value, 0);
+        const selectedInSeries = seriesRows.filter(sr => sr.row.selected).length;
+        const dupesInSeries = seriesRows.filter(sr => sr.row._duplicateSeries || sr.row._duplicate).length;
+        groups.push({
+          type: 'installment_series',
+          title: seriesTitle,
+          total: seriesRows[0].row.installmentTotal,
+          perValue: seriesRows[0].row.value,
+          totalValue: totalSeriesValue,
+          selectedCount: selectedInSeries,
+          dupeCount: dupesInSeries,
+          items: seriesRows,
+        });
+      } else {
+        groups.push({ type: 'single', item: { row: r, globalIdx: i } });
+        i++;
+      }
+    }
+    return groups;
+  }, [rows]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -470,7 +506,110 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r, i) => {
+                  {groupedRows.map((group, gi) => {
+                    if (group.type === 'installment_series') {
+                      // Render installment series with header
+                      return (
+                        <React.Fragment key={`series-${gi}`}>
+                          {/* Series header row */}
+                          <tr className="border-t-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
+                            <td colSpan={7} className="p-2 text-xs">
+                              <div className="flex items-center gap-2">
+                                <Layers size={14} className="text-blue-600" />
+                                <span className="font-bold text-blue-700 dark:text-blue-300">
+                                  {group.title}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  — {group.total} parcelas × {formatCurrency(group.perValue)} = {formatCurrency(group.totalValue)} total
+                                </span>
+                                {group.dupeCount > 0 && (
+                                  <Badge variant="outline" className="text-[9px] bg-purple-50 text-purple-600 border-purple-200">
+                                    {group.dupeCount} já importada(s)
+                                  </Badge>
+                                )}
+                                <span className="ml-auto text-muted-foreground">
+                                  {group.selectedCount}/{group.total} selecionadas
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                          {/* Individual installment rows */}
+                          {group.items.map(({ row: r, globalIdx: i }) => {
+                            const isDisabled = r._duplicate || r._duplicateSeries;
+                            const label = r._seriesLabel;
+                            let labelBadge = null;
+                            if (label === 'retroativa') {
+                              labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-700 border border-amber-200">retroativa</span>;
+                            } else if (label === 'esta_fatura') {
+                              labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-100 text-blue-700 border border-blue-200">★ esta fatura</span>;
+                            } else if (label === 'futura') {
+                              labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-gray-100 text-gray-600 border border-gray-200">futura</span>;
+                            }
+
+                            return (
+                              <tr
+                                key={i}
+                                className={cn(
+                                  "border-t transition-colors",
+                                  isDisabled ? 'bg-red-50/30 dark:bg-red-950/10 opacity-50' : 'hover:bg-muted/30 cursor-pointer',
+                                  label === 'esta_fatura' && !isDisabled && 'bg-blue-50/30 dark:bg-blue-950/10'
+                                )}
+                                onClick={() => !isDisabled && toggleRow(i)}
+                              >
+                                <td className="p-2 pl-6">
+                                  <input
+                                    type="checkbox"
+                                    checked={r.selected}
+                                    disabled={isDisabled}
+                                    onChange={() => !isDisabled && toggleRow(i)}
+                                    className="w-3.5 h-3.5 accent-primary"
+                                  />
+                                </td>
+                                <td className="p-2 whitespace-nowrap text-xs">
+                                  {r.date?.split('-').reverse().join('/')}
+                                </td>
+                                <td className="p-2 whitespace-nowrap text-xs text-muted-foreground">
+                                  {r.invoiceMonth ? r.invoiceMonth.split('-').reverse().join('/') : '—'}
+                                </td>
+                                <td className="p-2 max-w-[200px] truncate text-xs">
+                                  <span className="text-muted-foreground">{r.installmentIndex}/{r.installmentTotal}</span>
+                                  {' '}{r.cleanTitle}
+                                </td>
+                                <td className="p-2">
+                                  {labelBadge}
+                                  {r._duplicate && (
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 border border-red-200 ml-1">
+                                      <AlertCircle size={9} /> Duplicada
+                                    </span>
+                                  )}
+                                  {r._duplicateSeries && !r._duplicate && (
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 ml-1">
+                                      Já existe
+                                    </span>
+                                  )}
+                                </td>
+                                <td className={cn("p-2 text-right font-semibold tabular-nums text-red-500")}>
+                                  -{formatCurrency(r.value)}
+                                </td>
+                                <td className="p-2" onClick={e => e.stopPropagation()}>
+                                  <Select value={r.category} onValueChange={v => updateCategory(i, v)}>
+                                    <SelectTrigger className="h-6 text-[10px] border-0 bg-transparent p-0 w-auto">
+                                      <SelectValue placeholder="-" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {cats.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    }
+
+                    // Single (non-installment) row
+                    const { row: r, globalIdx: i } = group.item;
                     const isDisabled = r._duplicate || r._duplicateSeries;
 
                     let rowBg = '';
@@ -543,11 +682,6 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                           {r.txType === 'income' && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
                               Crédito
-                            </span>
-                          )}
-                          {r.txType === 'installment' && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-600 border border-blue-200">
-                              <Layers size={9} /> {r.installmentIndex}/{r.installmentTotal}
                             </span>
                           )}
                           {r.txType === 'normal' && !r._duplicate && !r._zeroValue && (
