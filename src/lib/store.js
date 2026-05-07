@@ -574,6 +574,13 @@ export function suggestCategoryFromRules(description) {
 // ══════════════════════════════════════════
 
 export async function initStore() {
+  // Não inicializa durante limpeza de dados (evita re-fetch de dados recém-deletados)
+  try {
+    if (localStorage.getItem('lumen_clearing') === '1') {
+      console.info('[initStore] Limpeza em andamento — skipping');
+      return;
+    }
+  } catch {}
   try {
     await Promise.allSettled([
       fetchCards(),
@@ -618,24 +625,36 @@ const ENTITIES_TO_CLEAR = [
 ];
 
 /**
- * Deleta todos os itens de uma entidade sequencialmente para evitar rate limit.
+ * Deleta todos os itens de uma entidade em lotes para evitar rate limit.
+ * Usa paginação para garantir que todos os itens sejam encontrados.
  * Retorna { deleted, errors }.
  */
 async function deleteEntityBatch(entity, name) {
-  let items;
-  try {
-    items = await entity.list('', 10000);
-  } catch (e) {
-    return { deleted: 0, errors: [`list falhou: ${e.message}`] };
+  const PAGE_SIZE = 500;
+  let allItems = [];
+  let offset = 0;
+
+  // Paginar para buscar TODOS os itens (list com limit pode ter ceiling interno)
+  while (true) {
+    let page;
+    try {
+      page = await entity.list('', PAGE_SIZE, offset);
+    } catch (e) {
+      return { deleted: allItems.length, errors: [`list falhou: ${e.message}`] };
+    }
+    if (!page?.length) break;
+    allItems.push(...page);
+    if (page.length < PAGE_SIZE) break; // última página
+    offset += PAGE_SIZE;
   }
 
-  if (!items?.length) return { deleted: 0, errors: [] };
+  if (!allItems.length) return { deleted: 0, errors: [] };
 
   const errors = [];
   let deleted = 0;
 
   // Deletar sequencialmente para não estourar o rate limit
-  for (const item of items) {
+  for (const item of allItems) {
     try {
       await entity.delete(item.id);
       deleted++;
@@ -655,8 +674,11 @@ async function deleteEntityBatch(entity, name) {
  */
 export async function clearAllData(base44Ref, onProgress) {
   const b44 = base44Ref || base44;
-  const totalSteps = ENTITIES_TO_CLEAR.length + 1; // +1 para localStorage
+  const totalSteps = ENTITIES_TO_CLEAR.length + 2; // +2: localStorage + query cache
   let currentStep = 0;
+
+  // Flag para bloquear migrações durante limpeza
+  try { localStorage.setItem('lumen_clearing', '1'); } catch {}
 
   const result = {
     entities: {},
@@ -697,14 +719,15 @@ export async function clearAllData(base44Ref, onProgress) {
   // com dados que já foram deletados da nuvem — melhor limpar tudo.
   report('Limpando cache local...');
   try {
-    const keysToRemove = [];
+    // Coletar TODAS as chaves primeiro (evita bug de índice com removeItem no loop)
+    const allKeys = [];
     for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k?.startsWith(LS_PREFIX)) keysToRemove.push(k);
+      allKeys.push(localStorage.key(i));
     }
-    // Adiciona chaves fora do prefixo que também pertencem ao app
+    const keysToRemove = allKeys.filter(k => k?.startsWith(LS_PREFIX));
+    // Chaves fora do prefixo que também pertencem ao app
     const EXTRA_KEYS = [
-      // Adicione aqui qualquer chave futura que não use LS_PREFIX
+      'lumen_clearing', // flag de limpeza em andamento
     ];
     for (const k of [...keysToRemove, ...EXTRA_KEYS]) {
       try {
@@ -722,5 +745,26 @@ export async function clearAllData(base44Ref, onProgress) {
   // Marca success baseado em erros críticos (não em erros parciais de deleção)
   result.success = result.errors.filter(e => !e.includes('list falhou')).length === 0;
 
+  // ═══ FASE 3: Limpar React Query cache ═══
+  // Sem isso, dados antigos persistem no cache e são re-renderizados
+  report('Limpando cache de consultas...');
+  try {
+    const { queryClientInstance } = await import('@/lib/query-client');
+    queryClientInstance.clear(); // remove todas as queries do cache
+  } catch (e) {
+    console.warn('[Store] Não foi possível limpar React Query cache:', e.message);
+  }
+
+  // Remove flag de limpeza
+  try { localStorage.removeItem('lumen_clearing'); } catch {}
+
   return result;
+}
+
+/**
+ * Verifica se uma limpeza de dados está em andamento.
+ * Usado por migrateCardsToCloud para evitar re-upload durante clearAllData.
+ */
+export function isClearingInProgress() {
+  try { return localStorage.getItem('lumen_clearing') === '1'; } catch { return false; }
 }

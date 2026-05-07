@@ -8,6 +8,11 @@ import { base44 } from '@/api/base44Client';
 
 const LS_PREFIX = 'rattio_'; // Mantido para compatibilidade com dados existentes — não alterar
 
+/** Verifica se uma limpeza de dados está em andamento */
+function isClearing() {
+  try { return localStorage.getItem('lumen_clearing') === '1'; } catch { return false; }
+}
+
 // Entidades que precisam existir no Base44
 const REQUIRED_ENTITIES = [
   { name: 'Transaction', fields: ['description', 'date', 'value', 'type', 'category', 'paymentMethod', 'isFixed', 'cardId', 'goalId', 'notes', 'isInstallment', 'installmentIndex', 'installmentTotal', 'installmentSeriesId', 'installmentCount', 'installmentCurrent', 'installmentTotalValue', 'invoiceMonth', 'source'] },
@@ -275,6 +280,10 @@ export const lumenSetup = { run, testEntity, createEntity, migrateConfigs, migra
  */
 async function migrateCardsToCloud(b44) {
   const client = b44 || base44;
+  if (isClearing()) {
+    console.info('[migrateCardsToCloud] Limpeza em andamento — skipping');
+    return { migrated: 0, skipped: true, reason: 'clearing in progress' };
+  }
   if (!client?.entities?.Card) {
     console.info('[migrateCardsToCloud] Card entity not available in SDK — skipping migration');
     return { migrated: 0, skipped: true, reason: 'Card entity not in SDK' };
