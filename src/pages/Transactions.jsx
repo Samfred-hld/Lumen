@@ -245,11 +245,23 @@ export default function Transactions() {
       }
 
       // Gap 3 — Filtragem final com normalizeStr
-      // Para parcelas: compara description + date + value + installmentCurrent
+      // Para parcelas: compara cleanTitle + date + value + installmentCurrent
       // Para normais: compara description + date + value
+      // Suporta formatos antigos ("Title - Parcela 1/4") e novos ("Title (1/4)")
+      const stripInstallmentSuffix = (desc) =>
+        normalizeStr(desc).replace(/\s*[-–]\s*parcela\s+\d+\/\d+\s*$/, '').replace(/\s*\(\d+\/\d+\)\s*$/, '');
+
       const deduped = valid.filter(newTx => {
         return !transactions.some(existing => {
-          if (normalizeStr(existing.description) !== normalizeStr(newTx.description)) return false;
+          // Para parcelas, comparar pelo título base (sem sufixo de parcela)
+          const existingDesc = newTx.isInstallment
+            ? stripInstallmentSuffix(existing.description || '')
+            : normalizeStr(existing.description);
+          const newDesc = newTx.isInstallment
+            ? stripInstallmentSuffix(newTx.description || '')
+            : normalizeStr(newTx.description);
+
+          if (existingDesc !== newDesc) return false;
           if (existing.date !== newTx.date) return false;
           if (Math.round(Math.abs(existing.value || 0) * 100) !== Math.round(Math.abs(newTx.value || 0) * 100)) return false;
           // Para parcelas, também comparar o índice

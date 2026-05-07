@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Check, AlertCircle, X, CreditCard, AlertTriangle, Layers, Loader2 } from 'lucide-react';
+import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
@@ -13,7 +13,6 @@ import { getCards, suggestCategoryFromRules } from '@/lib/store';
 import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
 import { normalizeStr } from '@/lib/stringUtils';
 import { parseAmount, parseAmountWithSign } from '@/lib/amountParser';
-import { base44 } from '@/api/base44Client';
 
 // ══════════════════════════════════════════
 // Date Utilities
@@ -37,15 +36,6 @@ function getInvoiceMonth(dateStr, closingDay) {
     return `${nextYear}-${String(nextMonth).padStart(2, '0')}`;
   }
   return `${y}-${String(m).padStart(2, '0')}`;
-}
-
-/**
- * Add months to an ISO date string (YYYY-MM-DD).
- */
-function addMonthsISO(dateStr, months) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const dt = new Date(y, m - 1 + months, d);
-  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
 }
 
 // ══════════════════════════════════════════
