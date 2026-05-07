@@ -272,7 +272,7 @@ async function run() {
 }
 
 // Export
-export const lumenSetup = { run, testEntity, createEntity, migrateConfigs, migrateToEntities, migrateCardsToCloud, pullFromCloud };
+export const lumenSetup = { run, testEntity, createEntity, migrateConfigs, migrateToEntities, migrateCardsToCloud, pullFromCloud, deduplicateCards, deduplicateRules, deduplicateTemplates, deduplicateAll };
 
 /**
  * Migra cartões do localStorage para a entidade Card no Base44.
@@ -342,6 +342,170 @@ async function migrateCardsToCloud(b44) {
   } catch {}
 
   return { migrated };
+}
+
+/**
+ * Remove cartões duplicados do Base44, mantendo o mais recente de cada nome.
+ * Pode ser chamado via console: lumenSetup.deduplicateCards()
+ */
+async function deduplicateCards(b44) {
+  const client = b44 || base44;
+  if (!client?.entities?.Card) {
+    console.warn('[deduplicateCards] Card entity not available');
+    return { removed: 0, error: 'Card entity not available' };
+  }
+
+  let allCards;
+  try {
+    allCards = await client.entities.Card.list('', 10000);
+  } catch (e) {
+    return { removed: 0, error: e.message };
+  }
+
+  if (!allCards?.length) return { removed: 0, total: 0 };
+
+  // Agrupar por nome (case-insensitive)
+  const groups = new Map();
+  for (const card of allCards) {
+    const key = (card.name || '').trim().toLowerCase();
+    if (!key) continue;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(card);
+  }
+
+  let removed = 0;
+  const errors = [];
+
+  for (const [name, cards] of groups) {
+    if (cards.length <= 1) continue;
+    // Manter o mais recente (maior id ou último criado)
+    cards.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
+    const keep = cards[0];
+    const toDelete = cards.slice(1);
+    console.log(`[deduplicateCards] "${name}": ${cards.length} cópias — mantendo ${keep.id}, deletando ${toDelete.length}`);
+
+    for (const card of toDelete) {
+      try {
+        await client.entities.Card.delete(card.id);
+        removed++;
+      } catch (e) {
+        errors.push(`Card[${card.id}]: ${e.message}`);
+      }
+    }
+  }
+
+  // Atualizar localStorage com estado limpo
+  try {
+    const fresh = await client.entities.Card.list('', 1000);
+    localStorage.setItem(LS_PREFIX + 'cards', JSON.stringify(fresh || []));
+  } catch {}
+
+  console.log(`[deduplicateCards] Concluído: ${removed} duplicatas removidas de ${allCards.length} total`);
+  return { removed, total: allCards.length, errors };
+}
+
+/**
+ * Remove regras duplicadas do Base44, mantendo a mais recente de cada keyword.
+ */
+async function deduplicateRules(b44) {
+  const client = b44 || base44;
+  if (!client?.entities?.Rule) return { removed: 0, error: 'Rule entity not available' };
+
+  let allRules;
+  try {
+    allRules = await client.entities.Rule.list('', 10000);
+  } catch (e) {
+    return { removed: 0, error: e.message };
+  }
+
+  if (!allRules?.length) return { removed: 0, total: 0 };
+
+  const groups = new Map();
+  for (const rule of allRules) {
+    const key = (rule.keyword || '').trim().toLowerCase();
+    if (!key) continue;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(rule);
+  }
+
+  let removed = 0;
+  for (const [keyword, rules] of groups) {
+    if (rules.length <= 1) continue;
+    rules.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
+    for (const rule of rules.slice(1)) {
+      try {
+        await client.entities.Rule.delete(rule.id);
+        removed++;
+      } catch {}
+    }
+  }
+
+  try {
+    const fresh = await client.entities.Rule.list('', 1000);
+    localStorage.setItem(LS_PREFIX + 'rules', JSON.stringify(fresh || []));
+  } catch {}
+
+  return { removed, total: allRules.length };
+}
+
+/**
+ * Remove templates duplicados do Base44, mantendo o mais recente de cada descrição.
+ */
+async function deduplicateTemplates(b44) {
+  const client = b44 || base44;
+  if (!client?.entities?.Template) return { removed: 0, error: 'Template entity not available' };
+
+  let allTpls;
+  try {
+    allTpls = await client.entities.Template.list('', 10000);
+  } catch (e) {
+    return { removed: 0, error: e.message };
+  }
+
+  if (!allTpls?.length) return { removed: 0, total: 0 };
+
+  const groups = new Map();
+  for (const tpl of allTpls) {
+    const key = (tpl.description || '').trim().toLowerCase();
+    if (!key) continue;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(tpl);
+  }
+
+  let removed = 0;
+  for (const [desc, tpls] of groups) {
+    if (tpls.length <= 1) continue;
+    tpls.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
+    for (const tpl of tpls.slice(1)) {
+      try {
+        await client.entities.Template.delete(tpl.id);
+        removed++;
+      } catch {}
+    }
+  }
+
+  try {
+    const fresh = await client.entities.Template.list('', 1000);
+    localStorage.setItem(LS_PREFIX + 'templates', JSON.stringify(fresh || []));
+  } catch {}
+
+  return { removed, total: allTpls.length };
+}
+
+/**
+ * Limpa TODAS as duplicatas de todas as entidades.
+ * Rodar no console: lumenSetup.deduplicateAll()
+ */
+async function deduplicateAll() {
+  console.log('🔧 Limpando duplicatas...\n');
+  const cards = await deduplicateCards();
+  console.log(`✅ Cards: ${cards.removed} removidos de ${cards.total}`);
+  const rules = await deduplicateRules();
+  console.log(`✅ Rules: ${rules.removed} removidos de ${rules.total}`);
+  const templates = await deduplicateTemplates();
+  console.log(`✅ Templates: ${templates.removed} removidos de ${templates.total}`);
+  console.log('\n✨ Limpeza concluída!');
+  return { cards, rules, templates };
 }
 
 // Auto-register on window

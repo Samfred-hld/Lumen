@@ -95,7 +95,15 @@ export async function fetchCards() {
     if (!cards?.length) {
       const local = getCards();
       if (local.length) {
-        for (const c of local) {
+        // Deduplicar por nome antes de migrar
+        const seen = new Set();
+        const unique = local.filter(c => {
+          const key = (c.name || '').trim().toLowerCase();
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        for (const c of unique) {
           await base44.entities.Card.create({
             name: c.name || '', color: c.color || '#3b82f6',
             limit: parseFloat(c.limit) || 0, closingDay: parseInt(c.closingDay) || 1,
@@ -201,7 +209,15 @@ export async function fetchRules() {
     if (!rules?.length) {
       const local = getRules();
       if (local.length) {
-        for (const r of local) {
+        // Deduplicar por keyword antes de migrar
+        const seen = new Set();
+        const unique = local.filter(r => {
+          const key = (r.keyword || '').trim().toLowerCase();
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        for (const r of unique) {
           await base44.entities.Rule.create({ keyword: r.keyword || '', category: r.category || '' });
         }
         const fresh = await base44.entities.Rule.list('', 1000);
@@ -282,7 +298,15 @@ export async function fetchTemplates() {
     if (!tpls?.length) {
       const local = getTemplates();
       if (local.length) {
-        for (const t of local) {
+        // Deduplicar por descrição antes de migrar
+        const seen = new Set();
+        const unique = local.filter(t => {
+          const key = (t.description || '').trim().toLowerCase();
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        for (const t of unique) {
           await base44.entities.Template.create({
             description: t.description || '', value: parseFloat(t.value) || 0,
             category: t.category || '', paymentMethod: t.paymentMethod || '', type: t.type || 'expense',
