@@ -17,16 +17,26 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 // ═══ Invoice month helper ═══
+/**
+ * Billing cycle: closingDay of M → closingDay-1 of M+1 = invoice for M+1.
+ * On/after closingDay → new cycle → invoice for M+2.
+ */
 function getInvoiceMonth(dateStr, closingDay) {
   if (!closingDay || !dateStr) return null;
   const [y, m, d] = dateStr.split('-').map(Number);
   const closeDay = parseInt(closingDay);
+
   if (d >= closeDay) {
-    const nextMonth = m === 12 ? 1 : m + 1;
-    const nextYear = m === 12 ? y + 1 : y;
+    // New cycle → invoice M+2
+    let nextMonth = m + 2;
+    let nextYear = y;
+    while (nextMonth > 12) { nextMonth -= 12; nextYear++; }
     return { year: nextYear, month: nextMonth - 1 };
   }
-  return { year: y, month: m - 1 };
+  // Current cycle → invoice M+1
+  const nextMonth = m + 1;
+  const nextYear = m === 12 ? y + 1 : y;
+  return { year: nextYear, month: (nextMonth > 12 ? nextMonth - 12 : nextMonth) - 1 };
 }
 
 // ═══ CSV Export ═══

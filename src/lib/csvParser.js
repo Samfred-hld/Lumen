@@ -367,7 +367,16 @@ export function hasEssentialColumns(headers) {
 
 /**
  * Determine the invoice month (YYYY-MM) for a transaction date based on the card's closing day.
- * If the transaction day > closingDay → next month's invoice.
+ *
+ * The billing cycle runs from closingDay of month M to closingDay-1 of month M+1.
+ * All transactions in this cycle appear on the invoice for month M+1.
+ * Transactions on/after closingDay start a new cycle → invoice for month M+2.
+ *
+ * Examples (closingDay=26):
+ *   25/04 → invoice May (M+1, still in current cycle)
+ *   26/04 → invoice June (M+2, new cycle started)
+ *   27/04 → invoice June (M+2)
+ *
  * Returns 'YYYY-MM' string or null.
  */
 export function getInvoiceMonth(dateStr, closingDay) {
@@ -379,11 +388,16 @@ export function getInvoiceMonth(dateStr, closingDay) {
   const closeDay = parseInt(closingDay);
 
   if (day >= closeDay) {
-    const nextMonth = m === 12 ? 1 : m + 1;
-    const nextYear = m === 12 ? y + 1 : y;
+    // On or after closing day → new cycle started → invoice is M+2
+    let nextMonth = m + 2;
+    let nextYear = y;
+    while (nextMonth > 12) { nextMonth -= 12; nextYear++; }
     return `${nextYear}-${String(nextMonth).padStart(2, '0')}`;
   }
-  return `${y}-${String(m).padStart(2, '0')}`;
+  // Before closing day → still in current cycle → invoice is M+1
+  const nextMonth = m + 1;
+  const nextYear = m === 12 ? y + 1 : y;
+  return `${nextYear}-${String(nextMonth > 12 ? nextMonth - 12 : nextMonth).padStart(2, '0')}`;
 }
 
 // ══════════════════════════════════════════
