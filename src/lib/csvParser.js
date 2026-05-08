@@ -530,6 +530,7 @@ export function parseCSV(text, options = {}) {
     dateFormatOverride = null,
     columnMapping = null,
     skipPatterns = [],
+    positiveIsExpense = true, // true = positivo é despesa (Nubank/C6); false = extrato bancário
   } = options;
 
   const errors = [];
@@ -678,16 +679,15 @@ export function parseCSV(text, options = {}) {
     let installmentTotal = null;
     let cleanTitle = desc;
 
-    if (isNegativeInSource) {
-      // Negative value in CSV = income/refund (bank convention)
-      // Check if it's a refund vs regular income
-      if (isRefundOrPayment(desc, absValue)) {
-        txType = 'refund';
-      } else {
-        txType = 'income';
-      }
+    // positiveIsExpense: true (Nubank/C6) → positivo=despesa, negativo=receita
+    // positiveIsExpense: false (extrato) → negativo=despesa, positivo=receita
+    const isExpense = positiveIsExpense ? !isNegativeInSource : isNegativeInSource;
+
+    if (!isExpense) {
+      // Valor que representa receita/pagamento neste banco
+      txType = isRefundOrPayment(desc, absValue) ? 'refund' : 'income';
     } else {
-      // Positive value
+      // Valor que representa despesa neste banco
       if (isRefundOrPayment(desc, absValue)) {
         txType = 'refund';
       } else {

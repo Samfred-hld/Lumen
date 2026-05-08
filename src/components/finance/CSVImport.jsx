@@ -60,10 +60,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
     let profileMapping = null;
     let profileSkipPatterns = [];
+    let positiveIsExpense = true; // default: positivo = despesa (Nubank/C6)
     if (!columnMapping) {
       const { key, profile } = detectBankProfile(headers);
       setDetectedBank(key === 'generic' ? null : { key, name: profile.name });
       profileSkipPatterns = profile.skipPatterns || [];
+      positiveIsExpense = profile.positiveIsExpense ?? true;
 
       if (key !== 'generic') {
         // Use profile for column mapping
@@ -86,6 +88,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
       existingTransactions: transactions,
       columnMapping: columnMapping || profileMapping,
       skipPatterns: columnMapping ? [] : profileSkipPatterns,
+      positiveIsExpense: columnMapping ? true : positiveIsExpense,
     });
 
     // Handle errors
