@@ -155,39 +155,31 @@ export function detectBankProfile(rawHeaders) {
 
 /**
  * Resolve column indices from profile column names against actual headers.
+ * Prioridade: match exato → palavra inteira → substring.
  */
 function resolveProfile(profile, headers) {
   if (!profile.columnNames) return profile;
 
   const resolved = { ...profile };
 
-  // Resolve date column
-  if (profile.dateIdx === -1 && profile.columnNames.date) {
-    const idx = headers.findIndex(h => h === profile.columnNames.date || h.includes(profile.columnNames.date));
-    if (idx !== -1) resolved.dateIdx = idx;
+  function findIdx(term) {
+    if (!term) return -1;
+    // 1. Match exato (case-insensitive)
+    let idx = headers.findIndex(h => h.toLowerCase() === term.toLowerCase());
+    if (idx !== -1) return idx;
+    // 2. Match de palavra inteira
+    const re = new RegExp(`\\b${term}\\b`, 'i');
+    idx = headers.findIndex(h => re.test(h));
+    if (idx !== -1) return idx;
+    // 3. Substring — apenas como último recurso
+    return headers.findIndex(h => h.toLowerCase().includes(term.toLowerCase()));
   }
 
-  // Resolve description column
-  if (profile.descIdx === -1 && profile.columnNames.desc) {
-    const idx = headers.findIndex(h => h === profile.columnNames.desc || h.includes(profile.columnNames.desc));
-    if (idx !== -1) resolved.descIdx = idx;
-  }
-
-  // Resolve value column
-  if (profile.valIdx === -1 && profile.columnNames.val) {
-    const idx = headers.findIndex(h => h === profile.columnNames.val || h === profile.columnNames.val.replace(/ã/g, 'a'));
-    if (idx !== -1) resolved.valIdx = idx;
-  }
-
-  // Resolve credit/debit columns
-  if (profile.columnNames.credit) {
-    const cIdx = headers.findIndex(h => h.includes(profile.columnNames.credit));
-    if (cIdx !== -1) resolved.creditIdx = cIdx;
-  }
-  if (profile.columnNames.debit) {
-    const dIdx = headers.findIndex(h => h.includes(profile.columnNames.debit));
-    if (dIdx !== -1) resolved.debitIdx = dIdx;
-  }
+  if (resolved.dateIdx === -1) resolved.dateIdx = findIdx(profile.columnNames.date);
+  if (resolved.descIdx === -1) resolved.descIdx = findIdx(profile.columnNames.desc);
+  if (resolved.valIdx === -1) resolved.valIdx = findIdx(profile.columnNames.val);
+  if (profile.columnNames.credit) resolved.creditIdx = findIdx(profile.columnNames.credit);
+  if (profile.columnNames.debit) resolved.debitIdx = findIdx(profile.columnNames.debit);
 
   // Check if we have split columns
   if (resolved.creditIdx !== undefined && resolved.creditIdx !== -1 &&
