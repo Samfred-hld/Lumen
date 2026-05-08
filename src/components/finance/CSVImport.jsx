@@ -9,7 +9,8 @@ import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
-import { getCards, lsGet, lsSet } from '@/lib/store';
+import { useCards } from '@/hooks/useData';
+import { lsGet, lsSet } from '@/lib/store';
 import { readFileWithEncoding, parseCSV as parseCSVFull, hasEssentialColumns } from '@/lib/csvParser';
 import { enrichWithDedup } from '@/lib/csvDedup';
 import { detectBankProfile } from '@/lib/csvProfile';
@@ -37,7 +38,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const [pendingText, setPendingText] = useState(null); // Store raw text for remapping
   const fileRef = useRef(null);
 
-  const cards = getCards();
+  const { data: cards = [], isLoading: cardsLoading } = useCards();
   const cats = getCategories();
 
   // Persist card selection
@@ -357,7 +358,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
         {/* ── Step: Upload ── */}
         {step === 'upload' && (
           <div className="space-y-4">
-            {cards.length > 0 && (
+            {cardsLoading ? (
+              <div className="flex items-center gap-2 bg-muted/50 rounded px-3 py-2 text-xs text-muted-foreground">
+                <Loader2 size={13} className="animate-spin" />
+                <span>Carregando cartões...</span>
+              </div>
+            ) : cards.length > 0 ? (
               <div>
                 <Label className="text-sm font-semibold flex items-center gap-1.5">
                   <CreditCard size={14} /> Cartão de Crédito
@@ -366,8 +372,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                   Selecione o cartão ANTES de fazer upload — isso ajusta as transações para o ciclo de fatura correto.
                 </p>
                 <Select value={selectedCard} onValueChange={handleCardChange}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Selecione o cartão" />
+                  <SelectTrigger className="mt-1" disabled={cardsLoading}>
+                    <SelectValue placeholder={cardsLoading ? "Carregando cartões..." : "Selecione o cartão"} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhum cartão</SelectItem>
@@ -397,18 +403,19 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
             <div
               className={cn(
-                "border-2 border-dashed rounded-lg p-10 text-center transition-colors cursor-pointer",
+                "border-2 border-dashed rounded-lg p-10 text-center transition-colors",
+                cardsLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
                 dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
               )}
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+              onDragOver={e => { if (!cardsLoading) { e.preventDefault(); setDragOver(true); } }}
               onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              onClick={() => fileRef.current?.click()}
+              onDrop={e => { if (!cardsLoading) handleDrop(e); }}
+              onClick={() => { if (!cardsLoading) fileRef.current?.click(); }}
             >
               <FileText size={40} className="mx-auto text-muted-foreground mb-3" />
-              <p className="font-semibold text-sm">Arraste o arquivo CSV aqui</p>
-              <p className="text-xs text-muted-foreground mt-1">ou clique para selecionar</p>
-              <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={e => handleFile(e.target.files?.[0])} />
+              <p className="font-semibold text-sm">{cardsLoading ? 'Aguarde, carregando cartões...' : 'Arraste o arquivo CSV aqui'}</p>
+              <p className="text-xs text-muted-foreground mt-1">{cardsLoading ? '' : 'ou clique para selecionar'}</p>
+              <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" disabled={cardsLoading} onChange={e => handleFile(e.target.files?.[0])} />
             </div>
 
             {/* Parse errors */}
