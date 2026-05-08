@@ -220,9 +220,7 @@ export default function Transactions() {
 
   const deleteSeries = async (seriesId) => {
     const seriesTx = transactions.filter(t => t.installmentSeriesId === seriesId);
-    for (const tx of seriesTx) {
-      await base44.entities.Transaction.delete(tx.id);
-    }
+    await Promise.all(seriesTx.map(tx => base44.entities.Transaction.delete(tx.id)));
     addChangelogEntry({ action: 'delete', entityType: 'série de parcelas', entityName: `${seriesTx.length} parcelas` });
     refetch();
     toast({ title: 'Série excluída', description: `${seriesTx.length} parcelas removidas` });
