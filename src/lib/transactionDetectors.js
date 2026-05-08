@@ -39,6 +39,20 @@ export function detectInstallment(description) {
     }
   }
 
+  // Pattern: "Title (3/12" — open parenthesis without closing
+  m = s.match(/\((\d{1,2})\/(\d{1,2})\s*$/);
+  if (m) {
+    const idx = parseInt(m[1]), total = parseInt(m[2]);
+    if (total > 1 && idx >= 1 && idx <= total) {
+      return {
+        isInstallment: true,
+        index: idx,
+        total,
+        cleanTitle: s.replace(/\s*\(\d{1,2}\/\d{1,2}\s*$/, '').trim(),
+      };
+    }
+  }
+
   // Pattern: "Title 3x" (common in Brazil)
   m = s.match(/^(.*?)\s+(\d+)[xX]\s*$/);
   if (m) {
