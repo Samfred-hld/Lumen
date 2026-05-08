@@ -191,11 +191,23 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
     const card = selectedCard && selectedCard !== 'none' ? cards.find(c => c.id === selectedCard) : null;
     const paymentMethod = card ? `Crédito - ${card.name}` : 'Crédito';
 
+    // Gerar um seriesId único por série de parcelas (mesmo cleanTitle + mesmo installmentTotal)
+    const seriesIdMap = new Map();
+    for (const r of selected) {
+      if (r.txType === 'installment') {
+        const key = `${r.cleanTitle}::${r.installmentTotal}`;
+        if (!seriesIdMap.has(key)) {
+          seriesIdMap.set(key, Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
+        }
+      }
+    }
+
     const transactionsToCreate = [];
 
     for (const r of selected) {
       if (r.txType === 'installment') {
         // Each row is already a single installment from the expanded series
+        const seriesKey = `${r.cleanTitle}::${r.installmentTotal}`;
         transactionsToCreate.push({
           description: `${r.cleanTitle} (${r.installmentIndex}/${r.installmentTotal})`,
           date: r.date,
@@ -210,6 +222,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
           installmentCount: r.installmentTotal,
           installmentCurrent: r.installmentIndex,
           installmentTotalValue: r.value * r.installmentTotal,
+          installmentSeriesId: seriesIdMap.get(seriesKey),
         });
       } else {
         const txEntityType = (r.txType === 'income' || r.txType === 'refund') ? 'income' : 'expense';
