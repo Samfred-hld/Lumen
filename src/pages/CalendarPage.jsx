@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, filterByMonth, calcTotals, getDaysInMonth, getFirstDayOfMonth } from '@/lib/financeUtils';
+import { getInvoiceMonth as getInvoiceMonthStr } from '@/lib/csvParser';
 import { MONTH_NAMES, MONTH_SHORT, DAY_NAMES } from '@/lib/categories';
 import TransactionModal from '@/components/finance/TransactionModal';
 import { cn } from '@/lib/utils';
@@ -18,25 +19,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 
 // ═══ Invoice month helper ═══
 /**
- * Billing cycle: closingDay of M → closingDay-1 of M+1 = invoice for M+1.
- * On/after closingDay → new cycle → invoice for M+2.
+ * Billing cycle wrapper — converts csvParser's "YYYY-MM" string to { year, month } (0-indexed).
  */
 function getInvoiceMonth(dateStr, closingDay) {
-  if (!closingDay || !dateStr) return null;
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const closeDay = parseInt(closingDay);
-
-  if (d >= closeDay) {
-    // New cycle → invoice M+2
-    let nextMonth = m + 2;
-    let nextYear = y;
-    while (nextMonth > 12) { nextMonth -= 12; nextYear++; }
-    return { year: nextYear, month: nextMonth - 1 };
-  }
-  // Current cycle → invoice M+1
-  const nextMonth = m + 1;
-  const nextYear = m === 12 ? y + 1 : y;
-  return { year: nextYear, month: (nextMonth > 12 ? nextMonth - 12 : nextMonth) - 1 };
+  const key = getInvoiceMonthStr(dateStr, closingDay);
+  if (!key) return null;
+  const [y, m] = key.split('-').map(Number);
+  return { year: y, month: m - 1 };
 }
 
 // ═══ CSV Export ═══
