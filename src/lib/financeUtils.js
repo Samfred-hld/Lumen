@@ -32,7 +32,10 @@ export function getMonthKey(year, month) {
 
 export function filterByMonth(transactions, year, month) {
   const prefix = getMonthKey(year, month);
-  return transactions.filter(t => t.date && t.date.startsWith(prefix));
+  return transactions.filter(t => {
+    if (t.invoiceMonth) return t.invoiceMonth === prefix; // cartão: mês da fatura
+    return t.date && t.date.startsWith(prefix); // demais: data da compra
+  });
 }
 
 export function calcTotals(transactions) {

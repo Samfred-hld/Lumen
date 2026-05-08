@@ -115,6 +115,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const handleFile = useCallback(async (file) => {
     if (!file) return;
 
+    // Exigir seleção de cartão — sem cartão, invoiceMonth e cardId nunca são preenchidos
+    if (!selectedCard || selectedCard === 'none') {
+      setParseErrors(['Selecione um cartão de crédito antes de importar. Sem cartão, as transações não serão associadas a um ciclo de fatura.']);
+      return;
+    }
+
     setParseErrors([]);
     setParseWarnings([]);
 
@@ -141,7 +147,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
     } catch (err) {
       setParseErrors([`Erro ao ler arquivo: ${err.message || 'Formato desconhecido'}`]);
     }
-  }, [processText]);
+  }, [processText, selectedCard]);
 
   const handleManualMapping = useCallback((mapping) => {
     setShowManualMapping(false);
@@ -367,10 +373,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             )}
 
             {cards.length > 0 && (!selectedCard || selectedCard === 'none') && (
-              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700">
-                <AlertTriangle size={13} />
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded px-3 py-2 text-xs text-red-700">
+                <AlertCircle size={13} />
                 <span>
-                  Sem cartão selecionado, as transações não serão associadas a um ciclo de fatura.
+                  <strong>Obrigatório:</strong> Selecione um cartão de crédito antes de fazer upload.
+                  Sem cartão, o mês da fatura (invoiceMonth) e o vínculo com o cartão (cardId) não serão preenchidos.
                 </span>
               </div>
             )}
@@ -409,7 +416,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               <p>Formatos aceitos: DD/MM/AAAA, AAAA-MM-DD, MM/DD/AAAA</p>
               <p>Separadores: vírgula (,), ponto e vírgula (;) ou TAB</p>
               <p>Bancos detectados: Nubank, Inter, Bradesco, Itaú, C6 Bank, XP</p>
-              <p className="mt-1 text-amber-600">⚠️ Valores positivos = despesas (fatura de cartão). Negativos = receitas/estornos.</p>
+              <p className="mt-1 text-red-600 font-semibold">⚠️ Selecione um cartão de crédito antes do upload — obrigatório para calcular o mês da fatura.</p>
             </div>
           </div>
         )}
