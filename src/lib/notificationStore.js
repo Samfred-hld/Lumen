@@ -24,13 +24,15 @@ function formatCurrency(value) {
   }).format(value || 0);
 }
 
+import { toMonthKey } from '@/lib/financeUtils';
+
 /**
  * Legacy: Gera notificações de orçamento (usado por Layout.jsx).
  * Preferir generateBudgetAlerts() para novos usos.
  */
 export function generateBudgetNotifications(budgets, transactions) {
   const now = new Date();
-  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const monthKey = toMonthKey(now);
   const monthTx = transactions.filter((t) => t.date?.startsWith(monthKey));
   const monthBudgets = budgets.filter((b) => b.month === monthKey);
 

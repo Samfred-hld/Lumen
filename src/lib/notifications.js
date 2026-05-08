@@ -4,6 +4,7 @@
 // Due date notifications + persistent notification center (localStorage).
 
 import { getCards, getSalaryConfig } from './store';
+import { getMonthKey } from '@/lib/financeUtils';
 import { format, getDate } from 'date-fns';
 
 // ── Browser Notification (due dates) ──
@@ -137,7 +138,7 @@ export function clearNotifications() {
 // ══════════════════════════════════════════
 
 export function generateBudgetAlerts(budgets, transactions, month, year) {
-  const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+  const prefix = getMonthKey(year, month);
   budgets.forEach((b) => {
     const gasto = transactions
       .filter(

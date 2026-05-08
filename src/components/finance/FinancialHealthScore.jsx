@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { filterByMonth, calcTotals, getGoalProgress } from '@/lib/financeUtils';
+import { filterByMonth, calcTotals, getGoalProgress, getMonthKey } from '@/lib/financeUtils';
 import { ShieldCheck } from 'lucide-react';
 
 /**
@@ -12,7 +12,7 @@ import { ShieldCheck } from 'lucide-react';
 function calcHealthScore({ transactions, budgets, goals, month, year }) {
   const monthTx = filterByMonth(transactions, year, month);
   const totals = calcTotals(monthTx);
-  const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+  const monthKey = getMonthKey(year, month);
   const monthBudgets = budgets.filter(b => b.month === monthKey);
 
   // 1. Taxa de poupança (investimentos / receita)

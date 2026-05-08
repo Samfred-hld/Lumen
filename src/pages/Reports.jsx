@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { formatCurrency, groupByCategory, calcTotals, getLast6Months, getCurrentMonthKey, filterByMonth } from '@/lib/financeUtils';
+import { formatCurrency, groupByCategory, calcTotals, getLast6Months, getCurrentMonthKey, filterByMonth, getMonthKey, toMonthKey } from '@/lib/financeUtils';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend,
@@ -47,7 +47,7 @@ function CashFlowForecast({ transactions }) {
   let cumulativeBalance = 0;
   for (let i = 0; i < months; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const key = toMonthKey(d);
     const monthName = MONTH_NAMES[d.getMonth()].slice(0, 3);
 
     // For current month use actual data, for future use averages
@@ -94,7 +94,7 @@ function CashFlowForecast({ transactions }) {
     // Calculate card expenses for the billing period — only include transactions
     // whose date falls within the invoice month/year (determined above by closingDay).
     // This ensures we don't sum all historical card transactions, only the relevant month.
-    const invoicePrefix = `${invoiceYear}-${String(invoiceMonth + 1).padStart(2, '0')}`;
+    const invoicePrefix = getMonthKey(invoiceYear, invoiceMonth);
     const cardExpenses = transactions.filter(t =>
       t.cardId === card.id && t.type === 'expense' &&
       (t.invoiceMonth ? t.invoiceMonth === invoicePrefix : t.date?.startsWith(invoicePrefix))
@@ -245,7 +245,7 @@ export default function Reports() {
   const getPeriodTx = () => {
     const today = now.toISOString().split('T')[0];
     if (period === 'month') {
-      const prefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const prefix = toMonthKey(now);
       return transactions.filter(t =>
         t.invoiceMonth ? t.invoiceMonth === prefix : t.date?.startsWith(prefix)
       );
@@ -300,7 +300,7 @@ export default function Reports() {
   // Monthly evolution (last 6 months)
   const last6 = getLast6Months();
   const monthlyData = last6.map(({ year, month }) => {
-    const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+    const prefix = getMonthKey(year, month);
     const tx = transactions.filter(t =>
       t.invoiceMonth ? t.invoiceMonth === prefix : t.date?.startsWith(prefix)
     );
@@ -316,7 +316,7 @@ export default function Reports() {
   }));
 
   // Real vs Planejado data
-  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const currentMonthKey = toMonthKey(now);
   const monthBudgets = budgets.filter(b => b.month === currentMonthKey);
   const budgetCategories = new Set(monthBudgets.map(b => b.category));
   const spentByCategory = {};
@@ -441,7 +441,7 @@ export default function Reports() {
               pdf.setFont(undefined, 'normal');
               pdf.setTextColor(100);
               const labels = { month: 'Este Mês', quarter: 'Trimestre', semester: 'Semestre', year: 'Este Ano', all: 'Todos os Dados' };
-              const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+              const monthKey = toMonthKey(now);
               pdf.text(`${labels[period] || 'Relatório'} — ${monthKey} | Gerado em ${new Date().toLocaleDateString('pt-BR')}`, margin, 22);
               pdf.setTextColor(0);
 

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdaptiveModal } from '@/components/ui/adaptive-modal';
 import { Card, CardContent } from '@/components/ui/card';
-import { formatCurrency, filterByMonth } from '@/lib/financeUtils';
+import { formatCurrency, filterByMonth, getMonthKey } from '@/lib/financeUtils';
 import { DEFAULT_CATEGORIES, MONTH_NAMES, CAT_COLORS } from '@/lib/categories';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -130,7 +130,7 @@ export default function Budgets() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+  const monthKey = getMonthKey(currentYear, currentMonth);
 
   const { data: budgets = [], refetch } = useBudgets();
   const { data: transactions = [] } = useTransactions();

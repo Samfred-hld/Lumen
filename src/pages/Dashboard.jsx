@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { formatCurrency, formatDate, filterByMonth, calcTotals, groupByCategory, getGoalProgress, getCurrentMonthKey } from '@/lib/financeUtils';
+import { formatCurrency, formatDate, filterByMonth, calcTotals, groupByCategory, getGoalProgress, getCurrentMonthKey, getMonthKey } from '@/lib/financeUtils';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import TransactionModal from '@/components/finance/TransactionModal';
@@ -202,7 +202,7 @@ export default function Dashboard() {
   }
 
   const monthBudgets = budgets.filter(b => {
-    const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+    const key = getMonthKey(currentYear, currentMonth);
     return b.month === key;
   });
 

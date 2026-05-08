@@ -14,7 +14,7 @@ import SuggestionBanner from '@/components/finance/SuggestionBanner';
 import InstallmentConfirm from '@/components/finance/InstallmentConfirm';
 import Pagination from '@/components/ui/pagination';
 import SwipeToDelete from '@/components/ui/swipe-to-delete';
-import { formatCurrency, formatDate, filterByMonth, calcTotals, getTypeBg } from '@/lib/financeUtils';
+import { formatCurrency, formatDate, filterByMonth, calcTotals, getTypeBg, getMonthKey, todayISO } from '@/lib/financeUtils';
 import { MONTH_NAMES, MONTH_SHORT, getCategories } from '@/lib/categories';
 import { getPaymentMethods } from '@/lib/store';
 import { getCategoryIcon, getCategoryColor } from '@/lib/categories';
@@ -106,7 +106,7 @@ export default function Transactions() {
   }, [transactions]);
 
   // Transações fora do mês atual (aviso)
-  const currentMonthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+  const currentMonthKey = getMonthKey(currentYear, currentMonth);
   const otherMonthsCount = transactions.length - transactions.filter(t =>
     t.invoiceMonth ? t.invoiceMonth === currentMonthKey : t.date?.startsWith(currentMonthKey)
   ).length;
@@ -346,7 +346,7 @@ export default function Transactions() {
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Transações');
-    const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+    const monthKey = getMonthKey(currentYear, currentMonth);
     XLSX.writeFile(wb, `lumen-transacoes-${monthKey}.xlsx`);
   };
 

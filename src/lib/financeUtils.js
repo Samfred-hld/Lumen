@@ -30,6 +30,13 @@ export function getMonthKey(year, month) {
   return `${year}-${String(month + 1).padStart(2, '0')}`;
 }
 
+export const todayISO = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+export const toMonthKey = (date) => getMonthKey(date.getFullYear(), date.getMonth());
+
 export function filterByMonth(transactions, year, month) {
   const prefix = getMonthKey(year, month);
   return transactions.filter(t => {

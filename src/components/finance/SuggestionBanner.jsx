@@ -47,7 +47,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
 
   const applyFixedTemplates = () => {
     let added = 0;
-    const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+    const monthPrefix = getMonthKey(currentYear, currentMonth);
     const txBatch = [];
     templates.forEach(tpl => {
       const alreadyExists = transactions.some(t =>
@@ -73,7 +73,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
 
   const applyFinancings = () => {
     let added = 0;
-    const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+    const monthPrefix = getMonthKey(currentYear, currentMonth);
     const txBatch = [];
     financings.forEach(f => {
       const alreadyExists = transactions.some(t =>
