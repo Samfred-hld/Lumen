@@ -99,14 +99,17 @@ export default function Transactions() {
   const monthsWithData = React.useMemo(() => {
     const set = new Set();
     transactions.forEach(t => {
-      if (t.date) set.add(t.date.slice(0, 7)); // YYYY-MM
+      const key = t.invoiceMonth || (t.date ? t.date.slice(0, 7) : null);
+      if (key) set.add(key);
     });
     return set;
   }, [transactions]);
 
   // Transações fora do mês atual (aviso)
   const currentMonthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
-  const otherMonthsCount = transactions.length - transactions.filter(t => t.date?.startsWith(currentMonthKey)).length;
+  const otherMonthsCount = transactions.length - transactions.filter(t =>
+    t.invoiceMonth ? t.invoiceMonth === currentMonthKey : t.date?.startsWith(currentMonthKey)
+  ).length;
 
   const filtered = monthTx.filter(t => {
     const matchSearch = !search || t.description?.toLowerCase().includes(search.toLowerCase()) || t.category?.toLowerCase().includes(search.toLowerCase());

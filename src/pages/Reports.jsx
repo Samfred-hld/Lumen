@@ -96,7 +96,8 @@ function CashFlowForecast({ transactions }) {
     // This ensures we don't sum all historical card transactions, only the relevant month.
     const invoicePrefix = `${invoiceYear}-${String(invoiceMonth + 1).padStart(2, '0')}`;
     const cardExpenses = transactions.filter(t =>
-      t.cardId === card.id && t.type === 'expense' && t.date?.startsWith(invoicePrefix)
+      t.cardId === card.id && t.type === 'expense' &&
+      (t.invoiceMonth ? t.invoiceMonth === invoicePrefix : t.date?.startsWith(invoicePrefix))
     ).reduce((s, t) => s + t.value, 0);
 
     return {
@@ -245,18 +246,32 @@ export default function Reports() {
     const today = now.toISOString().split('T')[0];
     if (period === 'month') {
       const prefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      return transactions.filter(t => t.date?.startsWith(prefix));
+      return transactions.filter(t =>
+        t.invoiceMonth ? t.invoiceMonth === prefix : t.date?.startsWith(prefix)
+      );
     }
     if (period === 'quarter') {
       const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString().split('T')[0];
-      return transactions.filter(t => t.date >= threeMonthsAgo);
+      const threeMonthsAgoKey = threeMonthsAgo.slice(0, 7);
+      return transactions.filter(t => {
+        const key = t.invoiceMonth || t.date;
+        return key >= threeMonthsAgoKey;
+      });
     }
     if (period === 'semester') {
       const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString().split('T')[0];
-      return transactions.filter(t => t.date >= sixMonthsAgo);
+      const sixMonthsAgoKey = sixMonthsAgo.slice(0, 7);
+      return transactions.filter(t => {
+        const key = t.invoiceMonth || t.date;
+        return key >= sixMonthsAgoKey;
+      });
     }
     if (period === 'year') {
-      return transactions.filter(t => t.date?.startsWith(String(now.getFullYear())));
+      const yearPrefix = String(now.getFullYear());
+      return transactions.filter(t => {
+        const key = t.invoiceMonth || t.date;
+        return key?.startsWith(yearPrefix);
+      });
     }
     return transactions;
   };
@@ -286,7 +301,9 @@ export default function Reports() {
   const last6 = getLast6Months();
   const monthlyData = last6.map(({ year, month }) => {
     const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
-    const tx = transactions.filter(t => t.date?.startsWith(prefix));
+    const tx = transactions.filter(t =>
+      t.invoiceMonth ? t.invoiceMonth === prefix : t.date?.startsWith(prefix)
+    );
     const t = calcTotals(tx);
     return { name: MONTH_NAMES[month].slice(0, 3), income: t.income, expense: t.expense, balance: t.balance };
   });
