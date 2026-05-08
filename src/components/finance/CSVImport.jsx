@@ -392,7 +392,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                   </SelectContent>
                 </Select>
               </div>
-            )}
+            ) : null}
 
             {cards.length > 0 && (!selectedCard || selectedCard === 'none') && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded px-3 py-2 text-xs text-red-700">
