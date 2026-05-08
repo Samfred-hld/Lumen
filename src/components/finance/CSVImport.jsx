@@ -308,40 +308,46 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
   const refundCount = rows.filter(r => r.txType === 'refund' || r.txType === 'income').length;
   const missingCount = rows.filter(r => r._missingInstallments?.length > 0).length;
 
-  // Group installment rows by series for preview display
-  const groupedRows = React.useMemo(() => {
+  // Group structure — only recalculates when txType/cleanTitle change (file load)
+  const groupStructure = React.useMemo(() => {
     const groups = [];
     let i = 0;
     while (i < rows.length) {
       const r = rows[i];
       if (r.txType === 'installment') {
-        // Find all consecutive rows with the same cleanTitle (they form a series)
-        const seriesRows = [];
         const seriesTitle = r.cleanTitle;
+        const indices = [];
         while (i < rows.length && rows[i].txType === 'installment' && rows[i].cleanTitle === seriesTitle) {
-          seriesRows.push({ row: rows[i], globalIdx: i });
+          indices.push(i);
           i++;
         }
-        const totalSeriesValue = seriesRows.reduce((s, sr) => s + sr.row.value, 0);
-        const selectedInSeries = seriesRows.filter(sr => sr.row.selected).length;
-        const dupesInSeries = seriesRows.filter(sr => sr.row._duplicateSeries || sr.row._duplicate).length;
-        groups.push({
-          type: 'installment_series',
-          title: seriesTitle,
-          total: seriesRows[0].row.installmentTotal,
-          perValue: seriesRows[0].row.value,
-          totalValue: totalSeriesValue,
-          selectedCount: selectedInSeries,
-          dupeCount: dupesInSeries,
-          items: seriesRows,
-        });
+        groups.push({ type: 'installment_series', title: seriesTitle, indices });
       } else {
-        groups.push({ type: 'single', item: { row: r, globalIdx: i } });
+        groups.push({ type: 'single', index: i });
         i++;
       }
     }
     return groups;
-  }, [rows]);
+  }, [rows.length, rows.map(r => r.cleanTitle + r.txType).join('|')]);
+
+  // Grouped rows — combines stable structure with volatile row state
+  const groupedRows = React.useMemo(() => {
+    return groupStructure.map(g => {
+      if (g.type === 'installment_series') {
+        const items = g.indices.map(i => ({ row: rows[i], globalIdx: i }));
+        return {
+          ...g,
+          items,
+          totalValue: items.reduce((s, it) => s + it.row.value, 0),
+          selectedCount: items.filter(it => it.row.selected).length,
+          dupeCount: items.filter(it => it.row._duplicateSeries || it.row._duplicate).length,
+          perValue: items[0]?.row.value,
+          total: items[0]?.row.installmentTotal,
+        };
+      }
+      return { ...g, item: { row: rows[g.index], globalIdx: g.index } };
+    });
+  }, [rows, groupStructure]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
