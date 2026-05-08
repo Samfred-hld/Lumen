@@ -214,6 +214,8 @@ export default function SettingsPage() {
   const [extraCats, setExtraCats] = useState(getExtraCats());
   const [salaryConfig, setSalaryConfig] = useState(getSalaryConfig());
   const [importMsg, setImportMsg] = useState('');
+  const [fixProgress, setFixProgress] = useState(null);
+  const [fixResult, setFixResult] = useState(null);
   const [showChangelog, setShowChangelog] = useState(false);
   const [customPMs, setCustomPMs] = useState(getCustomPaymentMethods());
   const [showPMModal, setShowPMModal] = useState(false);
@@ -539,6 +541,52 @@ export default function SettingsPage() {
             <Button variant="outline" size="sm" className="text-xs w-full" asChild><label htmlFor="import-json-settings" className="cursor-pointer inline-flex items-center justify-center"><Upload size={12} className="mr-1"/>Restaurar Backup</label></Button>
           </label>
         </div>
+      </Section>
+
+      {/* ── Fix Invoice Month ── */}
+      <Section icon={Receipt} title="Corrigir Mês de Fatura">
+        <p className="text-xs text-muted-foreground mb-3">
+          Corrige transações importadas sem <code>invoiceMonth</code> calculando automaticamente com base no dia de fechamento do cartão.
+        </p>
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs"
+            disabled={fixProgress !== null}
+            onClick={async () => {
+              setFixResult(null);
+              setFixProgress({ current: 0, total: 0 });
+              try {
+                const { fixNullInvoiceMonth } = await import('@/lib/fixNullInvoiceMonth');
+                const result = await fixNullInvoiceMonth(setFixProgress);
+                setFixResult(result);
+              } catch (e) {
+                setFixResult({ error: e.message });
+              }
+              setFixProgress(null);
+            }}
+          >
+            <Receipt size={12} className="mr-1" />
+            {fixProgress ? 'Corrigindo...' : 'Corrigir Mês de Fatura'}
+          </Button>
+          {fixProgress && (
+            <span className="text-xs text-muted-foreground">
+              {fixProgress.current}/{fixProgress.total} transações...
+            </span>
+          )}
+        </div>
+        {fixResult && !fixResult.error && (
+          <div className="mt-2 text-xs space-y-1">
+            <p className="text-emerald-600">✅ Corrigidas: {fixResult.fixed}</p>
+            {fixResult.needsReview.length > 0 && (
+              <p className="text-amber-600">⚠️ Precisam revisão manual: {fixResult.needsReview.length}</p>
+            )}
+          </div>
+        )}
+        {fixResult?.error && (
+          <p className="mt-2 text-xs text-red-500">Erro: {fixResult.error}</p>
+        )}
       </Section>
 
       {/* ── Changelog ── */}
