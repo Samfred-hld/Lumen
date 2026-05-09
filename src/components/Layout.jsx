@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { getNotifications, markAsRead, markAllAsRead, getUnreadCount, generateBudgetNotifications } from '@/lib/notificationStore';
 import GlobalSearch from '@/components/GlobalSearch';
 import FAB from '@/components/ui/fab';
+import { useTransactionModal } from '@/lib/transactionModalStore';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard, shortcut: '1' },
@@ -319,7 +320,7 @@ export default function Layout() {
     // N — new transaction (dispatch event for current page to handle)
     if (e.key === 'n' || e.key === 'N') {
       e.preventDefault();
-      window.dispatchEvent(new CustomEvent('lumen-new-transaction'));
+      useTransactionModal.open();
       announce('Abrindo nova transação');
       return;
     }
@@ -489,9 +490,9 @@ export default function Layout() {
 
         {/* FAB for mobile */}
         <FAB
-          onNewTransaction={() => window.dispatchEvent(new CustomEvent('lumen-new-transaction'))}
-          onNewIncome={() => window.dispatchEvent(new CustomEvent('lumen-new-transaction', { detail: { defaultType: 'income' } }))}
-          onNewExpense={() => window.dispatchEvent(new CustomEvent('lumen-new-transaction', { detail: { defaultType: 'expense' } }))}
+          onNewTransaction={() => useTransactionModal.open()}
+          onNewIncome={() => useTransactionModal.open('income')}
+          onNewExpense={() => useTransactionModal.open('expense')}
         />
       </div>
 

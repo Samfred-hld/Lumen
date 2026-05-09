@@ -15,6 +15,7 @@ import InstallmentConfirm from '@/components/finance/InstallmentConfirm';
 import Pagination from '@/components/ui/pagination';
 import SwipeToDelete from '@/components/ui/swipe-to-delete';
 import { formatCurrency, formatDate, filterByMonth, calcTotals, getTypeBg, getMonthKey, todayISO } from '@/lib/financeUtils';
+import { useTransactionModal } from '@/lib/transactionModalStore';
 import { MONTH_NAMES, MONTH_SHORT, getCategories } from '@/lib/categories';
 import { getPaymentMethods } from '@/lib/store';
 import { getCategoryIcon, getCategoryColor } from '@/lib/categories';
@@ -323,13 +324,14 @@ export default function Transactions() {
 
   // Listen for global keyboard shortcut to open new transaction modal
   useEffect(() => {
-    const handler = (e) => {
-      setEditing(null);
-      setDefaultType(e.detail?.defaultType || 'expense');
-      setShowModal(true);
-    };
-    window.addEventListener('lumen-new-transaction', handler);
-    return () => window.removeEventListener('lumen-new-transaction', handler);
+    const unsub = useTransactionModal.subscribe(({ isOpen, defaultType }) => {
+      if (isOpen) {
+        setEditing(null);
+        setDefaultType(defaultType);
+        setShowModal(true);
+      }
+    });
+    return unsub;
   }, []);
 
   const TYPE_LABEL = { income: 'Receita', expense: 'Despesa', investment: 'Investimento', all: 'Todos' };

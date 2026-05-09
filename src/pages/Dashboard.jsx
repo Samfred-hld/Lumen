@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatCurrency, formatDate, filterByMonth, calcTotals, groupByCategory, getGoalProgress, getCurrentMonthKey, getMonthKey } from '@/lib/financeUtils';
+import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import TransactionModal from '@/components/finance/TransactionModal';
@@ -170,12 +171,13 @@ export default function Dashboard() {
   }, [budgets, transactions, currentMonth, currentYear]);
 
   useEffect(() => {
-    const handler = (e) => {
-      setDefaultType(e.detail?.defaultType || 'expense');
-      setShowModal(true);
-    };
-    window.addEventListener('lumen-new-transaction', handler);
-    return () => window.removeEventListener('lumen-new-transaction', handler);
+    const unsub = useTransactionModal.subscribe(({ isOpen, defaultType }) => {
+      if (isOpen) {
+        setDefaultType(defaultType);
+        setShowModal(true);
+      }
+    });
+    return unsub;
   }, []);
 
   const monthTx = filterByMonth(transactions, currentYear, currentMonth);
