@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, TrendingDown, TrendingUp, QrCode, CreditCard, Banknote, FileText, Barcode, ArrowRightLeft, History, Bookmark, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCategories } from '@/lib/categories';
-import { getCards, suggestCategoryFromRules, getQuickDraft, saveQuickDraft, clearQuickDraft } from '@/lib/store';
+import { suggestCategoryFromRules, getQuickDraft, saveQuickDraft, clearQuickDraft } from '@/lib/store';
+import { useCards } from '@/hooks/useData';
 
 const PM_OPTIONS = [
   { value: 'Pix', icon: QrCode },
@@ -13,6 +14,7 @@ const PM_OPTIONS = [
 ];
 
 export default function QuickEntry({ onSave }) {
+  const { data: cards = [] } = useCards();
   const [type, setType] = useState('expense');
   const [value, setValue] = useState('');
   const [description, setDescription] = useState('');
@@ -23,7 +25,6 @@ export default function QuickEntry({ onSave }) {
   const [expanded, setExpanded] = useState(false);
 
   const categories = getCategories();
-  const cards = getCards();
 
   // Restore draft
   useEffect(() => {

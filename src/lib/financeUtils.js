@@ -127,3 +127,28 @@ export function getLast6Months() {
   }
   return months;
 }
+
+// ── Smart date formatter ──
+export function formatSmartDate(dateStr) {
+  if (!dateStr) return '-';
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+  const [y, m, d] = dateStr.split('-');
+  const monthShort = MONTH_SHORT[parseInt(m) - 1];
+  const day = parseInt(d);
+
+  if (dateStr === todayStr) return `Hoje, ${day} ${monthShort}`;
+  if (dateStr === yesterdayStr) return `Ontem, ${day} ${monthShort}`;
+  return `${day} ${monthShort}`;
+}
+
+export function isToday(dateStr) {
+  if (!dateStr) return false;
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  return dateStr === todayStr;
+}

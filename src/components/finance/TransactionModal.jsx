@@ -13,11 +13,11 @@ import { CreditCard, Calendar, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
-import { getCards, suggestCategoryFromRules, getTemplates, getPaymentMethods } from '@/lib/store';
+import { suggestCategoryFromRules, getTemplates, getPaymentMethods } from '@/lib/store';
 import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
 import { Checkbox } from '@/components/ui/checkbox';
 import { base44 } from '@/api/base44Client';
-import { useTransactions } from '@/hooks/useData';
+import { useTransactions, useCards } from '@/hooks/useData';
 
 // ═══ Zod Validation Schema ═══
 const transactionSchema = z.object({
@@ -72,7 +72,8 @@ const TYPE_TABS = [
 ];
 
 export default function TransactionModal({ open, onClose, onSave, transaction, goals = [], defaultType = 'expense' }) {
-  const cards = getCards();
+  const { data: cardsData = [] } = useCards();
+  const cards = cardsData;
   const categories = getCategories();
   const paymentMethods = getPaymentMethods();
 

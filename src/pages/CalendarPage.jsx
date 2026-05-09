@@ -10,9 +10,9 @@ import { getInvoiceMonth as getInvoiceMonthStr } from '@/lib/csvParser';
 import { MONTH_NAMES, MONTH_SHORT, DAY_NAMES } from '@/lib/categories';
 import TransactionModal from '@/components/finance/TransactionModal';
 import { cn } from '@/lib/utils';
-import { getCards } from '@/lib/store';
+// store imports removed — using useCards() hook instead
 import { getCategoryIcon } from '@/lib/categories';
-import { useTransactions, useGoals } from '@/hooks/useData';
+import { useTransactions, useGoals, useCards } from '@/hooks/useData';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -65,8 +65,7 @@ export default function CalendarPage() {
 
   const { data: transactions = [], refetch } = useTransactions(500);
   const { data: goals = [] } = useGoals();
-
-  const cards = getCards();
+  const { data: cards = [] } = useCards();
 
   useEffect(() => {
     const handler = (e) => {

@@ -15,7 +15,7 @@ import CalendarPage from './pages/CalendarPage';
 import Reports from './pages/Reports';
 import SettingsPage from './pages/Settings';
 import { initStore } from '@/lib/store';
-import { lumenSetup } from '@/lib/entitySetup';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -25,8 +25,10 @@ const AuthenticatedApp = () => {
     if (!isLoadingAuth && !authError) {
       // Fetch cards, rules, templates, settings from Base44 entities
       initStore();
-      // Migrate localStorage cards to Card entity
-      lumenSetup.migrateCardsToCloud().catch(() => {});
+      // Migrate localStorage cards to Card entity (lazy import to keep it out of main bundle)
+      import('@/lib/entitySetup').then(({ lumenSetup }) => {
+        lumenSetup.migrateCardsToCloud().catch(() => {});
+      });
     }
   }, [isLoadingAuth, authError]);
 
@@ -68,14 +70,16 @@ const AuthenticatedApp = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

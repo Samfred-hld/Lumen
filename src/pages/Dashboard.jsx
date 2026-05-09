@@ -13,10 +13,10 @@ import TransactionModal from '@/components/finance/TransactionModal';
 import DashCustomizeModal from '@/components/finance/DashCustomizeModal';
 import FinancialHealthScore from '@/components/finance/FinancialHealthScore';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
-import { useTransactions, useBudgets, useGoals } from '@/hooks/useData';
+import { useTransactions, useBudgets, useGoals, useCards } from '@/hooks/useData';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
-import { lsGet, lsSet, getCards, getDashSections, getSalaryConfig, setOnboarded } from '@/lib/store';
+import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded } from '@/lib/store';
 import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications, generateBudgetAlerts } from '@/lib/notifications';
 
@@ -150,6 +150,7 @@ export default function Dashboard() {
   const { data: transactions = [], refetch: refetchTx } = useTransactions();
   const { data: goals = [] } = useGoals();
   const { data: budgets = [] } = useBudgets();
+  const { data: cards = [] } = useCards();
 
   useEffect(() => {
     if (transactions.length > 0) {
@@ -230,7 +231,6 @@ export default function Dashboard() {
   const installmentTotal = installmentTx.reduce((s, t) => s + Math.abs(t.value), 0);
 
   // ── Upcoming due dates ──
-  const cards = getCards();
   const salaryConfig = getSalaryConfig();
   const today = new Date();
   const upcomingItems = [];
