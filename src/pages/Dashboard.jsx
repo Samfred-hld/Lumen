@@ -18,6 +18,7 @@ import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded, fetchOnbo
 import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications } from '@/lib/notifications';
 import { KpiCard, getDelta } from '@/components/dashboard/KpiCard';
+import HeroBalance from '@/components/dashboard/HeroBalance';
 import OnboardingModal from '@/components/dashboard/OnboardingModal';
 import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
@@ -32,6 +33,10 @@ export default function Dashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
   const [dashSections, setDashSections] = useState(getDashSections());
+  const [showKpiResumo, setShowKpiResumo] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return true;
+    return false;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -223,35 +228,49 @@ export default function Dashboard() {
   function renderResumo() {
     return (
       <div key="resumo">
-        {/* Mobile: horizontal scroll carousel */}
-        <div className="flex lg:hidden gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide animate-fade-in">
-          <div className="shrink-0 w-44 snap-start">
-            <KpiCard label="Receitas" value={formatCurrency(totals.income)} icon={TrendingUp} variant="income"
-              delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
-          </div>
-          <div className="shrink-0 w-44 snap-start">
-            <KpiCard label="Despesas" value={formatCurrency(totals.expense)} icon={TrendingDown} variant="expense"
-              delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
-          </div>
-          <div className="shrink-0 w-44 snap-start">
-            <KpiCard label="Saldo" value={formatCurrency(totals.balance)} icon={Wallet} variant="balance"
-              delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
-          </div>
-          <div className="shrink-0 w-44 snap-start">
-            <KpiCard label="Investido" value={formatCurrency(totals.investment)} icon={PiggyBank} variant="investment" />
-          </div>
-        </div>
+        {/* Collapsible header */}
+        <button
+          onClick={() => setShowKpiResumo(v => !v)}
+          className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors mb-3 w-full"
+        >
+          <ChevronRight size={14} className={cn('transition-transform duration-200', showKpiResumo && 'rotate-90')} />
+          Resumo do Mês
+        </button>
 
-        {/* Desktop: 4-column grid */}
-        <div className="hidden lg:grid grid-cols-4 gap-3 animate-fade-in">
-          <KpiCard label="Receitas" value={formatCurrency(totals.income)} icon={TrendingUp} variant="income"
-            delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
-          <KpiCard label="Despesas" value={formatCurrency(totals.expense)} icon={TrendingDown} variant="expense"
-            delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
-          <KpiCard label="Saldo" value={formatCurrency(totals.balance)} icon={Wallet} variant="balance"
-            delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
-          <KpiCard label="Investido" value={formatCurrency(totals.investment)} icon={PiggyBank} variant="investment" />
-        </div>
+        {showKpiResumo && (
+          <>
+            {/* Mobile: horizontal scroll carousel */}
+            <div className="flex lg:hidden gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide animate-fade-in">
+              <div className="shrink-0 w-44 snap-start">
+                <KpiCard label="Receitas" value={formatCurrency(totals.income)} icon={TrendingUp} variant="income"
+                  delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
+              </div>
+              <div className="shrink-0 w-44 snap-start">
+                <KpiCard label="Despesas" value={formatCurrency(totals.expense)} icon={TrendingDown} variant="expense"
+                  delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
+              </div>
+              <div className="shrink-0 w-44 snap-start">
+                <KpiCard label="Saldo" value={formatCurrency(totals.balance)} icon={Wallet} variant="balance"
+                  delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
+              </div>
+              <div className="shrink-0 w-44 snap-start">
+                <KpiCard label="Investido" value={formatCurrency(totals.investment)} icon={PiggyBank} variant="investment" />
+              </div>
+            </div>
+
+            {/* Desktop: 4-column grid */}
+            <div className="hidden lg:grid grid-cols-4 gap-3 animate-fade-in">
+              <KpiCard label="Receitas" value={formatCurrency(totals.income)} icon={TrendingUp} variant="income"
+                delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
+              <KpiCard label="Despesas" value={formatCurrency(totals.expense)} icon={TrendingDown} variant="expense"
+                delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
+              <KpiCard label="Saldo" value={formatCurrency(totals.balance)} icon={Wallet} variant="balance"
+                delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
+              <KpiCard label="Investido" value={formatCurrency(totals.investment)} icon={PiggyBank} variant="investment" />
+            </div>
+          </>
+        )}
+
         <div className="mt-3 animate-fade-in" style={{ animationDelay: '0.05s' }}>
           <FinancialHealthScore
             transactions={transactions}
@@ -540,6 +559,9 @@ export default function Dashboard() {
           <span>{alerts.length} orçamento(s) ultrapassado(s): {alerts.map(a => a.category).join(', ')}</span>
         </div>
       )}
+
+      {/* Hero Balance — editorial headline number */}
+      <HeroBalance balance={totals.balance} income={totals.income} expense={totals.expense} />
 
       {/* Dynamic sections */}
       {orderedSections.map((s, i) => (
