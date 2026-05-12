@@ -13,12 +13,15 @@ import {
 import { cn } from '@/lib/utils';
 import { useTransactions, useBudgets } from '@/hooks/useData';
 import CashFlowForecast from '@/components/finance/CashFlowForecast';
+import Pagination from '@/components/ui/pagination';
 
 
 export default function Reports() {
   const [period, setPeriod] = useState('month');
   const [filterType, setFilterType] = useState('all');
   const [isExporting, setIsExporting] = useState(false);
+  const [detailPage, setDetailPage] = useState(1);
+  const DETAIL_PAGE_SIZE = 20;
   const reportRef = useRef(null);
 
   const { data: transactions = [] } = useTransactions();
@@ -63,6 +66,21 @@ export default function Reports() {
 
   const avgTicket = periodTx.length > 0 ? periodTx.reduce((s, t) => s + t.value, 0) / periodTx.length : 0;
   const maxExpense = periodTx.filter(t => t.type === 'expense').reduce((max, t) => t.value > max.value ? t : max, { value: 0 });
+
+  // Pagination for detail section
+  const detailTotalPages = Math.ceil(periodTx.length / DETAIL_PAGE_SIZE);
+  const pagedDetailTx = periodTx.slice(
+    (detailPage - 1) * DETAIL_PAGE_SIZE,
+    detailPage * DETAIL_PAGE_SIZE
+  );
+
+  // Page subtotals
+  const pageIncome = pagedDetailTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.value || 0), 0);
+  const pageExpense = pagedDetailTx.filter(t => t.type === 'expense').reduce((s, t) => s + (t.value || 0), 0);
+  const pageBalance = pageIncome - pageExpense;
+
+  // Reset detail page when filters change
+  useEffect(() => { setDetailPage(1); }, [period, filterType]);
 
   const dayCounts = {};
   periodTx.filter(t => t.type === 'expense').forEach(t => {
@@ -529,7 +547,7 @@ export default function Reports() {
         <CardContent className="p-0">
           {/* Mobile: card list */}
           <div className="sm:hidden divide-y divide-border">
-            {periodTx.slice(0, 20).map(t => (
+            {pagedDetailTx.map(t => (
               <div key={t.id} className="flex items-center justify-between px-4 py-3">
                 <div>
                   <p className="text-sm font-medium truncate max-w-[180px]">{t.description}</p>
@@ -542,9 +560,14 @@ export default function Reports() {
                 </p>
               </div>
             ))}
-            {periodTx.length > 20 && (
-              <p className="text-center text-xs text-muted-foreground py-3">Exibindo 20 de {periodTx.length} transações</p>
+            {detailTotalPages > 1 && (
+              <div className="px-4 py-3 border-t">
+                <Pagination page={detailPage} totalPages={detailTotalPages} onPageChange={setDetailPage} />
+              </div>
             )}
+            <p className="text-center text-xs text-muted-foreground py-2">
+              Exibindo {Math.min(detailPage * DETAIL_PAGE_SIZE, periodTx.length)} de {periodTx.length} transações
+            </p>
           </div>
 
           {/* Desktop: table */}
@@ -560,7 +583,7 @@ export default function Reports() {
                 </tr>
               </thead>
               <tbody>
-                {periodTx.slice(0, 20).map(t => (
+                {pagedDetailTx.map(t => (
                   <tr key={t.id} className="border-b last:border-0 hover:bg-muted/40 transition-colors">
                     <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap tabular-nums">{t.date?.split('-').reverse().join('/')}</td>
                     <td className="px-4 py-2.5 max-w-[180px] truncate">{t.description}</td>
@@ -581,10 +604,29 @@ export default function Reports() {
                   </tr>
                 ))}
               </tbody>
+              <tfoot className="border-t-2 bg-muted/30">
+                <tr>
+                  <td colSpan={3} className="px-4 py-2 text-xs font-semibold text-muted-foreground">
+                    Subtotal ({pagedDetailTx.length} itens)
+                  </td>
+                  <td className="px-4 py-2 text-right text-xs font-bold text-emerald-600 tabular-nums hidden md:table-cell" />
+                  <td className={cn(
+                    "px-4 py-2 text-right text-xs font-bold tabular-nums",
+                    pageBalance >= 0 ? 'text-emerald-600' : 'text-red-600'
+                  )}>
+                    Saldo pagina: {formatCurrency(pageBalance)}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
-            {periodTx.length > 20 && (
-              <p className="text-center text-xs text-muted-foreground py-3">Exibindo 20 de {periodTx.length} transações</p>
+            {detailTotalPages > 1 && (
+              <div className="px-4 py-3 border-t">
+                <Pagination page={detailPage} totalPages={detailTotalPages} onPageChange={setDetailPage} />
+              </div>
             )}
+            <p className="text-center text-xs text-muted-foreground py-2">
+              Exibindo {Math.min(detailPage * DETAIL_PAGE_SIZE, periodTx.length)} de {periodTx.length} transações
+            </p>
           </div>
         </CardContent>
       </Card>
