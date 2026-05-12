@@ -3,6 +3,7 @@ import { Plus, TrendingDown, TrendingUp, QrCode, CreditCard, Banknote, FileText,
 import { cn } from '@/lib/utils';
 import { getCategories } from '@/lib/categories';
 import { suggestCategoryFromRules, getQuickDraft, saveQuickDraft, clearQuickDraft } from '@/lib/store';
+import { clampDateInput } from '@/lib/financeUtils';
 import { useCards } from '@/hooks/useData';
 
 const PM_OPTIONS = [
@@ -168,7 +169,13 @@ export default function QuickEntry({ onSave }) {
         <input
           type="date"
           value={date}
-          onChange={e => setDate(e.target.value)}
+          max="2099-12-31"
+          min="1900-01-01"
+          onChange={e => setDate(clampDateInput(e.target.value))}
+          onBlur={e => {
+            const clamped = clampDateInput(e.target.value);
+            if (clamped !== e.target.value) setDate(clamped);
+          }}
           className="w-full h-11 rounded border border-border bg-muted/50 px-3.5 text-sm outline-none focus:border-primary transition-colors"
         />
       </div>
