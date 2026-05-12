@@ -106,14 +106,14 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
   const formatCurrency = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3.5 flex items-center justify-between gap-4 flex-wrap animate-fade-in dark:bg-amber-950/30 dark:border-amber-800">
+    <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3.5 flex items-center justify-between gap-4 flex-wrap animate-fade-in">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded bg-amber-100 flex items-center justify-center shrink-0 mt-0.5 dark:bg-amber-900/50">
-          <Lightbulb size={16} className="text-amber-600 dark:text-amber-400" />
+        <div className="w-8 h-8 rounded bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+          <Lightbulb size={16} className="text-amber-600" />
         </div>
         <div>
-          <p className="text-sm font-bold text-amber-900 dark:text-amber-200">Sugestões do mês</p>
-          <p className="text-xs text-amber-700 mt-0.5 dark:text-amber-400">
+          <p className="text-sm font-bold text-amber-900">Sugestões do mês</p>
+          <p className="text-xs text-amber-700 mt-0.5">
             Adicione rapidamente seu salário, despesas fixas e financiamentos.
           </p>
         </div>
@@ -148,7 +148,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
         )}
         <button
           onClick={dismiss}
-          className="p-1.5 rounded border border-amber-300 text-amber-600 hover:bg-amber-100 transition-colors dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/50"
+          className="p-1.5 rounded border border-amber-300 text-amber-600 hover:bg-amber-100 transition-colors"
           aria-label="Dispensar sugestões"
         >
           <X size={14} />

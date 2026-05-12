@@ -548,11 +548,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                       return (
                         <React.Fragment key={`series-${gi}`}>
                           {/* Series header row */}
-                          <tr className="border-t-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
+                          <tr className="border-t-2 border-blue-200 bg-blue-50/50">
                             <td colSpan={7} className="p-2 text-xs">
                               <div className="flex items-center gap-2">
                                 <Layers size={14} className="text-blue-600" />
-                                <span className="font-bold text-blue-700 dark:text-blue-300">
+                                <span className="font-bold text-blue-700">
                                   {group.title}
                                 </span>
                                 <span className="text-muted-foreground">
@@ -587,8 +587,8 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                                 key={i}
                                 className={cn(
                                   "border-t transition-colors",
-                                  isDisabled ? 'bg-red-50/30 dark:bg-red-950/10 opacity-50' : 'hover:bg-muted/30 cursor-pointer',
-                                  label === 'esta_fatura' && !isDisabled && 'bg-blue-50/30 dark:bg-blue-950/10'
+                                  isDisabled ? 'bg-red-50/30 opacity-50' : 'hover:bg-muted/30 cursor-pointer',
+                                  label === 'esta_fatura' && !isDisabled && 'bg-blue-50/30'
                                 )}
                                 onClick={() => !isDisabled && toggleRow(i)}
                               >
@@ -649,11 +649,11 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                     const isDisabled = r._duplicate || r._duplicateSeries;
 
                     let rowBg = '';
-                    if (r._duplicate) rowBg = 'bg-red-50/50 dark:bg-red-950/20';
-                    else if (r._duplicateSeries) rowBg = 'bg-purple-50/50 dark:bg-purple-950/20';
-                    else if (r._duplicateSuspect) rowBg = 'bg-yellow-50/50 dark:bg-yellow-950/20';
-                    else if (r.txType === 'refund' || r.txType === 'income') rowBg = 'bg-emerald-50/50 dark:bg-emerald-950/20';
-                    else if (r._missingInstallments?.length > 0) rowBg = 'bg-orange-50/30 dark:bg-orange-950/10';
+                    if (r._duplicate) rowBg = 'bg-red-50/50';
+                    else if (r._duplicateSeries) rowBg = 'bg-purple-50/50';
+                    else if (r._duplicateSuspect) rowBg = 'bg-yellow-50/50';
+                    else if (r.txType === 'refund' || r.txType === 'income') rowBg = 'bg-emerald-50/50';
+                    else if (r._missingInstallments?.length > 0) rowBg = 'bg-orange-50/30';
 
                     return (
                       <tr
@@ -754,7 +754,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
             {/* Info banners */}
             {missingCount > 0 && (
-              <div className="bg-orange-50 border border-orange-200 rounded px-3 py-2 text-xs text-orange-700 dark:bg-orange-950/30 dark:border-orange-800 dark:text-orange-300">
+              <div className="bg-orange-50 border border-orange-200 rounded px-3 py-2 text-xs text-orange-700">
                 <p className="font-semibold">
                   <AlertTriangle size={12} className="inline mr-1" />
                   Atenção: {missingCount} série(s) de parcelas possuem parcelas anteriores não importadas.
@@ -765,7 +765,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             )}
 
             {seriesDupeCount > 0 && (
-              <div className="bg-purple-50 border border-purple-200 rounded px-3 py-2 text-xs text-purple-700 dark:bg-purple-950/30 dark:border-purple-800 dark:text-purple-300">
+              <div className="bg-purple-50 border border-purple-200 rounded px-3 py-2 text-xs text-purple-700">
                 <p className="font-semibold">
                   <Layers size={12} className="inline mr-1" />
                   {seriesDupeCount} parcela(s) já existem no sistema e foram desmarcadas.

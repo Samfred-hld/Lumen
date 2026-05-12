@@ -225,7 +225,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
                 <li>• Todos os cartões</li><li>• Todas as regras</li><li>• Todas as configurações</li>
                 <li>• Dados sincronizados na nuvem</li>
               </ul>
-              <div className="bg-red-50 border border-red-200 rounded p-3 text-xs text-red-700 dark:bg-red-950/30 dark:border-red-800 dark:text-red-300">
+              <div className="bg-red-50 border border-red-200 rounded p-3 text-xs text-red-700">
                 <strong>⚠️ Esta ação é irreversível.</strong> Recomendamos fazer um backup JSON antes.
               </div>
               <div className="space-y-1.5">

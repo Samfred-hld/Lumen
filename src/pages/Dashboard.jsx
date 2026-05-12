@@ -432,7 +432,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded bg-indigo-100 dark:bg-indigo-900/30">
+              <div className="p-3 rounded bg-indigo-100">
                 <PiggyBank size={24} className="text-indigo-600" />
               </div>
               <div>

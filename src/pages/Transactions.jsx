@@ -391,7 +391,7 @@ export default function Transactions() {
 
       {/* Aviso de transações em outros meses */}
       {otherMonthsCount > 0 && monthTx.length === 0 && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300">
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700">
           <span className="font-semibold">📅</span>
           <span>
             Nenhuma transação em {MONTH_NAMES[currentMonth]}, mas há <strong>{otherMonthsCount}</strong> transação(ões) em outros meses.

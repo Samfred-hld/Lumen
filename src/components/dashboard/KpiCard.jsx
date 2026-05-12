@@ -4,10 +4,10 @@ import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const KPI_STYLES = {
-  income: { iconBg: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-600', valueColor: 'text-emerald-700 dark:text-emerald-400', accent: 'bg-emerald-500' },
-  expense: { iconBg: 'bg-red-100 dark:bg-red-900/30', iconColor: 'text-red-500', valueColor: 'text-red-600 dark:text-red-400', accent: 'bg-red-500' },
-  balance: { iconBg: 'bg-stone-100 dark:bg-stone-900/30', iconColor: 'text-stone-600', valueColor: 'text-stone-700 dark:text-stone-400', accent: 'bg-stone-500' },
-  investment: { iconBg: 'bg-amber-100 dark:bg-amber-900/30', iconColor: 'text-amber-600', valueColor: 'text-amber-700 dark:text-amber-400', accent: 'bg-amber-500' },
+  income: { iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', valueColor: 'text-emerald-700', accent: 'bg-emerald-500' },
+  expense: { iconBg: 'bg-red-100', iconColor: 'text-red-500', valueColor: 'text-red-600', accent: 'bg-red-500' },
+  balance: { iconBg: 'bg-stone-100', iconColor: 'text-stone-600', valueColor: 'text-stone-700', accent: 'bg-stone-500' },
+  investment: { iconBg: 'bg-amber-100', iconColor: 'text-amber-600', valueColor: 'text-amber-700', accent: 'bg-amber-500' },
 };
 
 export function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLabel }) {

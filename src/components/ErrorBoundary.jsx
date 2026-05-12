@@ -29,7 +29,7 @@ export class ErrorBoundary extends React.Component {
               Ocorreu um erro inesperado. Tente recarregar a página.
             </p>
             {this.state.error && (
-              <pre className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 rounded p-3 mb-4 overflow-auto max-h-32 text-left">
+              <pre className="text-xs text-red-500 bg-red-50 rounded p-3 mb-4 overflow-auto max-h-32 text-left">
                 {this.state.error.message}
               </pre>
             )}

@@ -293,9 +293,9 @@ export default function Reports() {
       {/* KPIs — Mobile: horizontal scroll, Desktop: grid */}
       <div className="flex lg:hidden gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide animate-fade-in">
         {[
-          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
-          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
-          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30' },
+          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100' },
+          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100' },
+          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100' },
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
@@ -317,9 +317,9 @@ export default function Reports() {
       </div>
       <div className="hidden lg:grid grid-cols-4 gap-3 animate-fade-in">
         {[
-          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
-          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
-          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30' },
+          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100' },
+          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100' },
+          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100' },
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
         ].map(kpi => (
           <Card key={kpi.label} className={cn("border-0 shadow-card overflow-hidden", kpi.gradient)}>

@@ -132,10 +132,10 @@ function getLabel(score) {
 }
 
 function getLabelColor(score) {
-  if (score >= 80) return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
-  if (score >= 60) return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-  if (score >= 40) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
-  return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+  if (score >= 80) return 'bg-emerald-100 text-emerald-700';
+  if (score >= 60) return 'bg-blue-100 text-blue-700';
+  if (score >= 40) return 'bg-amber-100 text-amber-700';
+  return 'bg-red-100 text-red-700';
 }
 
 export default function FinancialHealthScore({ transactions, budgets, goals, month, year }) {
@@ -155,9 +155,9 @@ export default function FinancialHealthScore({ transactions, budgets, goals, mon
           <div className="flex flex-col items-center shrink-0">
             <div className={cn(
               "w-20 h-20 rounded-full flex items-center justify-center border-4",
-              score >= 70 ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' :
-              score >= 40 ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' :
-              'border-red-500 bg-red-50 dark:bg-red-900/20'
+              score >= 70 ? 'border-emerald-500 bg-emerald-50' :
+              score >= 40 ? 'border-amber-500 bg-amber-50' :
+              'border-red-500 bg-red-50'
             )}>
               <span className={cn("text-3xl font-bold tabular-nums", getScoreColor(score))}>
                 {score}
