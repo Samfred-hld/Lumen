@@ -326,16 +326,16 @@ export default function Transactions() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
+          <h1 className="text-2xl font-bold">Transações</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Controle todos os seus lançamentos</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1.5">
-            <button onClick={() => navigate(-1)} className="p-1 hover:bg-accent rounded-lg transition-colors" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
+          <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
+            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
             <span className="text-sm font-medium px-2 min-w-[110px] text-center">
               {MONTH_NAMES[currentMonth]} {currentYear}
             </span>
-            <button onClick={() => navigate(1)} className="p-1 hover:bg-accent rounded-lg transition-colors" aria-label="Próximo mês"><ChevronRight size={14} /></button>
+            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
             {/* Indicador de meses com dados */}
             <div className="flex gap-0.5 ml-1" title={`Dados em ${monthsWithData.size} mês(es)`}>
               {Array.from(monthsWithData).sort().slice(-6).map(ym => {
@@ -378,20 +378,20 @@ export default function Transactions() {
 
       {/* Summary pills */}
       <div className="flex flex-wrap gap-2 animate-fade-in">
-        <span className="summary-pill income">
+        <span className="px-3.5 py-2 rounded gradient-emerald text-emerald-700 text-sm font-semibold shadow-card tabular-nums border border-emerald-200/50">
           ↑ Receitas: {formatCurrency(totals.income)}
         </span>
-        <span className="summary-pill expense">
+        <span className="px-3.5 py-2 rounded gradient-red text-red-600 text-sm font-semibold shadow-card tabular-nums border border-red-200/50">
           ↓ Despesas: {formatCurrency(totals.expense)}
         </span>
-        <span className="summary-pill investment">
+        <span className="px-3.5 py-2 rounded gradient-violet text-violet-600 text-sm font-semibold shadow-card tabular-nums border border-violet-200/50">
           ◆ Investido: {formatCurrency(totals.investment)}
         </span>
       </div>
 
       {/* Aviso de transações em outros meses */}
       {otherMonthsCount > 0 && monthTx.length === 0 && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300">
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300">
           <span className="font-semibold">📅</span>
           <span>
             Nenhuma transação em {MONTH_NAMES[currentMonth]}, mas há <strong>{otherMonthsCount}</strong> transação(ões) em outros meses.
@@ -479,8 +479,8 @@ export default function Transactions() {
 
         {/* Advanced Filters Panel */}
         {showAdvFilters && (
-          <div className="section-card p-4">
-            <div className="space-y-3">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-4 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Category */}
                 <div>
@@ -567,30 +567,30 @@ export default function Transactions() {
                       </span>
                     )}
                   </div>
-                  <Button variant="ghost" size="sm" className="h-7 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50" onClick={clearAdvFilters}>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-600 hover:bg-red-50" onClick={clearAdvFilters}>
                     Limpar filtros
                   </Button>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 
       {/* Transaction list */}
-      <div className="section-card !p-0 overflow-hidden">
-        <div className="p-0">
+      <Card className="border-0 shadow-card overflow-hidden">
+        <CardContent className="p-0">
           {filtered.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state-icon">
-                <Search size={24} />
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded bg-muted/50 flex items-center justify-center">
+                <Search size={24} className="text-muted-foreground/50" />
               </div>
               <p className="text-sm font-medium text-muted-foreground">Nenhuma transação encontrada</p>
-              <p className="text-xs text-muted-foreground/60">Tente ajustar os filtros ou adicione uma nova transação</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Tente ajustar os filtros ou adicione uma nova transação</p>
             </div>
           ) : (
             <>
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border/60">
               {paginatedTx.map((t, i) => (
                 <TransactionRow
                   key={t.id}
@@ -603,14 +603,14 @@ export default function Transactions() {
               ))}
             </div>
             {totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-border">
+              <div className="px-4 py-3 border-t border-border/40">
                 <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
               </div>
             )}
             </>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       <TransactionModal
         open={showModal}

@@ -370,7 +370,7 @@ export default function Layout() {
       <aside
         className={cn(
           "fixed lg:relative z-50 h-full flex flex-col gradient-navy transition-all duration-300",
-          collapsed ? "w-[64px]" : "w-[220px]",
+          collapsed ? "w-[76px]" : "w-[264px]",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
         role="navigation"
@@ -383,15 +383,15 @@ export default function Layout() {
         )}>
           {!collapsed && (
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 gradient-primary rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-sm">L</span>
+              <div className="w-9 h-9 gradient-primary flex items-center justify-center shadow-lg" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+                <span className="text-white font-bold text-sm font-mono">L</span>
               </div>
-              <span className="text-white text-lg font-semibold tracking-tight">Lúmen</span>
+              <span className="font-display text-white text-xl tracking-tight">Lúmen</span>
             </div>
           )}
           {collapsed && (
-            <div className="w-8 h-8 gradient-primary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-sm">L</span>
+            <div className="w-9 h-9 gradient-primary flex items-center justify-center shadow-lg" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+              <span className="text-white font-bold text-sm font-mono">L</span>
             </div>
           )}
         </div>
@@ -489,7 +489,7 @@ export default function Layout() {
           >
             <Menu size={20} />
           </button>
-          <span className="font-semibold text-lg ml-2">Lúmen</span>
+          <span className="font-display text-lg ml-2">Lúmen</span>
           <div className="ml-auto">
             <NotificationCenter />
           </div>
