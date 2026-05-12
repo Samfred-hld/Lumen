@@ -300,7 +300,7 @@ export default function Reports() {
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
             <Card className={cn("border-0 shadow-card overflow-hidden", kpi.gradient)}>
               <CardContent className="p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between flex-wrap gap-3">
                   <div>
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
                     <p className={cn("text-xl font-bold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
