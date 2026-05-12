@@ -20,6 +20,8 @@ export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
   const query = useQuery({
     queryKey: ['transactions'],
     queryFn: () => base44.entities.Transaction.list('-date', limit),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
   });
 
   // Real-time subscription
@@ -44,6 +46,8 @@ export function useBudgets() {
   const query = useQuery({
     queryKey: ['budgets'],
     queryFn: () => base44.entities.Budget.list(),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
   });
 
   useEffect(() => {
@@ -65,6 +69,8 @@ export function useGoals() {
   const query = useQuery({
     queryKey: ['goals'],
     queryFn: () => base44.entities.Goal.list(),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
   });
 
   useEffect(() => {
@@ -86,6 +92,8 @@ export function useCards() {
   const query = useQuery({
     queryKey: ['cards'],
     queryFn: () => base44.entities.Card.list('', 1000),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
   });
 
   useEffect(() => {
