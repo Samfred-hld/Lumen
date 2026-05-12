@@ -105,7 +105,7 @@ function GoalModal({ open, onClose, onSave, goal }) {
             />
             {errors.name && <p className="text-sm text-destructive mt-1">{errors.name.message}</p>}
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
               <Label>Valor Alvo (R$)</Label>
               <Input
@@ -227,7 +227,7 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
     <Card className="border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300 overflow-hidden group">
       <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${goal.color || '#10b981'}, ${goal.color || '#10b981'}88)` }} />
       <CardContent className="p-4 space-y-3">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between flex-wrap gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-sm truncate">{goal.name}</h3>
@@ -344,7 +344,7 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
       className="max-w-lg"
     >
 
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <Card className="border-0 shadow-sm"><CardContent className="p-3">
             <p className="text-[10px] text-muted-foreground uppercase font-semibold">Total Entradas</p>
             <p className="text-lg font-bold text-emerald-600 tabular-nums">{formatCurrency(totalIn)}</p>
@@ -416,7 +416,7 @@ export default function Goals() {
 
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Metas</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Acompanhe seus objetivos financeiros</p>
@@ -427,7 +427,7 @@ export default function Goals() {
       </div>
 
       {goals.length > 0 && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Card className="border-0 shadow-sm"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Acumulado</p><p className="text-xl font-bold text-emerald-600 mt-1">{formatCurrency(totalCurrent)}</p></CardContent></Card>
           <Card className="border-0 shadow-sm"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total de Metas</p><p className="text-xl font-bold mt-1">{formatCurrency(totalTarget)}</p></CardContent></Card>
         </div>
