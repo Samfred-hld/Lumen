@@ -19,6 +19,7 @@ import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications } from '@/lib/notifications';
 import { KpiCard, getDelta } from '@/components/dashboard/KpiCard';
 import HeroBalance from '@/components/dashboard/HeroBalance';
+import StatusLine from '@/components/dashboard/StatusLine';
 import OnboardingModal from '@/components/dashboard/OnboardingModal';
 import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
@@ -562,6 +563,15 @@ export default function Dashboard() {
 
       {/* Hero Balance — editorial headline number */}
       <HeroBalance balance={totals.balance} income={totals.income} expense={totals.expense} />
+
+      {/* Status Line — compact indicators */}
+      <StatusLine
+        budgets={budgets}
+        monthBudgets={monthBudgets}
+        goals={goals}
+        upcomingItems={upcomingItems}
+        monthTx={monthTx}
+      />
 
       {/* Dynamic sections */}
       {orderedSections.map((s, i) => (
