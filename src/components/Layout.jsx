@@ -296,7 +296,12 @@ export default function Layout() {
     // Don't trigger shortcuts when typing in inputs
     const tag = e.target.tagName;
     const isEditable = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable;
-    if (isEditable) return;
+    // Don't trigger on interactive elements (buttons, links, roles)
+    const isInteractive = tag === 'BUTTON' || tag === 'A' ||
+      e.target.closest('button') || e.target.closest('a') ||
+      e.target.closest('[role="button"]') || e.target.closest('[role="tab"]') ||
+      e.target.closest('[role="menuitem"]') || e.target.closest('[role="option"]');
+    if (isEditable || isInteractive) return;
 
     // ? — show shortcuts help
     if (e.key === '?') {
