@@ -10,6 +10,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, Area, AreaChart
 } from 'recharts';
+import { CHART_COLORS, CHART_TOOLTIP_STYLE, AXIS_STYLE, GRID_STYLE } from '@/lib/chartTheme';
 import { cn } from '@/lib/utils';
 import { useTransactions, useBudgets } from '@/hooks/useData';
 import CashFlowForecast from '@/components/finance/CashFlowForecast';
@@ -393,10 +394,10 @@ export default function Reports() {
                     <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
-                <Tooltip formatter={v => formatCurrency(v)} />
+                <CartesianGrid {...GRID_STYLE} />
+                <XAxis {...AXIS_STYLE} dataKey="name" />
+                <YAxis {...AXIS_STYLE} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={v => formatCurrency(v)} />
                 <Area type="monotone" dataKey="income" name="Receitas" stroke="#10b981" fill="url(#incomeGrad)" strokeWidth={2} />
                 <Area type="monotone" dataKey="expense" name="Despesas" stroke="#ef4444" fill="url(#expenseGrad)" strokeWidth={2} />
               </AreaChart>
@@ -445,11 +446,11 @@ export default function Reports() {
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={catBarData} barSize={24} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} width={80} />
-                <Tooltip formatter={v => formatCurrency(v)} />
-                <Bar dataKey="value" name="Valor" radius={[0, 4, 4, 0]}>
+                <CartesianGrid {...GRID_STYLE} horizontal={false} />
+                <XAxis {...AXIS_STYLE} type="number" tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+                <YAxis {...AXIS_STYLE} type="category" dataKey="name" width={80} />
+                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={v => formatCurrency(v)} />
+                <Bar dataKey="value" name="Valor" radius={[0, 6, 6, 0]} maxBarSize={40}>
                   {catBarData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                 </Bar>
               </BarChart>
@@ -472,12 +473,12 @@ export default function Reports() {
               <div style={{ minWidth: Math.max(300, realVsPlanned.length * 60) }}>
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={rvChartData} barGap={4} barSize={20}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
-                    <Tooltip formatter={v => formatCurrency(v)} />
-                    <Bar dataKey="Orçado" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Realizado" fill="#f97316" radius={[4, 4, 0, 0]} />
+                    <CartesianGrid {...GRID_STYLE} />
+                    <XAxis {...AXIS_STYLE} dataKey="name" />
+                    <YAxis {...AXIS_STYLE} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} formatter={v => formatCurrency(v)} />
+                    <Bar dataKey="Orçado" fill="#3b82f6" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                    <Bar dataKey="Realizado" fill="#f97316" radius={[6, 6, 0, 0]} maxBarSize={40} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
