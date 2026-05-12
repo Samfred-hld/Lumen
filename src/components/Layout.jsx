@@ -10,6 +10,7 @@ import { useBudgets, useTransactions } from '@/hooks/useData';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Menu } from 'lucide-react';
 import { getNotifications, markAsRead, markAllAsRead, getUnreadCount, generateBudgetNotifications } from '@/lib/notificationStore';
 import GlobalSearch from '@/components/GlobalSearch';
 import FAB from '@/components/ui/fab';
@@ -270,6 +271,7 @@ function NotificationCenter() {
 
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showGlobalSearch, setShowGlobalSearch] = useState(false);
   const location = useLocation();
@@ -369,7 +371,7 @@ export default function Layout() {
         className={cn(
           "fixed lg:relative z-50 h-full flex flex-col gradient-navy transition-all duration-300",
           collapsed ? "w-[76px]" : "w-[264px]",
-          "-translate-x-full lg:translate-x-0"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
         role="navigation"
         aria-label="Navegação principal"
@@ -402,7 +404,7 @@ export default function Layout() {
               <Link
                 key={path}
                 to={path}
-                onClick={() => {}}
+                onClick={() => setSidebarOpen(false)}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded mb-0.5 transition-all duration-200 group relative",
                   active
@@ -468,11 +470,26 @@ export default function Layout() {
         </div>
       </aside>
 
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile header */}
         <header className="lg:hidden flex items-center h-14 px-4 border-b border-border bg-card shrink-0">
-          <span className="font-serif text-lg">Lúmen</span>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 -ml-2 hover:bg-muted rounded-lg transition-colors"
+            aria-label="Abrir menu"
+          >
+            <Menu size={20} />
+          </button>
+          <span className="font-serif text-lg ml-2">Lúmen</span>
           <div className="ml-auto">
             <NotificationCenter />
           </div>
