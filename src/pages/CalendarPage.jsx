@@ -39,7 +39,7 @@ function exportCalendarCSV(transactions, cards, month, year) {
       `"${(t.description || '').replace(/"/g, '""')}"`,
       `"${t.category || ''}"`,
       t.type === 'income' ? 'Receita' : t.type === 'investment' ? 'Investimento' : 'Despesa',
-      Math.abs(t.value).toFixed(2).replace('.', ','),
+      formatCurrency(Math.abs(t.value)),
       `"${c ? 'Crédito - ' + c.name : t.paymentMethod || ''}"`,
     ].join(';');
   });
