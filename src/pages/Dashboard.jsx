@@ -20,6 +20,7 @@ import { checkDueDateNotifications } from '@/lib/notifications';
 import { KpiCard, getDelta } from '@/components/dashboard/KpiCard';
 import HeroBalance from '@/components/dashboard/HeroBalance';
 import StatusLine from '@/components/dashboard/StatusLine';
+import DashSection from '@/components/dashboard/DashSection';
 import OnboardingModal from '@/components/dashboard/OnboardingModal';
 import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
@@ -211,9 +212,24 @@ export default function Dashboard() {
   const renderSection = (sectionId) => {
     switch (sectionId) {
       case 'resumo': return renderResumo();
-      case 'graficos': return renderGraficos();
-      case 'gastos': return renderGastos();
-      case 'metas': return renderMetas();
+      case 'graficos':
+        return (
+          <DashSection id="graficos" title="Evolução Mensal" color="bg-primary" defaultOpen={true}>
+            <ChartsSection barData={barData} processedPieData={processedPieData} />
+          </DashSection>
+        );
+      case 'gastos':
+        return (
+          <DashSection id="gastos" title="Gastos por Categoria" color="bg-amber-500" defaultOpen={false}>
+            <CategoryBreakdown expensesByCategory={expensesByCategory} totals={totals} />
+          </DashSection>
+        );
+      case 'metas':
+        return (
+          <DashSection id="metas" title="Metas Ativas" color="bg-amber-500" defaultOpen={false}>
+            <GoalsSection goals={goals} transactions={transactions} />
+          </DashSection>
+        );
       case 'parcelas': return renderParcelas();
       case 'planejado': return renderPlanejado();
       case 'previsao': return renderPrevisao();
@@ -285,246 +301,181 @@ export default function Dashboard() {
     );
   }
 
-  function renderGraficos() {
-    return <ChartsSection key="graficos" barData={barData} processedPieData={processedPieData} />;
-  }
 
-  function renderGastos() {
-    return (
-      <div key="gastos" className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-        <CategoryBreakdown expensesByCategory={expensesByCategory} totals={totals} />
-      </div>
-    );
-  }
-
-  function renderMetas() {
-    return (
-      <div key="metas" className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <GoalsSection goals={goals} transactions={transactions} />
-      </div>
-    );
-  }
 
   function renderParcelas() {
     if (installmentTx.length === 0) return null;
     return (
-      <div key="parcelas" className="animate-fade-in-up" style={{ animationDelay: '0.22s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <div className="w-1.5 h-4 rounded-full bg-pink-500" /> Parcelas Ativas
-              </CardTitle>
-              <span className="text-sm font-bold text-red-500 tabular-nums">{formatCurrency(installmentTotal)}</span>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-2">
-            {installmentTx.slice(0, 5).map(t => (
-              <div key={t.id} className="flex items-center justify-between p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{t.description}</p>
-                  <p className="text-xs text-muted-foreground">
-                    <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-50 border-blue-200 text-blue-600 mr-1">
-                      {t.installmentCurrent}/{t.installmentCount}
-                    </Badge>
-                    {formatDate(t.date)}
-                  </p>
-                </div>
-                <span className="text-sm font-bold text-red-500 tabular-nums shrink-0">{formatCurrency(Math.abs(t.value))}</span>
+      <DashSection id="parcelas" title="Parcelas Ativas" color="bg-pink-500" defaultOpen={false}>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs text-muted-foreground">{installmentTx.length} parcela(s)</span>
+          <span className="text-sm font-bold text-red-500 tabular-nums">{formatCurrency(installmentTotal)}</span>
+        </div>
+        <div className="space-y-2">
+          {installmentTx.slice(0, 5).map(t => (
+            <div key={t.id} className="flex items-center justify-between p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{t.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-50 border-blue-200 text-blue-600 mr-1">
+                    {t.installmentCurrent}/{t.installmentCount}
+                  </Badge>
+                  {formatDate(t.date)}
+                </p>
               </div>
-            ))}
-            {installmentTx.length > 5 && (
-              <Link to="/transactions" className="block text-center text-xs text-primary font-medium hover:underline mt-2">
-                Ver todas ({installmentTx.length})
-              </Link>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              <span className="text-sm font-bold text-red-500 tabular-nums shrink-0">{formatCurrency(Math.abs(t.value))}</span>
+            </div>
+          ))}
+          {installmentTx.length > 5 && (
+            <Link to="/transactions" className="block text-center text-xs text-primary font-medium hover:underline mt-2">
+              Ver todas ({installmentTx.length})
+            </Link>
+          )}
+        </div>
+      </DashSection>
     );
   }
 
   function renderPlanejado() {
     if (monthBudgets.length === 0) return null;
     return (
-      <div key="planejado" className="animate-fade-in-up" style={{ animationDelay: '0.25s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Planejado vs Real
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-3">
-            {monthBudgets.map(b => {
-              const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
-              const pct = b.limit > 0 ? Math.min(100, (spent / b.limit) * 100) : 0;
-              const over = spent > b.limit;
-              return (
-                <div key={b.id}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium">{getCategoryIcon(b.category)} {b.category}</span>
-                    <span className={cn("text-xs font-semibold", over ? 'text-red-500' : 'text-muted-foreground')}>
-                      {formatCurrency(spent)} / {formatCurrency(b.limit)}
-                    </span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div className={cn("h-full rounded-full transition-all duration-500", over ? 'bg-red-500' : 'bg-primary')} style={{ width: `${pct}%` }} />
-                  </div>
+      <DashSection id="planejado" title="Planejado vs Real" color="bg-amber-500" defaultOpen={false}>
+        <div className="space-y-3">
+          {monthBudgets.map(b => {
+            const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
+            const pct = b.limit > 0 ? Math.min(100, (spent / b.limit) * 100) : 0;
+            const over = spent > b.limit;
+            return (
+              <div key={b.id}>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">{getCategoryIcon(b.category)} {b.category}</span>
+                  <span className={cn("text-xs font-semibold", over ? 'text-red-500' : 'text-muted-foreground')}>
+                    {formatCurrency(spent)} / {formatCurrency(b.limit)}
+                  </span>
                 </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className={cn("h-full rounded-full transition-all duration-500", over ? 'bg-red-500' : 'bg-primary')} style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </DashSection>
     );
   }
 
   function renderPrevisao() {
     return (
-      <div key="previsao" className="animate-fade-in-up" style={{ animationDelay: '0.28s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-cyan-500" /> Previsão Próximo Mês
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Receita Prev.</p>
-                <p className="text-lg font-bold text-emerald-600 tabular-nums mt-1">{formatCurrency(avgIncome)}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Despesa Prev.</p>
-                <p className="text-lg font-bold text-red-500 tabular-nums mt-1">{formatCurrency(avgExpense)}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Saldo Prev.</p>
-                <p className={cn("text-lg font-bold tabular-nums mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                  {formatCurrency(avgIncome - avgExpense)}
-                </p>
-              </div>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-3">Baseado na média dos últimos 3 meses</p>
-          </CardContent>
-        </Card>
-      </div>
+      <DashSection id="previsao" title="Previsão Próximo Mês" color="bg-cyan-500" defaultOpen={false}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Receita Prev.</p>
+            <p className="text-lg font-bold text-emerald-600 tabular-nums mt-1">{formatCurrency(avgIncome)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Despesa Prev.</p>
+            <p className="text-lg font-bold text-red-500 tabular-nums mt-1">{formatCurrency(avgExpense)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Saldo Prev.</p>
+            <p className={cn("text-lg font-bold tabular-nums mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+              {formatCurrency(avgIncome - avgExpense)}
+            </p>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-3">Baseado na média dos últimos 3 meses</p>
+      </DashSection>
     );
   }
 
   function renderVencimentos() {
     if (upcomingItems.length === 0) return null;
     return (
-      <div key="vencimentos" className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-orange-500" /> Próximos Vencimentos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-2">
-            {upcomingItems.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
-                <div className="w-9 h-9 rounded flex items-center justify-center bg-muted">
-                  <item.icon size={16} className={item.color} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{item.label}</p>
-                  <p className="text-xs text-muted-foreground">{item.date}</p>
-                </div>
-                <span className={cn("text-sm font-bold tabular-nums", item.color)}>{formatCurrency(item.value)}</span>
+      <DashSection id="vencimentos" title="Próximos Vencimentos" color="bg-orange-500" defaultOpen={false}>
+        <div className="space-y-2">
+          {upcomingItems.map((item, i) => (
+            <div key={i} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
+              <div className="w-9 h-9 rounded flex items-center justify-center bg-muted">
+                <item.icon size={16} className={item.color} />
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">{item.label}</p>
+                <p className="text-xs text-muted-foreground">{item.date}</p>
+              </div>
+              <span className={cn("text-sm font-bold tabular-nums", item.color)}>{formatCurrency(item.value)}</span>
+            </div>
+          ))}
+        </div>
+      </DashSection>
     );
   }
 
   function renderPatrimonio() {
     return (
-      <div key="patrimonio" className="animate-fade-in-up" style={{ animationDelay: '0.32s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-indigo-500" /> Patrimônio Total
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded bg-indigo-100">
-                <PiggyBank size={24} className="text-indigo-600" />
-              </div>
-              <div>
-                <p className={cn("text-2xl font-bold tabular-nums", patrimonio >= 0 ? 'text-foreground' : 'text-red-500')}>
-                  {formatCurrency(patrimonio)}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">Saldo acumulado total (receitas − despesas − investimentos)</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <DashSection id="patrimonio" title="Patrimônio Total" color="bg-indigo-500" defaultOpen={false}>
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded bg-indigo-100">
+            <PiggyBank size={24} className="text-indigo-600" />
+          </div>
+          <div>
+            <p className={cn("text-2xl font-bold tabular-nums", patrimonio >= 0 ? 'text-foreground' : 'text-red-500')}>
+              {formatCurrency(patrimonio)}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">Saldo acumulado total (receitas − despesas − investimentos)</p>
+          </div>
+        </div>
+      </DashSection>
     );
   }
 
   function renderTendencia() {
     return (
-      <div key="tendencia" className="animate-fade-in-up" style={{ animationDelay: '0.34s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-teal-500" /> Tendência vs Mês Anterior
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div className="text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Receitas</p>
-                <div className="flex items-center justify-center gap-1">
-                  {getDelta(totals.income, prevTotals.income) > 0 ? (
-                    <ArrowUpRight size={16} className="text-emerald-500" />
-                  ) : getDelta(totals.income, prevTotals.income) < 0 ? (
-                    <ArrowDownRight size={16} className="text-red-500" />
-                  ) : <Minus size={16} className="text-muted-foreground" />}
-                  <span className={cn("text-lg font-bold", getDelta(totals.income, prevTotals.income) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                    {getDelta(totals.income, prevTotals.income).toFixed(1)}%
-                  </span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.income)} vs {formatCurrency(prevTotals.income)}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Despesas</p>
-                <div className="flex items-center justify-center gap-1">
-                  {getDelta(totals.expense, prevTotals.expense) > 0 ? (
-                    <ArrowUpRight size={16} className="text-red-500" />
-                  ) : getDelta(totals.expense, prevTotals.expense) < 0 ? (
-                    <ArrowDownRight size={16} className="text-emerald-500" />
-                  ) : <Minus size={16} className="text-muted-foreground" />}
-                  <span className={cn("text-lg font-bold", getDelta(totals.expense, prevTotals.expense) <= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                    {getDelta(totals.expense, prevTotals.expense).toFixed(1)}%
-                  </span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.expense)} vs {formatCurrency(prevTotals.expense)}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Saldo</p>
-                <div className="flex items-center justify-center gap-1">
-                  {getDelta(totals.balance, prevTotals.balance) > 0 ? (
-                    <ArrowUpRight size={16} className="text-emerald-500" />
-                  ) : getDelta(totals.balance, prevTotals.balance) < 0 ? (
-                    <ArrowDownRight size={16} className="text-red-500" />
-                  ) : <Minus size={16} className="text-muted-foreground" />}
-                  <span className={cn("text-lg font-bold", getDelta(totals.balance, prevTotals.balance) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                    {getDelta(totals.balance, prevTotals.balance).toFixed(1)}%
-                  </span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.balance)} vs {formatCurrency(prevTotals.balance)}</p>
-              </div>
+      <DashSection id="tendencia" title="Tendência vs Mês Anterior" color="bg-teal-500" defaultOpen={false}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Receitas</p>
+            <div className="flex items-center justify-center gap-1">
+              {getDelta(totals.income, prevTotals.income) > 0 ? (
+                <ArrowUpRight size={16} className="text-emerald-500" />
+              ) : getDelta(totals.income, prevTotals.income) < 0 ? (
+                <ArrowDownRight size={16} className="text-red-500" />
+              ) : <Minus size={16} className="text-muted-foreground" />}
+              <span className={cn("text-lg font-bold", getDelta(totals.income, prevTotals.income) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                {getDelta(totals.income, prevTotals.income).toFixed(1)}%
+              </span>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.income)} vs {formatCurrency(prevTotals.income)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Despesas</p>
+            <div className="flex items-center justify-center gap-1">
+              {getDelta(totals.expense, prevTotals.expense) > 0 ? (
+                <ArrowUpRight size={16} className="text-red-500" />
+              ) : getDelta(totals.expense, prevTotals.expense) < 0 ? (
+                <ArrowDownRight size={16} className="text-emerald-500" />
+              ) : <Minus size={16} className="text-muted-foreground" />}
+              <span className={cn("text-lg font-bold", getDelta(totals.expense, prevTotals.expense) <= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                {getDelta(totals.expense, prevTotals.expense).toFixed(1)}%
+              </span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.expense)} vs {formatCurrency(prevTotals.expense)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Saldo</p>
+            <div className="flex items-center justify-center gap-1">
+              {getDelta(totals.balance, prevTotals.balance) > 0 ? (
+                <ArrowUpRight size={16} className="text-emerald-500" />
+              ) : getDelta(totals.balance, prevTotals.balance) < 0 ? (
+                <ArrowDownRight size={16} className="text-red-500" />
+              ) : <Minus size={16} className="text-muted-foreground" />}
+              <span className={cn("text-lg font-bold", getDelta(totals.balance, prevTotals.balance) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                {getDelta(totals.balance, prevTotals.balance).toFixed(1)}%
+              </span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.balance)} vs {formatCurrency(prevTotals.balance)}</p>
+          </div>
+        </div>
+      </DashSection>
     );
   }
 
