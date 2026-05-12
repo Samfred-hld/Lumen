@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════
 
 import { base44 } from '@/api/base44Client';
-import { LS_PREFIX } from './helpers';
+import { LS_PREFIX, getPrefix } from './helpers';
 
 export const ALL_LS_KEYS = [
   'cards', 'cards_syncedAt', 'extraCats', 'rules', 'rules_syncedAt',
@@ -133,7 +133,9 @@ export async function clearAllData(base44Ref, onProgress) {
     for (let i = 0; i < localStorage.length; i++) {
       allKeys.push(localStorage.key(i));
     }
-    const keysToRemove = allKeys.filter(k => k?.startsWith(LS_PREFIX));
+    // Clear both legacy prefix and current user-specific prefix
+    const userPrefix = getPrefix();
+    const keysToRemove = allKeys.filter(k => k && (k.startsWith(LS_PREFIX) || k.startsWith(userPrefix) || k === 'rattio_lastUserId'));
     // Chaves fora do prefixo que também pertencem ao app
     const EXTRA_KEYS = [
       'lumen_clearing', // flag de limpeza em andamento
