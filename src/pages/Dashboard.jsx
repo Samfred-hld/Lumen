@@ -16,7 +16,7 @@ import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useTransactions, useBudgets, useGoals, useCards } from '@/hooks/useData';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
-import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded } from '@/lib/store';
+import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded, fetchOnboarded, isOnboarded } from '@/lib/store';
 import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications, generateBudgetAlerts } from '@/lib/notifications';
 
@@ -138,13 +138,30 @@ export default function Dashboard() {
   const [dashSections, setDashSections] = useState(getDashSections());
 
   useEffect(() => {
-    const onboarded = lsGet('onboarded', null);
-    if (!onboarded) {
-      const timer = setTimeout(() => setShowOnboarding(true), 800);
+    let cancelled = false;
+
+    async function checkOnboarding() {
+      // 1. Verifica localStorage imediatamente
+      if (isOnboarded()) {
+        checkDueDateNotifications();
+        return;
+      }
+      // 2. Nao esta no localStorage — busca na nuvem (pode ter completado em outro dispositivo)
+      const cloudResult = await fetchOnboarded();
+      if (cancelled) return;
+      if (cloudResult && cloudResult !== 'false') {
+        checkDueDateNotifications();
+        return;
+      }
+      // 3. Realmente nao onboardou — exibe apos delay
+      const timer = setTimeout(() => {
+        if (!cancelled) setShowOnboarding(true);
+      }, 800);
       return () => clearTimeout(timer);
     }
-    // Check for due date notifications
-    checkDueDateNotifications();
+
+    checkOnboarding();
+    return () => { cancelled = true; };
   }, []);
 
   const { data: transactions = [], refetch: refetchTx } = useTransactions();
