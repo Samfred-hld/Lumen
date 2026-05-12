@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreditCard, Calendar, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/lib/financeUtils';
+import { formatCurrency, clampDateInput } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
 import { suggestCategoryFromRules, getTemplates, getPaymentMethods } from '@/lib/store';
 import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
@@ -320,6 +320,13 @@ export default function TransactionModal({ open, onClose, onSave, transaction, g
               <Input
                 {...register('date')}
                 type="date"
+                max="2099-12-31"
+                min="1900-01-01"
+                onChange={(e) => register('date').onChange({ target: { value: clampDateInput(e.target.value), name: 'date' } })}
+                onBlur={(e) => {
+                  const clamped = clampDateInput(e.target.value);
+                  if (clamped !== e.target.value) register('date').onChange({ target: { value: clamped, name: 'date' } });
+                }}
                 className={cn("mt-1", errors.date && "border-red-500 focus-visible:ring-red-500")}
               />
               {errors.date && <p className="text-sm text-destructive mt-1">{errors.date.message}</p>}
