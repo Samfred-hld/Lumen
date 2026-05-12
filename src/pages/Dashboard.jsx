@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, Sparkles, ArrowRight, CreditCard, Target, Calendar, Upload, Settings, ArrowUpRight, ArrowDownRight, Minus, Layers, Bell } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, ArrowRight, CreditCard, Target, Calendar, Upload, Settings, ArrowUpRight, ArrowDownRight, Minus, Layers, Bell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatCurrency, formatDate, filterByMonth, calcTotals, groupByCategory, getGoalProgress, getCurrentMonthKey, getMonthKey } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { CHART_COLORS, CHART_TOOLTIP_STYLE, AXIS_STYLE, GRID_STYLE } from '@/lib/chartTheme';
 import TransactionModal from '@/components/finance/TransactionModal';
 import DashCustomizeModal from '@/components/finance/DashCustomizeModal';
 import FinancialHealthScore from '@/components/finance/FinancialHealthScore';
@@ -20,122 +17,13 @@ import { Link } from 'react-router-dom';
 import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded, fetchOnboarded, isOnboarded } from '@/lib/store';
 import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications, generateBudgetAlerts } from '@/lib/notifications';
+import { KpiCard, getDelta } from '@/components/dashboard/KpiCard';
+import OnboardingModal from '@/components/dashboard/OnboardingModal';
+import ChartsSection from '@/components/dashboard/ChartsSection';
+import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
+import GoalsSection from '@/components/dashboard/GoalsSection';
 
-// ═══ Onboarding Welcome Modal ═══
-function OnboardingModal({ open, onClose }) {
-  const [step, setStep] = useState(0);
-
-  const steps = [
-    { icon: Sparkles, title: 'Bem-vindo ao Lúmen! 🎉', desc: 'Seu assistente de controle financeiro pessoal. Vamos configurar tudo em segundos.', color: 'text-primary' },
-    { icon: Plus, title: 'Registre suas transações', desc: 'Adicione receitas e despesas. Use o botão "Novo" ou pressione N a qualquer momento.', color: 'text-emerald-600', tip: 'Dica: ative "Lançamento fixo" para gastos mensais recorrentes.' },
-    { icon: CreditCard, title: 'Cartões de crédito', desc: 'Cadastre seus cartões em Configurações para controlar faturas e limites.', color: 'text-blue-500', link: '/settings', linkLabel: 'Ir para Configurações' },
-    { icon: Target, title: 'Metas e orçamentos', desc: 'Defina metas de economia e orçamentos por categoria para manter o controle.', color: 'text-amber-600' },
-    { icon: Upload, title: 'Importe seus dados', desc: 'Tem dados em planilha? Importe CSV direto pela página de Transações.', color: 'text-amber-600' },
-  ];
-
-  const current = steps[step];
-
-  return (
-    <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="max-w-sm" onPointerDownOutside={e => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="text-center">
-            <div className={cn("mx-auto mb-3 w-14 h-14 rounded flex items-center justify-center bg-muted", current.color)}>
-              <current.icon size={28} />
-            </div>
-            {current.title}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="text-center space-y-3">
-          <p className="text-sm text-muted-foreground">{current.desc}</p>
-          {current.tip && (
-            <div className="bg-primary/5 border border-primary/20 rounded p-3 text-xs text-primary">💡 {current.tip}</div>
-          )}
-          {current.link && (
-            <Link to={current.link} onClick={onClose}>
-              <Button variant="outline" size="sm" className="text-xs">{current.linkLabel} <ArrowRight size={12} className="ml-1" /></Button>
-            </Link>
-          )}
-        </div>
-        <div className="flex items-center justify-center gap-1.5 my-2">
-          {steps.map((_, i) => (
-            <div key={i} className={cn("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-primary" : i < step ? "w-1.5 bg-primary/40" : "w-1.5 bg-muted")} />
-          ))}
-        </div>
-        <div className="flex gap-2">
-          {step > 0 && <Button variant="outline" className="flex-1" onClick={() => setStep(s => s - 1)}>Voltar</Button>}
-          <Button className="flex-1" onClick={async () => {
-            if (step < steps.length - 1) setStep(s => s + 1);
-            else { await setOnboarded(); onClose(); }
-          }}>
-            {step < steps.length - 1 ? 'Próximo' : 'Começar!'}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ═══ Premium KPI Card ═══
-const KPI_STYLES = {
-  income: { iconBg: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-600', valueColor: 'text-emerald-700 dark:text-emerald-400', accent: 'bg-emerald-500' },
-  expense: { iconBg: 'bg-red-100 dark:bg-red-900/30', iconColor: 'text-red-500', valueColor: 'text-red-600 dark:text-red-400', accent: 'bg-red-500' },
-  balance: { iconBg: 'bg-stone-100 dark:bg-stone-900/30', iconColor: 'text-stone-600', valueColor: 'text-stone-700 dark:text-stone-400', accent: 'bg-stone-500' },
-  investment: { iconBg: 'bg-amber-100 dark:bg-amber-900/30', iconColor: 'text-amber-600', valueColor: 'text-amber-700 dark:text-amber-400', accent: 'bg-amber-500' },
-};
-
-function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLabel }) {
-  const s = KPI_STYLES[variant] || KPI_STYLES.balance;
-  const deltaText = delta !== undefined
-    ? `${delta > 0 ? 'Aumentou' : delta < 0 ? 'Diminuiu' : 'Sem alteração'} ${Math.abs(delta).toFixed(1)}% ${deltaLabel || ''}`
-    : '';
-  return (
-    <Card
-      className="relative overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300"
-      role="region"
-      aria-label={`${label}: ${value}${deltaText ? '. ' + deltaText : ''}`}
-    >
-      <CardContent className="p-5 relative">
-        <div className={cn("absolute top-0 left-0 right-0 h-[3px] rounded-t-xl", s.accent)} />
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <div className="space-y-1">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
-            <p className={cn("text-[22px] font-bold tabular-nums tracking-tight", s.valueColor)} aria-hidden="true">{value}</p>
-            {delta !== undefined && (
-              <div className="flex items-center gap-1 mt-0.5" aria-hidden="true">
-                {delta > 0 ? (
-                  <ArrowUpRight size={12} className={variant === 'expense' ? 'text-red-500' : 'text-emerald-500'} />
-                ) : delta < 0 ? (
-                  <ArrowDownRight size={12} className={variant === 'expense' ? 'text-emerald-500' : 'text-red-500'} />
-                ) : (
-                  <Minus size={12} className="text-muted-foreground" />
-                )}
-                <span className={cn("text-[10px] font-semibold",
-                  delta > 0 ? (variant === 'expense' ? 'text-red-500' : 'text-emerald-500') :
-                  delta < 0 ? (variant === 'expense' ? 'text-emerald-500' : 'text-red-500') :
-                  'text-muted-foreground'
-                )}>
-                  {delta > 0 ? '+' : ''}{delta?.toFixed(1)}%
-                </span>
-                {deltaLabel && <span className="text-[10px] text-muted-foreground">{deltaLabel}</span>}
-              </div>
-            )}
-          </div>
-          <div className={cn("p-2.5 rounded", s.iconBg)} aria-hidden="true">
-            <Icon size={20} className={s.iconColor} />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ═══ Trend Helper ═══
-function getDelta(cur, prev) {
-  if (!prev && !cur) return 0;
-  if (!prev) return 100;
-  return ((cur - prev) / Math.abs(prev)) * 100;
-}
+// ═══ Onboarding, KPI, and helpers moved to src/components/dashboard/ ═══
 
 export default function Dashboard() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
@@ -383,106 +271,13 @@ export default function Dashboard() {
   }
 
   function renderGraficos() {
-    // Accessible text summaries for screen readers
-    const barSummary = barData.map(d => `${d.name}: receitas ${formatCurrency(d.income)}, despesas ${formatCurrency(d.expense)}`).join('; ');
-    const pieSummary = processedPieData.map(d => `${d.name}: ${formatCurrency(d.value)}`).join('; ');
-
-    return (
-      <div key="graficos" className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-primary" aria-hidden="true" /> Evolução Mensal
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="sr-only" role="img" aria-label={`Evolução mensal de receitas e despesas. ${barSummary}`}>
-              Resumo: {barSummary}
-            </div>
-            <ResponsiveContainer width="100%" height={200} aria-hidden="true">
-              <BarChart data={barData} barSize={12}>
-                <CartesianGrid {...GRID_STYLE} />
-                <XAxis {...AXIS_STYLE} dataKey="name" />
-                <YAxis {...AXIS_STYLE} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
-                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
-                <Bar dataKey="income" name="Receitas" fill={CHART_COLORS.income} radius={[6, 6, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="expense" name="Despesas" fill={CHART_COLORS.expense} radius={[6, 6, 0, 0]} maxBarSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" aria-hidden="true" /> Gastos por Categoria
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {processedPieData.length === 0 ? (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Sem despesas neste mês</div>
-            ) : (
-              <>
-                <div className="sr-only" role="img" aria-label={`Gastos por categoria este mês. ${pieSummary}`}>
-                  Resumo: {pieSummary}
-                </div>
-                <div className="flex items-center gap-4">
-                  <ResponsiveContainer width="50%" height={180} aria-hidden="true">
-                    <PieChart>
-                      <Pie data={processedPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value">
-                        {processedPieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                      </Pie>
-                      <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="space-y-1.5 flex-1 min-w-0">
-                    {processedPieData.map(d => (
-                      <div key={d.name} className="flex items-center gap-2 text-xs">
-                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} aria-hidden="true" />
-                        <span className="text-muted-foreground truncate flex-1">{d.name}</span>
-                        <span className="font-semibold shrink-0">{formatCurrency(d.value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <ChartsSection key="graficos" barData={barData} processedPieData={processedPieData} />;
   }
 
   function renderGastos() {
     return (
       <div key="gastos" className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Gastos por Categoria
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-2">
-            {expensesByCategory.length === 0 ? (
-              <p className="text-muted-foreground text-sm text-center py-4">Sem despesas neste mês</p>
-            ) : (
-              expensesByCategory.slice(0, 8).map(([cat, val]) => {
-                const pct = totals.expense > 0 ? (val / totals.expense) * 100 : 0;
-                return (
-                  <div key={cat} className="flex items-center gap-3">
-                    <span className="text-sm shrink-0">{getCategoryIcon(cat)}</span>
-                    <span className="text-sm font-medium w-28 truncate shrink-0">{cat}</span>
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: CAT_COLORS[cat] || '#94a3b8' }} />
-                    </div>
-                    <span className="text-xs font-semibold tabular-nums w-20 text-right shrink-0">{formatCurrency(val)}</span>
-                    <span className="text-xs text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
-                  </div>
-                );
-              })
-            )}
-          </CardContent>
-        </Card>
+        <CategoryBreakdown expensesByCategory={expensesByCategory} totals={totals} />
       </div>
     );
   }
@@ -490,38 +285,7 @@ export default function Dashboard() {
   function renderMetas() {
     return (
       <div key="metas" className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Metas Ativas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4">
-            {goals.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Nenhuma meta cadastrada</p>
-            ) : (
-              goals.slice(0, 4).map(g => {
-                const current = getGoalProgress(g, transactions);
-                const pct = Math.min(100, g.targetValue > 0 ? (current / g.targetValue) * 100 : 0);
-                return (
-                  <div key={g.id}>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-sm font-medium truncate">{g.name}</span>
-                      <span className="text-xs text-muted-foreground">{pct.toFixed(0)}%</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden progress-animated">
-                      <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, background: g.color || '#10b981' }} />
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span className="text-xs text-muted-foreground">{formatCurrency(current)}</span>
-                      <span className="text-xs text-muted-foreground">{formatCurrency(g.targetValue)}</span>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </CardContent>
-        </Card>
+        <GoalsSection goals={goals} transactions={transactions} />
       </div>
     );
   }
