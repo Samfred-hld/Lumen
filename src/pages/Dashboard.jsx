@@ -206,15 +206,21 @@ export default function Dashboard() {
     return unsub;
   }, []);
 
-  const monthTx = filterByMonth(transactions, currentYear, currentMonth);
-  const totals = calcTotals(monthTx);
-  const expensesByCategory = groupByCategory(monthTx.filter(t => t.type === 'expense'));
+  const monthTx = React.useMemo(() => filterByMonth(transactions, currentYear, currentMonth), [transactions, currentYear, currentMonth]);
+  const totals = React.useMemo(() => calcTotals(monthTx), [monthTx]);
+  const expensesByCategory = React.useMemo(
+    () => groupByCategory(monthTx.filter(t => t.type === 'expense')),
+    [monthTx]
+  );
 
   // Previous month for comparison
-  let prevMonth = currentMonth - 1, prevYear = currentYear;
-  if (prevMonth < 0) { prevMonth = 11; prevYear--; }
-  const prevMonthTx = filterByMonth(transactions, prevYear, prevMonth);
-  const prevTotals = calcTotals(prevMonthTx);
+  const prevMonthData = React.useMemo(() => {
+    let pm = currentMonth - 1, py = currentYear;
+    if (pm < 0) { pm = 11; py--; }
+    const prevTx = filterByMonth(transactions, py, pm);
+    return { prevTx, prevTotals: calcTotals(prevTx) };
+  }, [transactions, currentMonth, currentYear]);
+  const { prevTx: prevMonthTx, prevTotals } = prevMonthData;
 
   const pieData = React.useMemo(() => expensesByCategory.map(([cat, val]) => ({
     name: cat, value: val, color: CAT_COLORS[cat] || '#94a3b8'
@@ -232,19 +238,22 @@ export default function Dashboard() {
     return [...top, { name: 'Outros', value: othersValue, color: '#94a3b8' }];
   }, [pieData]);
 
-  const barData = [];
-  for (let i = 5; i >= 0; i--) {
-    let m = currentMonth - i, y = currentYear;
-    if (m < 0) { m += 12; y -= 1; }
-    const txs = filterByMonth(transactions, y, m);
-    const t = calcTotals(txs);
-    barData.push({ name: MONTH_NAMES[m].slice(0, 3), income: t.income, expense: t.expense });
-  }
+  const barData = React.useMemo(() => {
+    const data = [];
+    for (let i = 5; i >= 0; i--) {
+      let m = currentMonth - i, y = currentYear;
+      if (m < 0) { m += 12; y -= 1; }
+      const txs = filterByMonth(transactions, y, m);
+      const t = calcTotals(txs);
+      data.push({ name: MONTH_NAMES[m].slice(0, 3), income: t.income, expense: t.expense });
+    }
+    return data;
+  }, [transactions, currentMonth, currentYear]);
 
-  const monthBudgets = budgets.filter(b => {
+  const monthBudgets = React.useMemo(() => {
     const key = getMonthKey(currentYear, currentMonth);
-    return b.month === key;
-  });
+    return budgets.filter(b => b.month === key);
+  }, [budgets, currentYear, currentMonth]);
 
   const handleSave = async (data) => {
     await base44.entities.Transaction.create(data);
@@ -252,10 +261,10 @@ export default function Dashboard() {
     setShowModal(false);
   };
 
-  const alerts = monthBudgets.filter(b => {
+  const alerts = React.useMemo(() => monthBudgets.filter(b => {
     const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
     return spent > b.limit;
-  });
+  }), [monthBudgets, monthTx]);
 
   // Section visibility helper
   const isSectionVisible = (id) => {
@@ -264,42 +273,48 @@ export default function Dashboard() {
   };
 
   // ── Installment transactions ──
-  const installmentTx = monthTx.filter(t => t.isInstallment);
-  const installmentTotal = installmentTx.reduce((s, t) => s + Math.abs(t.value), 0);
+  const installmentTx = React.useMemo(() => monthTx.filter(t => t.isInstallment), [monthTx]);
+  const installmentTotal = React.useMemo(() => installmentTx.reduce((s, t) => s + Math.abs(t.value), 0), [installmentTx]);
 
   // ── Upcoming due dates ──
   const salaryConfig = getSalaryConfig();
-  const today = new Date();
-  const upcomingItems = [];
-  cards.forEach(c => {
-    const diff = c.dueDay - today.getDate();
-    if (diff >= 0 && diff <= 7) {
-      const cardTotal = monthTx.filter(t => t.cardId === c.id && t.type === 'expense').reduce((s, t) => s + t.value, 0);
-      upcomingItems.push({ label: `Fatura ${c.name}`, date: `dia ${c.dueDay}`, value: cardTotal, color: 'text-red-500', icon: CreditCard });
+  const upcomingItems = React.useMemo(() => {
+    const today = new Date();
+    const items = [];
+    cards.forEach(c => {
+      const diff = c.dueDay - today.getDate();
+      if (diff >= 0 && diff <= 7) {
+        const cardTotal = monthTx.filter(t => t.cardId === c.id && t.type === 'expense').reduce((s, t) => s + t.value, 0);
+        items.push({ label: `Fatura ${c.name}`, date: `dia ${c.dueDay}`, value: cardTotal, color: 'text-red-500', icon: CreditCard });
+      }
+    });
+    if (salaryConfig.autoGenerate || salaryConfig.value > 0) {
+      const salaryDiff = salaryConfig.day - today.getDate();
+      if (salaryDiff >= 0 && salaryDiff <= 7) {
+        items.push({ label: 'Salário', date: `dia ${salaryConfig.day}`, value: salaryConfig.value, color: 'text-emerald-500', icon: Wallet });
+      }
     }
-  });
-  if (salaryConfig.autoGenerate || salaryConfig.value > 0) {
-    const salaryDiff = salaryConfig.day - today.getDate();
-    if (salaryDiff >= 0 && salaryDiff <= 7) {
-      upcomingItems.push({ label: 'Salário', date: `dia ${salaryConfig.day}`, value: salaryConfig.value, color: 'text-emerald-500', icon: Wallet });
-    }
-  }
+    return items;
+  }, [cards, monthTx, salaryConfig]);
 
   // ── Patrimônio total (saldo acumulado de todos os meses) ──
-  const allTotals = calcTotals(transactions);
+  const allTotals = React.useMemo(() => calcTotals(transactions), [transactions]);
   const patrimonio = allTotals.balance;
 
   // ── Forecast (simple: avg of last 3 months) ──
-  const forecastData = [];
-  for (let i = 2; i >= 0; i--) {
-    let m = currentMonth - 1 - i, y = currentYear;
-    if (m < 0) { m += 12; y -= 1; }
-    const txs = filterByMonth(transactions, y, m);
-    const t = calcTotals(txs);
-    forecastData.push(t);
-  }
-  const avgIncome = forecastData.reduce((s, t) => s + t.income, 0) / 3;
-  const avgExpense = forecastData.reduce((s, t) => s + t.expense, 0) / 3;
+  const { avgIncome, avgExpense } = React.useMemo(() => {
+    const data = [];
+    for (let i = 2; i >= 0; i--) {
+      let m = currentMonth - 1 - i, y = currentYear;
+      if (m < 0) { m += 12; y -= 1; }
+      const txs = filterByMonth(transactions, y, m);
+      data.push(calcTotals(txs));
+    }
+    return {
+      avgIncome: data.reduce((s, t) => s + t.income, 0) / 3,
+      avgExpense: data.reduce((s, t) => s + t.expense, 0) / 3,
+    };
+  }, [transactions, currentMonth, currentYear]);
 
   // Render sections in order
   const orderedSections = dashSections.filter(s => s.visible);
