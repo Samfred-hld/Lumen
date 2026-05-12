@@ -8,7 +8,7 @@
 // Barrel file — re-exporta tudo dos módulos em ./store/
 
 // ── Helpers ──
-export { LS_PREFIX, lsGet, lsSet, lsRemove, getLocal, setLocal, removeLocal, hasEntity, ensureEntity } from './store/helpers';
+export { LS_PREFIX, lsGet, lsSet, lsRemove, getLocal, setLocal, removeLocal, hasEntity, ensureEntity, migrateToUserPrefix } from './store/helpers';
 
 // ── Cards ──
 export { getCards, saveCards, fetchCards, addCard, updateCard, deleteCard } from './store/cards';
@@ -52,6 +52,7 @@ import {
   fetchDashSections, fetchSuggestionsLog, fetchFinancings, fetchOnboarded, fetchLastRecurringGen,
 } from './store/settings';
 import { _autoDeduplicate } from './store/dedup';
+import { migrateToUserPrefix } from './store/helpers';
 
 export async function initStore() {
   // Não inicializa durante limpeza de dados (evita re-fetch de dados recém-deletados)
@@ -61,6 +62,10 @@ export async function initStore() {
       return;
     }
   } catch {}
+
+  // Migra dados do prefixo legado (rattio_) para prefixo por usuario (rattio_{userId}_)
+  migrateToUserPrefix();
+
   try {
     await Promise.allSettled([
       fetchCards(),
