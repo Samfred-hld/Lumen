@@ -32,7 +32,7 @@ async function setSettingToCloud(key, value) {
 }
 
 // ── Salary Config ──
-export function getSalaryConfig() { return getLocal('salaryConfig', { value: 0, day: 5, autoGenerate: false }); }
+export function getSalaryConfig() { return getLocal('salaryConfig', { incomeType: 'clt', value: 0, day: 5, autoGenerate: false }); }
 export async function fetchSalaryConfig() {
   const cloud = await getSettingFromCloud('salaryConfig');
   if (cloud) { setLocal('salaryConfig', cloud); return cloud; }
