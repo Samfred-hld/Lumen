@@ -368,16 +368,23 @@ export default function Dashboard() {
   }
 
   function renderGraficos() {
+    // Accessible text summaries for screen readers
+    const barSummary = barData.map(d => `${d.name}: receitas ${formatCurrency(d.income)}, despesas ${formatCurrency(d.expense)}`).join('; ');
+    const pieSummary = processedPieData.map(d => `${d.name}: ${formatCurrency(d.value)}`).join('; ');
+
     return (
       <div key="graficos" className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
         <Card className="border-0 shadow-card overflow-hidden">
           <CardHeader className="pb-2 border-b border-border/40">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-primary" /> Evolução Mensal
+              <div className="w-1.5 h-4 rounded-full bg-primary" aria-hidden="true" /> Evolução Mensal
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+            <div className="sr-only" role="img" aria-label={`Evolução mensal de receitas e despesas. ${barSummary}`}>
+              Resumo: {barSummary}
+            </div>
+            <ResponsiveContainer width="100%" height={200} aria-hidden="true">
               <BarChart data={barData} barSize={12}>
                 <CartesianGrid {...GRID_STYLE} />
                 <XAxis {...AXIS_STYLE} dataKey="name" />
@@ -393,32 +400,37 @@ export default function Dashboard() {
         <Card className="border-0 shadow-card overflow-hidden">
           <CardHeader className="pb-2 border-b border-border/40">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Gastos por Categoria
+              <div className="w-1.5 h-4 rounded-full bg-amber-500" aria-hidden="true" /> Gastos por Categoria
             </CardTitle>
           </CardHeader>
           <CardContent>
             {processedPieData.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Sem despesas neste mês</div>
             ) : (
-              <div className="flex items-center gap-4">
-                <ResponsiveContainer width="50%" height={180}>
-                  <PieChart>
-                    <Pie data={processedPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value">
-                      {processedPieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                    </Pie>
-                    <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="space-y-1.5 flex-1 min-w-0">
-                  {processedPieData.map(d => (
-                    <div key={d.name} className="flex items-center gap-2 text-xs">
-                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
-                      <span className="text-muted-foreground truncate flex-1">{d.name}</span>
-                      <span className="font-semibold shrink-0">{formatCurrency(d.value)}</span>
-                    </div>
-                  ))}
+              <>
+                <div className="sr-only" role="img" aria-label={`Gastos por categoria este mês. ${pieSummary}`}>
+                  Resumo: {pieSummary}
                 </div>
-              </div>
+                <div className="flex items-center gap-4">
+                  <ResponsiveContainer width="50%" height={180} aria-hidden="true">
+                    <PieChart>
+                      <Pie data={processedPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value">
+                        {processedPieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                      </Pie>
+                      <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    {processedPieData.map(d => (
+                      <div key={d.name} className="flex items-center gap-2 text-xs">
+                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} aria-hidden="true" />
+                        <span className="text-muted-foreground truncate flex-1">{d.name}</span>
+                        <span className="font-semibold shrink-0">{formatCurrency(d.value)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
