@@ -146,6 +146,20 @@ export function formatSmartDate(dateStr) {
   return `${day} ${monthShort}`;
 }
 
+export function clampDateInput(value) {
+  if (!value) return value;
+  const parts = value.split('-');
+  if (parts[0] && parts[0].length > 4) {
+    parts[0] = parts[0].slice(0, 4);
+  }
+  if (parts[0]) {
+    const year = parseInt(parts[0]);
+    if (!isNaN(year) && year > 2099) parts[0] = '2099';
+    if (!isNaN(year) && year < 1900) parts[0] = '1900';
+  }
+  return parts.join('-');
+}
+
 export function isToday(dateStr) {
   if (!dateStr) return false;
   const today = new Date();
