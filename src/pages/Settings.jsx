@@ -37,11 +37,11 @@ function CardModal({ open, onClose, onSave, card }) {
         <DialogHeader><DialogTitle>{card ? 'Editar Cartão' : 'Novo Cartão de Crédito'}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div><Label>Nome do Cartão</Label><Input value={form.name} onChange={e => set('name', e.target.value)} className="mt-1" placeholder="Ex: Nubank, Itaú..." /></div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div><Label>Bandeira</Label><Select value={form.brand} onValueChange={v => set('brand', v)}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{BRANDS.map(b => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}</SelectContent></Select></div>
             <div><Label>Limite (R$)</Label><Input type="number" min="0" step="0.01" value={form.limit} onChange={e => set('limit', e.target.value)} className="mt-1" placeholder="0,00" /></div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div><Label>Dia Fechamento</Label><Input type="number" min="1" max="31" value={form.closingDay} onChange={e => set('closingDay', e.target.value)} className="mt-1" placeholder="Ex: 3" /></div>
             <div><Label>Dia Vencimento</Label><Input type="number" min="1" max="31" value={form.dueDay} onChange={e => set('dueDay', e.target.value)} className="mt-1" placeholder="Ex: 10" /></div>
           </div>
@@ -95,7 +95,7 @@ function CardStatementModal({ open, onClose, card, transactions }) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><Receipt size={18} className="text-primary" /> Extrato: {card.name}</DialogTitle>
         </DialogHeader>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
           <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
             <button onClick={() => changeStmtMonth(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
             <span className="text-sm font-medium px-2 min-w-[110px] text-center">{MONTH_NAMES[stmtMonth]} {stmtYear}</span>
