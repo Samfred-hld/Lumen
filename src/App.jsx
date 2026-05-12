@@ -55,13 +55,13 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/transactions" element={<Transactions />} />
-        <Route path="/budgets" element={<Budgets />} />
-        <Route path="/goals" element={<Goals />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+        <Route path="/transactions" element={<ErrorBoundary><Transactions /></ErrorBoundary>} />
+        <Route path="/budgets" element={<ErrorBoundary><Budgets /></ErrorBoundary>} />
+        <Route path="/goals" element={<ErrorBoundary><Goals /></ErrorBoundary>} />
+        <Route path="/calendar" element={<ErrorBoundary><CalendarPage /></ErrorBoundary>} />
+        <Route path="/reports" element={<ErrorBoundary><Reports /></ErrorBoundary>} />
+        <Route path="/settings" element={<ErrorBoundary><SettingsPage /></ErrorBoundary>} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
