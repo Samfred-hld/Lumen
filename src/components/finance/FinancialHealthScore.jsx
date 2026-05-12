@@ -181,7 +181,7 @@ export default function FinancialHealthScore({ transactions, budgets, goals, mon
             <div className="space-y-2">
               {criteria.map((c, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs">
-                  <span className="shrink-0">{c.passed ? '✅' : '❌'}</span>
+                  <span className="shrink-0" aria-label={c.passed ? 'Aprovado' : 'Reprovado'} role="img">{c.passed ? '✅' : '❌'}</span>
                   <span className="text-muted-foreground flex-1 truncate">{c.label}</span>
                   <span className={cn("font-semibold shrink-0 tabular-nums", c.passed ? 'text-foreground' : 'text-red-500')}>
                     {c.value}

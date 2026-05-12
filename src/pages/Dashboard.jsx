@@ -86,16 +86,23 @@ const KPI_STYLES = {
 
 function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLabel }) {
   const s = KPI_STYLES[variant] || KPI_STYLES.balance;
+  const deltaText = delta !== undefined
+    ? `${delta > 0 ? 'Aumentou' : delta < 0 ? 'Diminuiu' : 'Sem alteração'} ${Math.abs(delta).toFixed(1)}% ${deltaLabel || ''}`
+    : '';
   return (
-    <Card className="relative overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300">
+    <Card
+      className="relative overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300"
+      role="region"
+      aria-label={`${label}: ${value}${deltaText ? '. ' + deltaText : ''}`}
+    >
       <CardContent className="p-5 relative">
         <div className={cn("absolute top-0 left-0 right-0 h-[3px] rounded-t-xl", s.accent)} />
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div className="space-y-1">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
-            <p className={cn("text-[22px] font-bold tabular-nums tracking-tight", s.valueColor)}>{value}</p>
+            <p className={cn("text-[22px] font-bold tabular-nums tracking-tight", s.valueColor)} aria-hidden="true">{value}</p>
             {delta !== undefined && (
-              <div className="flex items-center gap-1 mt-0.5">
+              <div className="flex items-center gap-1 mt-0.5" aria-hidden="true">
                 {delta > 0 ? (
                   <ArrowUpRight size={12} className={variant === 'expense' ? 'text-red-500' : 'text-emerald-500'} />
                 ) : delta < 0 ? (
@@ -114,7 +121,7 @@ function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLa
               </div>
             )}
           </div>
-          <div className={cn("p-2.5 rounded", s.iconBg)}>
+          <div className={cn("p-2.5 rounded", s.iconBg)} aria-hidden="true">
             <Icon size={20} className={s.iconColor} />
           </div>
         </div>
