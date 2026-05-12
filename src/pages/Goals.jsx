@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { AdaptiveModal } from '@/components/ui/adaptive-modal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatCurrency, formatDate, getGoalProgress } from '@/lib/financeUtils';
+import { formatCurrency, formatDate, getGoalProgress, clampDateInput } from '@/lib/financeUtils';
 import { cn } from '@/lib/utils';
 import { useTransactions, useGoals } from '@/hooks/useData';
 
@@ -165,6 +165,13 @@ function GoalModal({ open, onClose, onSave, goal }) {
             <Input
               {...register('deadline')}
               type="date"
+              max="2099-12-31"
+              min="1900-01-01"
+              onChange={(e) => register('deadline').onChange({ target: { value: clampDateInput(e.target.value), name: 'deadline' } })}
+              onBlur={(e) => {
+                const clamped = clampDateInput(e.target.value);
+                if (clamped !== e.target.value) register('deadline').onChange({ target: { value: clamped, name: 'deadline' } });
+              }}
               className="mt-1"
             />
             {errors.deadline && <p className="text-sm text-destructive mt-1">{errors.deadline.message}</p>}
