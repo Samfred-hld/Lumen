@@ -1,6 +1,7 @@
 #env
 .env
 .env.*
+opencode.json
 
 # Logs
 /logs

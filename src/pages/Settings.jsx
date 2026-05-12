@@ -171,7 +171,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Configurações</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Configurações</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Cartões, categorias, regras, backup e preferências</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
@@ -182,20 +182,20 @@ export default function SettingsPage() {
       </div>
 
       {importMsg && (
-        <div className={cn("flex items-center gap-2 p-3 rounded text-sm font-medium", importMsg.includes('sucesso') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200')}>
+        <div className={cn("flex items-center gap-2 p-3 rounded-xl text-sm font-medium", importMsg.includes('sucesso') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200')}>
           {importMsg.includes('sucesso') ? <Check size={16} /> : <AlertCircle size={16} />}{importMsg}
         </div>
       )}
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 bg-muted/50 p-1 rounded">
+      <div className="flex gap-1 bg-muted/50 p-1 rounded-xl">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded text-sm font-medium transition-all duration-200",
-              activeTab === tab.id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200",
+              activeTab === tab.id ? "bg-card text-foreground border border-border" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
             <span>{tab.icon}</span>

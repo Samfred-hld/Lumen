@@ -78,34 +78,37 @@ function OnboardingModal({ open, onClose }) {
 
 // ═══ Premium KPI Card ═══
 const KPI_STYLES = {
-  income: { iconBg: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-600', valueColor: 'text-emerald-700 dark:text-emerald-400', accent: 'bg-emerald-500' },
-  expense: { iconBg: 'bg-red-100 dark:bg-red-900/30', iconColor: 'text-red-500', valueColor: 'text-red-600 dark:text-red-400', accent: 'bg-red-500' },
-  balance: { iconBg: 'bg-stone-100 dark:bg-stone-900/30', iconColor: 'text-stone-600', valueColor: 'text-stone-700 dark:text-stone-400', accent: 'bg-stone-500' },
-  investment: { iconBg: 'bg-amber-100 dark:bg-amber-900/30', iconColor: 'text-amber-600', valueColor: 'text-amber-700 dark:text-amber-400', accent: 'bg-amber-500' },
+  income: { iconBg: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', valueColor: 'text-emerald-700 dark:text-emerald-300', accent: 'bg-emerald-500', border: 'border-l-emerald-500' },
+  expense: { iconBg: 'bg-rose-50 dark:bg-rose-900/20', iconColor: 'text-rose-500 dark:text-rose-400', valueColor: 'text-rose-600 dark:text-rose-300', accent: 'bg-rose-500', border: 'border-l-rose-500' },
+  balance: { iconBg: 'bg-indigo-50 dark:bg-indigo-900/20', iconColor: 'text-indigo-600 dark:text-indigo-400', valueColor: 'text-indigo-700 dark:text-indigo-300', accent: 'bg-indigo-500', border: 'border-l-indigo-500' },
+  investment: { iconBg: 'bg-violet-50 dark:bg-violet-900/20', iconColor: 'text-violet-600 dark:text-violet-400', valueColor: 'text-violet-700 dark:text-violet-300', accent: 'bg-violet-500', border: 'border-l-violet-500' },
 };
 
 function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLabel }) {
   const s = KPI_STYLES[variant] || KPI_STYLES.balance;
   return (
-    <Card className="relative overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300">
-      <CardContent className="p-5 relative">
-        <div className={cn("absolute top-0 left-0 right-0 h-[3px] rounded-t-xl", s.accent)} />
+    <div className={cn(
+      "relative overflow-hidden rounded-2xl bg-card border border-border",
+      "hover:border-muted-foreground/20 transition-colors duration-200",
+      "border-l-[3px]", s.border
+    )}>
+      <div className="p-5">
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div className="space-y-1">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
-            <p className={cn("text-[22px] font-bold tabular-nums tracking-tight", s.valueColor)}>{value}</p>
+            <p className={cn("text-[22px] font-semibold tabular-nums tracking-tight", s.valueColor)}>{value}</p>
             {delta !== undefined && (
               <div className="flex items-center gap-1 mt-0.5">
                 {delta > 0 ? (
-                  <ArrowUpRight size={12} className={variant === 'expense' ? 'text-red-500' : 'text-emerald-500'} />
+                  <ArrowUpRight size={12} className={variant === 'expense' ? 'text-rose-500' : 'text-emerald-500'} />
                 ) : delta < 0 ? (
-                  <ArrowDownRight size={12} className={variant === 'expense' ? 'text-emerald-500' : 'text-red-500'} />
+                  <ArrowDownRight size={12} className={variant === 'expense' ? 'text-emerald-500' : 'text-rose-500'} />
                 ) : (
                   <Minus size={12} className="text-muted-foreground" />
                 )}
                 <span className={cn("text-[10px] font-semibold",
-                  delta > 0 ? (variant === 'expense' ? 'text-red-500' : 'text-emerald-500') :
-                  delta < 0 ? (variant === 'expense' ? 'text-emerald-500' : 'text-red-500') :
+                  delta > 0 ? (variant === 'expense' ? 'text-rose-500' : 'text-emerald-500') :
+                  delta < 0 ? (variant === 'expense' ? 'text-emerald-500' : 'text-rose-500') :
                   'text-muted-foreground'
                 )}>
                   {delta > 0 ? '+' : ''}{delta?.toFixed(1)}%
@@ -114,12 +117,12 @@ function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLa
               </div>
             )}
           </div>
-          <div className={cn("p-2.5 rounded", s.iconBg)}>
+          <div className={cn("p-2.5 rounded-xl", s.iconBg)}>
             <Icon size={20} className={s.iconColor} />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -363,13 +366,14 @@ export default function Dashboard() {
   function renderGraficos() {
     return (
       <div key="graficos" className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-primary" /> Evolução Mensal
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-primary" />
+              <span className="text-sm font-semibold">Evolução Mensal</span>
+            </div>
+          </div>
+          <div>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={barData} barSize={12}>
                 <CartesianGrid {...GRID_STYLE} />
@@ -380,16 +384,17 @@ export default function Dashboard() {
                 <Bar dataKey="expense" name="Despesas" fill={CHART_COLORS.expense} radius={[6, 6, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Gastos por Categoria
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-violet-500" />
+              <span className="text-sm font-semibold">Gastos por Categoria</span>
+            </div>
+          </div>
+          <div>
             {processedPieData.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Sem despesas neste mês</div>
             ) : (
@@ -413,8 +418,8 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -422,13 +427,14 @@ export default function Dashboard() {
   function renderGastos() {
     return (
       <div key="gastos" className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Gastos por Categoria
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-2">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-violet-500" />
+              <span className="text-sm font-semibold">Gastos por Categoria</span>
+            </div>
+          </div>
+          <div className="space-y-2">
             {expensesByCategory.length === 0 ? (
               <p className="text-muted-foreground text-sm text-center py-4">Sem despesas neste mês</p>
             ) : (
@@ -447,8 +453,8 @@ export default function Dashboard() {
                 );
               })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -456,13 +462,14 @@ export default function Dashboard() {
   function renderMetas() {
     return (
       <div key="metas" className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Metas Ativas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-emerald-500" />
+              <span className="text-sm font-semibold">Metas Ativas</span>
+            </div>
+          </div>
+          <div className="space-y-3">
             {goals.length === 0 ? (
               <p className="text-muted-foreground text-sm">Nenhuma meta cadastrada</p>
             ) : (
@@ -486,8 +493,8 @@ export default function Dashboard() {
                 );
               })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -496,16 +503,17 @@ export default function Dashboard() {
     if (installmentTx.length === 0) return null;
     return (
       <div key="parcelas" className="animate-fade-in-up" style={{ animationDelay: '0.22s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <div className="w-1.5 h-4 rounded-full bg-pink-500" /> Parcelas Ativas
-              </CardTitle>
-              <span className="text-sm font-bold text-red-500 tabular-nums">{formatCurrency(installmentTotal)}</span>
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-4 rounded-full bg-rose-500" />
+                <span className="text-sm font-semibold">Parcelas Ativas</span>
+              </div>
+              <span className="text-sm font-bold text-rose-500 tabular-nums">{formatCurrency(installmentTotal)}</span>
             </div>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-2">
+          </div>
+          <div className="space-y-2">
             {installmentTx.slice(0, 5).map(t => (
               <div key={t.id} className="flex items-center justify-between p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
                 <div className="flex-1 min-w-0">
@@ -517,7 +525,7 @@ export default function Dashboard() {
                     {formatDate(t.date)}
                   </p>
                 </div>
-                <span className="text-sm font-bold text-red-500 tabular-nums shrink-0">{formatCurrency(Math.abs(t.value))}</span>
+                <span className="text-sm font-bold text-rose-500 tabular-nums shrink-0">{formatCurrency(Math.abs(t.value))}</span>
               </div>
             ))}
             {installmentTx.length > 5 && (
@@ -525,8 +533,8 @@ export default function Dashboard() {
                 Ver todas ({installmentTx.length})
               </Link>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -535,13 +543,14 @@ export default function Dashboard() {
     if (monthBudgets.length === 0) return null;
     return (
       <div key="planejado" className="animate-fade-in-up" style={{ animationDelay: '0.25s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Planejado vs Real
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-3">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-indigo-500" />
+              <span className="text-sm font-semibold">Planejado vs Real</span>
+            </div>
+          </div>
+          <div className="space-y-3">
             {monthBudgets.map(b => {
               const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
               const pct = b.limit > 0 ? Math.min(100, (spent / b.limit) * 100) : 0;
@@ -550,18 +559,18 @@ export default function Dashboard() {
                 <div key={b.id}>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-medium">{getCategoryIcon(b.category)} {b.category}</span>
-                    <span className={cn("text-xs font-semibold", over ? 'text-red-500' : 'text-muted-foreground')}>
+                    <span className={cn("text-xs font-semibold", over ? 'text-rose-500' : 'text-muted-foreground')}>
                       {formatCurrency(spent)} / {formatCurrency(b.limit)}
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div className={cn("h-full rounded-full transition-all duration-500", over ? 'bg-red-500' : 'bg-primary')} style={{ width: `${pct}%` }} />
+                    <div className={cn("h-full rounded-full transition-all duration-500", over ? 'bg-rose-500' : 'bg-primary')} style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               );
             })}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -569,13 +578,14 @@ export default function Dashboard() {
   function renderPrevisao() {
     return (
       <div key="previsao" className="animate-fade-in-up" style={{ animationDelay: '0.28s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-cyan-500" /> Previsão Próximo Mês
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-cyan-500" />
+              <span className="text-sm font-semibold">Previsão Próximo Mês</span>
+            </div>
+          </div>
+          <div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Receita Prev.</p>
@@ -583,18 +593,18 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Despesa Prev.</p>
-                <p className="text-lg font-bold text-red-500 tabular-nums mt-1">{formatCurrency(avgExpense)}</p>
+                <p className="text-lg font-bold text-rose-500 tabular-nums mt-1">{formatCurrency(avgExpense)}</p>
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Saldo Prev.</p>
-                <p className={cn("text-lg font-bold tabular-nums mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                <p className={cn("text-lg font-bold tabular-nums mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-rose-500')}>
                   {formatCurrency(avgIncome - avgExpense)}
                 </p>
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-3">Baseado na média dos últimos 3 meses</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -603,16 +613,17 @@ export default function Dashboard() {
     if (upcomingItems.length === 0) return null;
     return (
       <div key="vencimentos" className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-orange-500" /> Próximos Vencimentos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-2">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-amber-500" />
+              <span className="text-sm font-semibold">Próximos Vencimentos</span>
+            </div>
+          </div>
+          <div className="space-y-2">
             {upcomingItems.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
-                <div className="w-9 h-9 rounded flex items-center justify-center bg-muted">
+              <div key={i} className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 transition-colors">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-muted">
                   <item.icon size={16} className={item.color} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -622,8 +633,8 @@ export default function Dashboard() {
                 <span className={cn("text-sm font-bold tabular-nums", item.color)}>{formatCurrency(item.value)}</span>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -631,26 +642,27 @@ export default function Dashboard() {
   function renderPatrimonio() {
     return (
       <div key="patrimonio" className="animate-fade-in-up" style={{ animationDelay: '0.32s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-indigo-500" /> Patrimônio Total
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-primary" />
+              <span className="text-sm font-semibold">Patrimônio Total</span>
+            </div>
+          </div>
+          <div>
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded bg-indigo-100 dark:bg-indigo-900/30">
-                <PiggyBank size={24} className="text-indigo-600" />
+              <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20">
+                <PiggyBank size={24} className="text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <p className={cn("text-2xl font-bold tabular-nums", patrimonio >= 0 ? 'text-foreground' : 'text-red-500')}>
+                <p className={cn("text-2xl font-semibold tabular-nums", patrimonio >= 0 ? 'text-foreground' : 'text-rose-500')}>
                   {formatCurrency(patrimonio)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">Saldo acumulado total (receitas − despesas − investimentos)</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -658,13 +670,14 @@ export default function Dashboard() {
   function renderTendencia() {
     return (
       <div key="tendencia" className="animate-fade-in-up" style={{ animationDelay: '0.34s' }}>
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-3 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-teal-500" /> Tendência vs Mês Anterior
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-cyan-500" />
+              <span className="text-sm font-semibold">Tendência vs Mês Anterior</span>
+            </div>
+          </div>
+          <div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Receitas</p>
@@ -672,9 +685,9 @@ export default function Dashboard() {
                   {getDelta(totals.income, prevTotals.income) > 0 ? (
                     <ArrowUpRight size={16} className="text-emerald-500" />
                   ) : getDelta(totals.income, prevTotals.income) < 0 ? (
-                    <ArrowDownRight size={16} className="text-red-500" />
-                  ) : <Minus size={16} className="text-muted-foreground" />}
-                  <span className={cn("text-lg font-bold", getDelta(totals.income, prevTotals.income) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                     <ArrowDownRight size={16} className="text-rose-500" />
+                   ) : <Minus size={16} className="text-muted-foreground" />}
+                   <span className={cn("text-lg font-bold", getDelta(totals.income, prevTotals.income) >= 0 ? 'text-emerald-600' : 'text-rose-500')}>
                     {getDelta(totals.income, prevTotals.income).toFixed(1)}%
                   </span>
                 </div>
@@ -684,11 +697,11 @@ export default function Dashboard() {
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Despesas</p>
                 <div className="flex items-center justify-center gap-1">
                   {getDelta(totals.expense, prevTotals.expense) > 0 ? (
-                    <ArrowUpRight size={16} className="text-red-500" />
-                  ) : getDelta(totals.expense, prevTotals.expense) < 0 ? (
-                    <ArrowDownRight size={16} className="text-emerald-500" />
-                  ) : <Minus size={16} className="text-muted-foreground" />}
-                  <span className={cn("text-lg font-bold", getDelta(totals.expense, prevTotals.expense) <= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                     <ArrowUpRight size={16} className="text-rose-500" />
+                   ) : getDelta(totals.expense, prevTotals.expense) < 0 ? (
+                     <ArrowDownRight size={16} className="text-emerald-500" />
+                   ) : <Minus size={16} className="text-muted-foreground" />}
+                   <span className={cn("text-lg font-bold", getDelta(totals.expense, prevTotals.expense) <= 0 ? 'text-emerald-600' : 'text-rose-500')}>
                     {getDelta(totals.expense, prevTotals.expense).toFixed(1)}%
                   </span>
                 </div>
@@ -709,8 +722,8 @@ export default function Dashboard() {
                 <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.balance)} vs {formatCurrency(prevTotals.balance)}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -720,16 +733,16 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold font-display">Dashboard</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Visão geral das suas finanças</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
-            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
+          <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1.5">
+            <button onClick={() => navigate(-1)} className="p-1 hover:bg-accent rounded-lg transition-colors" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
             <span className="text-sm font-medium px-2 min-w-[120px] text-center">
               {MONTH_NAMES[currentMonth]} {currentYear}
             </span>
-            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
+            <button onClick={() => navigate(1)} className="p-1 hover:bg-accent rounded-lg transition-colors" aria-label="Próximo mês"><ChevronRight size={14} /></button>
           </div>
           <Button size="sm" variant="outline" onClick={() => setShowCustomize(true)}>
             <Settings size={14} className="mr-1" /> Personalizar
@@ -742,7 +755,7 @@ export default function Dashboard() {
 
       {/* Alerts */}
       {alerts.length > 0 && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm">
           <AlertCircle size={16} />
           <span>{alerts.length} orçamento(s) ultrapassado(s): {alerts.map(a => a.category).join(', ')}</span>
         </div>
@@ -756,22 +769,23 @@ export default function Dashboard() {
       ))}
 
       {/* Recent transactions (always shown at bottom) */}
-      <Card className="border-0 shadow-card overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
-        <CardHeader className="pb-3 border-b border-border/40">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-1.5 h-4 rounded-full bg-emerald-500" /> Últimas Transações
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 pt-4">
+      <div className="section-card animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
+        <div className="section-card-header">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-4 rounded-full bg-emerald-500" />
+            <span className="text-sm font-semibold">Últimas Transações</span>
+          </div>
+        </div>
+        <div className="space-y-2">
           {monthTx.length === 0 ? (
             <p className="text-muted-foreground text-sm">Sem transações neste mês</p>
           ) : (
             monthTx.slice(0, 5).map(t => (
-              <div key={t.id} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
+              <div key={t.id} className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 transition-colors">
                 <div className={cn(
-                  "w-9 h-9 rounded flex items-center justify-center text-xs font-bold shrink-0 shadow-sm",
+                  "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0",
                   t.type === 'income' ? 'gradient-emerald text-emerald-700' :
-                  t.type === 'expense' ? 'gradient-red text-red-700' : 'gradient-violet text-amber-700'
+                  t.type === 'expense' ? 'gradient-red text-rose-700' : 'gradient-violet text-violet-700'
                 )}>
                   {(t.description || '?')[0].toUpperCase()}
                 </div>
@@ -781,15 +795,15 @@ export default function Dashboard() {
                 </div>
                 <span className={cn(
                   "text-sm font-semibold shrink-0",
-                  t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-amber-600'
+                  t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-rose-500' : 'text-violet-600'
                 )}>
                   {t.type !== 'income' ? '-' : '+'}{formatCurrency(t.value)}
                 </span>
               </div>
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <TransactionModal open={showModal} onClose={() => setShowModal(false)} onSave={handleSave} goals={goals} defaultType={defaultType} />
       <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} />

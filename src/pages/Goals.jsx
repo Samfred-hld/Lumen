@@ -224,18 +224,18 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
   const daysLeft = goal.deadline ? Math.ceil((new Date(goal.deadline) - new Date()) / 86400000) : null;
 
   return (
-    <Card className="border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300 overflow-hidden group">
-      <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${goal.color || '#10b981'}, ${goal.color || '#10b981'}88)` }} />
-      <CardContent className="p-4 space-y-3">
+    <div className="relative overflow-hidden rounded-2xl bg-card border border-border hover:border-muted-foreground/20 transition-colors duration-200 group">
+      <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(90deg, ${goal.color || '#10b981'}, ${goal.color || '#10b981'}88)` }} />
+      <div className="p-4 pt-5 space-y-3">
         <div className="flex items-start justify-between flex-wrap gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-sm truncate">{goal.name}</h3>
-              <Badge variant="outline" className="text-[10px] py-0 px-1.5 shrink-0">
+              <Badge variant="outline" className="text-[10px] py-0 px-1.5 shrink-0 rounded-full">
                 {(goal.progressMode || 'linked') === 'manual' ? 'manual' : 'automático'}
               </Badge>
               {done && <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />}
-              {overdue && !done && <AlertTriangle size={14} className="text-red-500 shrink-0" />}
+              {overdue && !done && <AlertTriangle size={14} className="text-rose-500 shrink-0" />}
             </div>
             {goal.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{goal.description}</p>}
           </div>
@@ -257,7 +257,7 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
           <div className="flex justify-between mt-1.5">
             <span className="text-xs font-bold" style={{ color: goal.color }}>{pct.toFixed(1)}%</span>
             {daysLeft !== null && (
-              <span className={cn("text-xs flex items-center gap-1 font-medium", overdue ? 'text-red-500' : 'text-muted-foreground')}>
+              <span className={cn("text-xs flex items-center gap-1 font-medium", overdue ? 'text-rose-500' : 'text-muted-foreground')}>
                 <Clock size={10} />
                 {done ? 'Concluída' : overdue ? `Atrasada ${Math.abs(daysLeft)}d` : `${daysLeft}d restantes`}
               </span>
@@ -295,8 +295,8 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
             <History size={12} className="mr-1" /> Histórico
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -345,14 +345,14 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
     >
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <Card className="border-0 shadow-sm"><CardContent className="p-3">
+          <div className="rounded-xl border border-border bg-card p-3">
             <p className="text-[10px] text-muted-foreground uppercase font-semibold">Total Entradas</p>
-            <p className="text-lg font-bold text-emerald-600 tabular-nums">{formatCurrency(totalIn)}</p>
-          </CardContent></Card>
-          <Card className="border-0 shadow-sm"><CardContent className="p-3">
+            <p className="text-lg font-semibold text-emerald-600 tabular-nums">{formatCurrency(totalIn)}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-3">
             <p className="text-[10px] text-muted-foreground uppercase font-semibold">Total Saídas</p>
-            <p className="text-lg font-bold text-red-500 tabular-nums">{formatCurrency(totalOut)}</p>
-          </CardContent></Card>
+            <p className="text-lg font-semibold text-rose-500 tabular-nums">{formatCurrency(totalOut)}</p>
+          </div>
         </div>
 
         {goalTx.length === 0 ? (
@@ -361,16 +361,16 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
           <div className="space-y-1">
             {goalTx.map(t => (
               <div key={t.id} className="flex items-center gap-3 p-2.5 rounded border border-border/60 hover:bg-muted/40 transition-colors">
-                <div className={cn("w-8 h-8 rounded flex items-center justify-center text-xs font-bold shrink-0",
-                  t.type === 'income' ? 'gradient-emerald text-emerald-700' : 'gradient-red text-red-700')}>
+                <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0",
+                  t.type === 'income' ? 'gradient-emerald text-emerald-700' : 'gradient-red text-rose-700')}>
                   {(t.description || '?')[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{t.description}</p>
                   <p className="text-xs text-muted-foreground">{formatDate(t.date)} · {t.category}</p>
                 </div>
-                <span className={cn("text-sm font-bold tabular-nums shrink-0",
-                  t.type === 'income' ? 'text-emerald-600' : 'text-red-500')}>
+                <span className={cn("text-sm font-semibold tabular-nums shrink-0",
+                  t.type === 'income' ? 'text-emerald-600' : 'text-rose-500')}>
                   {t.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(t.value))}
                 </span>
               </div>
@@ -418,7 +418,7 @@ export default function Goals() {
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Metas</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Metas</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Acompanhe seus objetivos financeiros</p>
         </div>
         <Button size="sm" onClick={() => { setEditing(null); setShowModal(true); }}>
@@ -428,19 +428,19 @@ export default function Goals() {
 
       {goals.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Card className="border-0 shadow-sm"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Acumulado</p><p className="text-xl font-bold text-emerald-600 mt-1">{formatCurrency(totalCurrent)}</p></CardContent></Card>
-          <Card className="border-0 shadow-sm"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total de Metas</p><p className="text-xl font-bold mt-1">{formatCurrency(totalTarget)}</p></CardContent></Card>
+          <div className="rounded-2xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Total Acumulado</p><p className="text-xl font-semibold text-emerald-600 mt-1">{formatCurrency(totalCurrent)}</p></div>
+          <div className="rounded-2xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Total de Metas</p><p className="text-xl font-semibold mt-1">{formatCurrency(totalTarget)}</p></div>
         </div>
       )}
 
       {goals.length === 0 ? (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-10 text-center">
-            <Target size={32} className="mx-auto text-muted-foreground mb-3" />
+        <div className="section-card">
+          <div className="empty-state">
+            <div className="empty-state-icon"><Target size={24} /></div>
             <p className="text-muted-foreground text-sm">Nenhuma meta cadastrada</p>
-            <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeira meta</Button>
-          </CardContent>
-        </Card>
+            <Button size="sm" className="mt-2" onClick={() => setShowModal(true)}>Criar primeira meta</Button>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {goals.map(g => (

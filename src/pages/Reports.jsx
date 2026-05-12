@@ -168,7 +168,7 @@ export default function Reports() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Relatórios</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Relatórios</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Análise detalhada das suas finanças</p>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -293,48 +293,48 @@ export default function Reports() {
       {/* KPIs — Mobile: horizontal scroll, Desktop: grid */}
       <div className="flex lg:hidden gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide animate-fade-in">
         {[
-          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
-          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
-          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30' },
+          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'bg-emerald-50 dark:bg-emerald-900/10', color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'bg-rose-50 dark:bg-rose-900/10', color: 'text-rose-500', bg: 'bg-rose-100 dark:bg-rose-900/30' },
+          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'bg-indigo-50 dark:bg-indigo-900/10', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-rose-500', bg: totals.balance >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-rose-100 dark:bg-rose-900/30' },
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
-            <Card className={cn("border-0 shadow-card overflow-hidden", kpi.gradient)}>
-              <CardContent className="p-4">
+            <div className={cn("rounded-2xl border border-border overflow-hidden", kpi.gradient)}>
+              <div className="p-4">
                 <div className="flex items-start justify-between flex-wrap gap-3">
                   <div>
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                    <p className={cn("text-xl font-bold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
+                    <p className={cn("text-xl font-semibold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
                   </div>
-                  <div className={cn("p-2 rounded", kpi.bg)}>
+                  <div className={cn("p-2 rounded-xl", kpi.bg)}>
                     <kpi.icon size={16} className={kpi.color} />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         ))}
       </div>
       <div className="hidden lg:grid grid-cols-4 gap-3 animate-fade-in">
         {[
-          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
-          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
-          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30' },
+          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'bg-emerald-50 dark:bg-emerald-900/10', color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'bg-rose-50 dark:bg-rose-900/10', color: 'text-rose-500', bg: 'bg-rose-100 dark:bg-rose-900/30' },
+          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'bg-indigo-50 dark:bg-indigo-900/10', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-rose-500', bg: totals.balance >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-rose-100 dark:bg-rose-900/30' },
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
         ].map(kpi => (
-          <Card key={kpi.label} className={cn("border-0 shadow-card overflow-hidden", kpi.gradient)}>
-            <CardContent className="p-4">
+          <div key={kpi.label} className={cn("rounded-2xl border border-border overflow-hidden", kpi.gradient)}>
+            <div className="p-4">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                  <p className={cn("text-xl font-bold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
+                  <p className={cn("text-xl font-semibold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
                 </div>
-                <div className={cn("p-2 rounded", kpi.bg)}>
+                <div className={cn("p-2 rounded-xl", kpi.bg)}>
                   <kpi.icon size={16} className={kpi.color} />
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -347,12 +347,12 @@ export default function Reports() {
           { label: 'Dia c/ Mais Gastos', value: topDay ? dayNames[parseInt(topDay[0])] : '—' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
-            <Card className="border-0 shadow-card">
-              <CardContent className="p-4">
+            <div className="rounded-2xl border border-border bg-card">
+              <div className="p-4">
                 <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                <p className="text-lg font-bold mt-0.5 tabular-nums">{kpi.value}</p>
-              </CardContent>
-            </Card>
+                <p className="text-lg font-semibold mt-0.5 tabular-nums">{kpi.value}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -363,12 +363,12 @@ export default function Reports() {
           { label: 'Maior Gasto', value: maxExpense.value > 0 ? formatCurrency(maxExpense.value) : '—' },
           { label: 'Dia c/ Mais Gastos', value: topDay ? dayNames[parseInt(topDay[0])] : '—' },
         ].map(kpi => (
-          <Card key={kpi.label} className="border-0 shadow-card">
-            <CardContent className="p-4">
+          <div className="rounded-2xl border border-border bg-card">
+            <div className="p-4">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-              <p className="text-lg font-bold mt-0.5 tabular-nums">{kpi.value}</p>
-            </CardContent>
-          </Card>
+              <p className="text-lg font-semibold mt-0.5 tabular-nums">{kpi.value}</p>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -379,9 +379,11 @@ export default function Reports() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Area chart - evolution */}
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-primary" />Evolução Mensal</CardTitle></CardHeader>
-          <CardContent>
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-primary" /><span className="text-sm font-semibold">Evolução Mensal</span></div>
+          </div>
+          <div>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={monthlyData}>
                 <defs>
@@ -402,13 +404,15 @@ export default function Reports() {
                 <Area type="monotone" dataKey="expense" name="Despesas" stroke="#ef4444" fill="url(#expenseGrad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Pie chart */}
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-amber-500" />Despesas por Categoria</CardTitle></CardHeader>
-          <CardContent>
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-violet-500" /><span className="text-sm font-semibold">Despesas por Categoria</span></div>
+          </div>
+          <div>
             {catData.length === 0 ? (
               <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">Sem dados para exibir</div>
             ) : (
@@ -432,8 +436,8 @@ export default function Reports() {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Cash Flow Forecast */}
@@ -441,9 +445,11 @@ export default function Reports() {
 
       {/* Category bar chart */}
       {catBarData.length > 0 && (
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-violet-500" />Gastos por Categoria — Detalhe</CardTitle></CardHeader>
-          <CardContent>
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-violet-500" /><span className="text-sm font-semibold">Gastos por Categoria — Detalhe</span></div>
+          </div>
+          <div>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={catBarData} barSize={24} layout="vertical">
                 <CartesianGrid {...GRID_STYLE} horizontal={false} />
@@ -455,19 +461,20 @@ export default function Reports() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Real vs Planejado */}
       {realVsPlanned.length > 0 && (
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-blue-500" /> Real vs Planejado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-4">
+        <div className="section-card">
+          <div className="section-card-header">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-blue-500" />
+              <span className="text-sm font-semibold">Real vs Planejado</span>
+            </div>
+          </div>
+          <div className="space-y-4">
             {/* Chart */}
             <div className="overflow-x-auto -mx-4 px-4">
               <div style={{ minWidth: Math.max(300, realVsPlanned.length * 60) }}>
@@ -538,14 +545,16 @@ export default function Reports() {
                 </tfoot>
               </table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Transactions */}
-      <Card className="border-0 shadow-card overflow-hidden">
-        <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-emerald-500" />Detalhamento de Transações</CardTitle></CardHeader>
-        <CardContent className="p-0">
+      <div className="section-card !p-0 overflow-hidden">
+        <div className="section-card-header px-6">
+          <div className="flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-emerald-500" /><span className="text-sm font-semibold">Detalhamento de Transações</span></div>
+        </div>
+        <div className="p-0">
           {/* Mobile: card list */}
           <div className="sm:hidden divide-y divide-border">
             {pagedDetailTx.map(t => (
@@ -629,8 +638,8 @@ export default function Reports() {
               Exibindo {Math.min(detailPage * DETAIL_PAGE_SIZE, periodTx.length)} de {periodTx.length} transações
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

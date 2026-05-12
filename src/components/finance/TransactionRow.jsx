@@ -12,13 +12,13 @@ import SwipeToDelete from '@/components/ui/swipe-to-delete';
 
 const TYPE_ACCENT = {
   income: 'border-l-emerald-500',
-  expense: 'border-l-red-500',
+  expense: 'border-l-rose-500',
   investment: 'border-l-violet-500',
 };
 
 export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate }) {
   const accent = TYPE_ACCENT[t.type] || 'border-l-gray-300';
-  const valueColor = t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-violet-600';
+  const valueColor = t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-rose-500' : 'text-violet-600';
   const valuePrefix = t.type !== 'income' ? '-' : '+';
   const subLabel = t.isFixed ? 'Recorrente' : t.isInstallment ? 'Parcelado' : t.type === 'income' ? 'Receita' : t.type === 'expense' ? 'Despesa' : 'Investimento';
 
@@ -121,7 +121,7 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
           <button onClick={() => onEdit(t)} className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground" aria-label="Editar">
             <Pencil size={13} />
           </button>
-          <button onClick={() => onDelete(t.id)} className="p-1.5 hover:bg-red-50 rounded text-muted-foreground hover:text-red-600" aria-label="Excluir">
+          <button onClick={() => onDelete(t.id)} className="p-1.5 hover:bg-rose-50 rounded-lg text-muted-foreground hover:text-rose-600" aria-label="Excluir">
             <Trash2 size={13} />
           </button>
         </div>
