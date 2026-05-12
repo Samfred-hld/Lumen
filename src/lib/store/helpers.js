@@ -17,7 +17,7 @@ function getCurrentUserId() {
   }
 }
 
-function getPrefix() {
+export function getPrefix() {
   return `rattio_${getCurrentUserId()}_`;
 }
 
