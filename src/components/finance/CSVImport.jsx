@@ -412,7 +412,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
             <div
               className={cn(
-                "border-2 border-dashed rounded-lg p-10 text-center transition-colors",
+                "border-2 border-dashed rounded p-10 text-center transition-colors",
                 cardsLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
                 dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
               )}
@@ -528,7 +528,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             </div>
 
             {/* Preview table */}
-            <div className="flex-1 overflow-y-auto border rounded-lg">
+            <div className="flex-1 overflow-y-auto border rounded">
               <table className="w-full text-xs">
                 <thead className="sticky top-0 bg-muted/80 backdrop-blur z-10">
                   <tr>

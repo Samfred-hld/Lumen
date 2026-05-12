@@ -99,7 +99,7 @@ export default function QuickEntry({ onSave }) {
     return (
       <button
         onClick={() => setExpanded(true)}
-        className="w-full flex items-center gap-3 p-3.5 rounded-lg border border-dashed border-muted-foreground/20 hover:border-primary/40 hover:bg-muted/30 transition-all text-sm text-muted-foreground"
+        className="w-full flex items-center gap-3 p-3.5 rounded border border-dashed border-muted-foreground/20 hover:border-primary/40 hover:bg-muted/30 transition-all text-sm text-muted-foreground"
       >
         <Plus size={16} />
         <span className="font-medium">Novo Lançamento</span>
@@ -109,7 +109,7 @@ export default function QuickEntry({ onSave }) {
   }
 
   return (
-    <div className="bg-card rounded-lg border shadow-card p-5 animate-fade-in">
+    <div className="bg-card rounded border shadow-card p-5 animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <div className="w-7 h-7 rounded bg-primary/10 flex items-center justify-center">

@@ -45,7 +45,7 @@ export default function ColumnMapper({ headers, onApply, onCancel }) {
   };
 
   return (
-    <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+    <div className="space-y-4 p-4 bg-muted/30 rounded border">
       <div className="flex items-center gap-2 text-sm font-semibold">
         <Columns3 size={16} />
         Mapeamento Manual de Colunas

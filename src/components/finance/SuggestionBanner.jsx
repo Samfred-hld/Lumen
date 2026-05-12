@@ -106,7 +106,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
   const formatCurrency = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3.5 flex items-center justify-between gap-4 flex-wrap animate-fade-in">
+    <div className="bg-amber-50 border border-amber-200 rounded px-4 py-3.5 flex items-center justify-between gap-4 flex-wrap animate-fade-in">
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 rounded bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
           <Lightbulb size={16} className="text-amber-600" />

@@ -12,7 +12,7 @@ import { base44 } from '@/api/base44Client';
 // ═══ Section wrapper ═══
 function Section({ icon: Icon, title, children, actions }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card shadow-sm">
+    <div className="rounded border border-border/60 bg-card shadow-sm">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded bg-primary/10"><Icon size={16} className="text-primary" /></div>

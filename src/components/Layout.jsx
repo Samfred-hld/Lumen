@@ -489,7 +489,7 @@ export default function Layout() {
         <header className="lg:hidden flex items-center h-14 px-4 border-b border-border bg-card shrink-0">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 -ml-2 hover:bg-muted rounded-lg transition-colors"
+            className="p-2 -ml-2 hover:bg-muted rounded transition-colors"
             aria-label="Abrir menu"
           >
             <Menu size={20} />

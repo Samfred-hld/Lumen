@@ -11,7 +11,7 @@ export const CHART_COLORS = {
 
 export const CHART_TOOLTIP_STYLE = {
   contentStyle: {
-    borderRadius: '10px',
+    borderRadius: '2px',
     border: '1px solid hsl(var(--border))',
     background: 'hsl(var(--card))',
     color: 'hsl(var(--foreground))',
