@@ -324,7 +324,7 @@ export default function Transactions() {
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Transações</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Controle todos os seus lançamentos</p>
