@@ -89,7 +89,7 @@ function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLa
     <Card className="relative overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300">
       <CardContent className="p-5 relative">
         <div className={cn("absolute top-0 left-0 right-0 h-[3px] rounded-t-xl", s.accent)} />
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between flex-wrap gap-3">
           <div className="space-y-1">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
             <p className={cn("text-[22px] font-bold tabular-nums tracking-tight", s.valueColor)}>{value}</p>
@@ -590,7 +590,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Receita Prev.</p>
                 <p className="text-lg font-bold text-emerald-600 tabular-nums mt-1">{formatCurrency(avgIncome)}</p>
@@ -679,7 +679,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Receitas</p>
                 <div className="flex items-center justify-center gap-1">
