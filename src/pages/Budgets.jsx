@@ -129,6 +129,8 @@ export default function Budgets() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [inlineEditId, setInlineEditId] = useState(null);
+  const [inlineValue, setInlineValue] = useState('');
 
   const monthKey = getMonthKey(currentYear, currentMonth);
 
@@ -150,6 +152,16 @@ export default function Budgets() {
   const handleDelete = async (id) => {
     await base44.entities.Budget.delete(id);
     refetch();
+  };
+
+  const handleInlineSave = async (budget) => {
+    const val = parseFloat(inlineValue);
+    if (!isNaN(val) && val > 0) {
+      await base44.entities.Budget.update(budget.id, { limit: val });
+      refetch();
+    }
+    setInlineEditId(null);
+    setInlineValue('');
   };
 
   const totalLimit = monthBudgets.reduce((s, b) => s + (b.limit || 0), 0);
@@ -217,7 +229,7 @@ export default function Budgets() {
                       {b.isRecurring && <Repeat size={11} className="text-muted-foreground shrink-0" />}
                     </div>
                     <div className="flex gap-1 opacity-60 hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setEditing(b); setShowModal(true); }} className="p-1.5 hover:bg-muted rounded" aria-label="Editar orçamento"><Pencil size={12} /></button>
+                      <button onClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }} className="p-1.5 hover:bg-muted rounded" aria-label="Editar limite"><Pencil size={12} /></button>
                       <button onClick={() => handleDelete(b.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" aria-label="Excluir orçamento"><Trash2 size={12} /></button>
                     </div>
                   </div>
@@ -225,7 +237,27 @@ export default function Budgets() {
                     <span className={cn("font-bold tabular-nums", over ? 'text-red-500' : warn ? 'text-amber-600' : 'text-foreground')}>
                       {formatCurrency(spent)}
                     </span>
-                    <span className="text-muted-foreground tabular-nums">{formatCurrency(b.limit)}</span>
+                    {inlineEditId === b.id ? (
+                      <Input
+                        type="number"
+                        value={inlineValue}
+                        onChange={e => setInlineValue(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleInlineSave(b); if (e.key === 'Escape') { setInlineEditId(null); setInlineValue(''); } }}
+                        onBlur={() => handleInlineSave(b)}
+                        className="h-6 w-24 text-right text-sm font-semibold tabular-nums px-1"
+                        autoFocus
+                        min="0"
+                        step="0.01"
+                      />
+                    ) : (
+                      <span
+                        className="text-muted-foreground tabular-nums cursor-pointer hover:text-foreground transition-colors"
+                        onDoubleClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }}
+                        title="Duplo-clique para editar"
+                      >
+                        {formatCurrency(b.limit)}
+                      </span>
+                    )}
                   </div>
                   <div className="h-2.5 bg-muted rounded-full overflow-hidden progress-animated">
                     <div
