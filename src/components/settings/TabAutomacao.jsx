@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
@@ -57,15 +58,47 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
       </Section>
 
       {/* ── Salary ── */}
-      <Section icon={DollarSign} title="Configuração de Salário">
-        <div className="grid grid-cols-3 gap-3 items-end">
-          <div><Label className="text-xs">Valor do Salário (R$)</Label><Input type="number" min="0" step="0.01" value={salaryConfig.value} onChange={e => setSalaryConfig(p => ({ ...p, value: parseFloat(e.target.value) || 0 }))} className="mt-1 h-8 text-sm" /></div>
-          <div><Label className="text-xs">Dia do Pagamento</Label><Input type="number" min="1" max="31" value={salaryConfig.day} onChange={e => setSalaryConfig(p => ({ ...p, day: parseInt(e.target.value) || 5 }))} className="mt-1 h-8 text-sm" /></div>
+      <Section icon={DollarSign} title="Configuração de Renda">
+        <div className="space-y-3">
+          <div>
+            <Label className="text-xs">Tipo de Renda</Label>
+            <Select
+              value={salaryConfig.incomeType || 'clt'}
+              onValueChange={(v) => setSalaryConfig(p => ({ ...p, incomeType: v }))}
+            >
+              <SelectTrigger className="mt-1 h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="clt">CLT — Salário fixo mensal</SelectItem>
+                <SelectItem value="freelancer">Autônomo / Freelancer</SelectItem>
+                <SelectItem value="entrepreneur">Empresário / Sócio</SelectItem>
+                <SelectItem value="investor">Investidor</SelectItem>
+                <SelectItem value="multiple">Múltiplas fontes de renda</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-2 gap-3 items-end">
+            <div>
+              <Label className="text-xs">
+                {salaryConfig.incomeType === 'clt' || !salaryConfig.incomeType
+                  ? 'Salário Bruto Mensal (R$)'
+                  : 'Referência de Renda Mensal (R$)'}
+              </Label>
+              <Input type="number" min="0" step="100" value={salaryConfig.value} onChange={e => setSalaryConfig(p => ({ ...p, value: parseFloat(e.target.value) || 0 }))} className="mt-1 h-8 text-sm" />
+              {salaryConfig.incomeType && salaryConfig.incomeType !== 'clt' && (
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Para renda variável, este valor serve de referência para calcular sua taxa de poupança.
+                </p>
+              )}
+            </div>
+            <div><Label className="text-xs">Dia do Pagamento</Label><Input type="number" min="1" max="31" value={salaryConfig.day} onChange={e => setSalaryConfig(p => ({ ...p, day: parseInt(e.target.value) || 5 }))} className="mt-1 h-8 text-sm" /></div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch checked={salaryConfig.autoGenerate} onCheckedChange={v => setSalaryConfig(p => ({ ...p, autoGenerate: v }))} />
+            <Label className="text-sm font-normal">Gerar receita automaticamente todo mês</Label>
+          </div>
           <Button size="sm" className="h-8" onClick={onSaveSalary}>Salvar</Button>
-        </div>
-        <div className="flex items-center gap-2 mt-3">
-          <Switch checked={salaryConfig.autoGenerate} onCheckedChange={v => setSalaryConfig(p => ({ ...p, autoGenerate: v }))} />
-          <Label className="text-sm font-normal">Gerar receita de salário automaticamente todo mês</Label>
         </div>
       </Section>
 
