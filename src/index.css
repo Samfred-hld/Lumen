@@ -74,7 +74,7 @@ body {
     --secondary: 30 15% 92%;            /* #EBE6DF */
     --secondary-foreground: 30 10% 12%;
     --muted: 30 15% 89%;                /* #E2DBD0 */
-    --muted-foreground: 30 6% 45%;      /* #78716C */
+    --muted-foreground: 30 6% 38%;      /* #6B6560 — contrast 5.1:1 on paper */
     --accent: 30 15% 92%;
     --accent-foreground: 30 10% 12%;
     --destructive: 0 65% 35%;           /* #991B1B */
