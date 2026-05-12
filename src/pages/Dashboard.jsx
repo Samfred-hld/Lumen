@@ -29,7 +29,7 @@ function OnboardingModal({ open, onClose }) {
     { icon: Sparkles, title: 'Bem-vindo ao Lúmen! 🎉', desc: 'Seu assistente de controle financeiro pessoal. Vamos configurar tudo em segundos.', color: 'text-primary' },
     { icon: Plus, title: 'Registre suas transações', desc: 'Adicione receitas e despesas. Use o botão "Novo" ou pressione N a qualquer momento.', color: 'text-emerald-600', tip: 'Dica: ative "Lançamento fixo" para gastos mensais recorrentes.' },
     { icon: CreditCard, title: 'Cartões de crédito', desc: 'Cadastre seus cartões em Configurações para controlar faturas e limites.', color: 'text-blue-500', link: '/settings', linkLabel: 'Ir para Configurações' },
-    { icon: Target, title: 'Metas e orçamentos', desc: 'Defina metas de economia e orçamentos por categoria para manter o controle.', color: 'text-violet-600' },
+    { icon: Target, title: 'Metas e orçamentos', desc: 'Defina metas de economia e orçamentos por categoria para manter o controle.', color: 'text-amber-600' },
     { icon: Upload, title: 'Importe seus dados', desc: 'Tem dados em planilha? Importe CSV direto pela página de Transações.', color: 'text-amber-600' },
   ];
 
@@ -80,8 +80,8 @@ function OnboardingModal({ open, onClose }) {
 const KPI_STYLES = {
   income: { iconBg: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-600', valueColor: 'text-emerald-700 dark:text-emerald-400', accent: 'bg-emerald-500' },
   expense: { iconBg: 'bg-red-100 dark:bg-red-900/30', iconColor: 'text-red-500', valueColor: 'text-red-600 dark:text-red-400', accent: 'bg-red-500' },
-  balance: { iconBg: 'bg-blue-100 dark:bg-blue-900/30', iconColor: 'text-blue-600', valueColor: 'text-blue-700 dark:text-blue-400', accent: 'bg-blue-500' },
-  investment: { iconBg: 'bg-violet-100 dark:bg-violet-900/30', iconColor: 'text-violet-600', valueColor: 'text-violet-700 dark:text-violet-400', accent: 'bg-violet-500' },
+  balance: { iconBg: 'bg-stone-100 dark:bg-stone-900/30', iconColor: 'text-stone-600', valueColor: 'text-stone-700 dark:text-stone-400', accent: 'bg-stone-500' },
+  investment: { iconBg: 'bg-amber-100 dark:bg-amber-900/30', iconColor: 'text-amber-600', valueColor: 'text-amber-700 dark:text-amber-400', accent: 'bg-amber-500' },
 };
 
 function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, deltaLabel }) {
@@ -209,9 +209,21 @@ export default function Dashboard() {
   const prevMonthTx = filterByMonth(transactions, prevYear, prevMonth);
   const prevTotals = calcTotals(prevMonthTx);
 
-  const pieData = expensesByCategory.slice(0, 6).map(([cat, val]) => ({
+  const pieData = React.useMemo(() => expensesByCategory.map(([cat, val]) => ({
     name: cat, value: val, color: CAT_COLORS[cat] || '#94a3b8'
-  }));
+  })), [expensesByCategory]);
+
+  const MAX_PIE_SLICES = 6;
+
+  const processedPieData = React.useMemo(() => {
+    if (!pieData || pieData.length === 0) return [];
+    if (pieData.length <= MAX_PIE_SLICES) return pieData;
+    const sorted = [...pieData].sort((a, b) => b.value - a.value);
+    const top = sorted.slice(0, MAX_PIE_SLICES);
+    const rest = sorted.slice(MAX_PIE_SLICES);
+    const othersValue = rest.reduce((sum, d) => sum + d.value, 0);
+    return [...top, { name: 'Outros', value: othersValue, color: '#94a3b8' }];
+  }, [pieData]);
 
   const barData = [];
   for (let i = 5; i >= 0; i--) {
@@ -378,20 +390,20 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {pieData.length === 0 ? (
+            {processedPieData.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Sem despesas neste mês</div>
             ) : (
               <div className="flex items-center gap-4">
                 <ResponsiveContainer width="50%" height={180}>
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value">
-                      {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                    <Pie data={processedPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value">
+                      {processedPieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                     </Pie>
                     <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="space-y-1.5 flex-1 min-w-0">
-                  {pieData.map(d => (
+                  {processedPieData.map(d => (
                     <div key={d.name} className="flex items-center gap-2 text-xs">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
                       <span className="text-muted-foreground truncate flex-1">{d.name}</span>
@@ -447,7 +459,7 @@ export default function Dashboard() {
         <Card className="border-0 shadow-card overflow-hidden">
           <CardHeader className="pb-3 border-b border-border/40">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="w-1.5 h-4 rounded-full bg-violet-500" /> Metas Ativas
+              <div className="w-1.5 h-4 rounded-full bg-amber-500" /> Metas Ativas
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
@@ -708,7 +720,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold font-display">Dashboard</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Visão geral das suas finanças</p>
         </div>
         <div className="flex items-center gap-2">
@@ -759,7 +771,7 @@ export default function Dashboard() {
                 <div className={cn(
                   "w-9 h-9 rounded flex items-center justify-center text-xs font-bold shrink-0 shadow-sm",
                   t.type === 'income' ? 'gradient-emerald text-emerald-700' :
-                  t.type === 'expense' ? 'gradient-red text-red-700' : 'gradient-violet text-violet-700'
+                  t.type === 'expense' ? 'gradient-red text-red-700' : 'gradient-violet text-amber-700'
                 )}>
                   {(t.description || '?')[0].toUpperCase()}
                 </div>
@@ -769,7 +781,7 @@ export default function Dashboard() {
                 </div>
                 <span className={cn(
                   "text-sm font-semibold shrink-0",
-                  t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-violet-600'
+                  t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-amber-600'
                 )}>
                   {t.type !== 'income' ? '-' : '+'}{formatCurrency(t.value)}
                 </span>

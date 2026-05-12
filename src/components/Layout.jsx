@@ -362,7 +362,7 @@ export default function Layout() {
   }, [handleKeyDown]);
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden font-inter">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* ARIA Live Announcer */}
       <AriaAnnouncer />
 
@@ -383,15 +383,15 @@ export default function Layout() {
         )}>
           {!collapsed && (
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded gradient-primary flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <span className="text-white font-bold text-sm">R</span>
+              <div className="w-9 h-9 gradient-primary flex items-center justify-center shadow-lg" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+                <span className="text-white font-bold text-sm font-mono">L</span>
               </div>
-              <span className="font-serif text-white text-xl tracking-tight">Lúmen</span>
+              <span className="font-display text-white text-xl tracking-tight">Lúmen</span>
             </div>
           )}
           {collapsed && (
-            <div className="w-9 h-9 rounded gradient-primary flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <span className="text-white font-bold text-sm">R</span>
+            <div className="w-9 h-9 gradient-primary flex items-center justify-center shadow-lg" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+              <span className="text-white font-bold text-sm font-mono">L</span>
             </div>
           )}
         </div>
@@ -489,7 +489,7 @@ export default function Layout() {
           >
             <Menu size={20} />
           </button>
-          <span className="font-serif text-lg ml-2">Lúmen</span>
+          <span className="font-display text-lg ml-2">Lúmen</span>
           <div className="ml-auto">
             <NotificationCenter />
           </div>

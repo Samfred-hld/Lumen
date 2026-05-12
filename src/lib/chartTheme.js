@@ -3,10 +3,10 @@
 // ══════════════════════════════════════════
 
 export const CHART_COLORS = {
-  income: '#10b981',
-  expense: '#ef4444',
-  investment: '#8b5cf6',
-  neutral: '#6366f1',
+  income: '#1A5C3A',
+  expense: '#991B1B',
+  investment: '#C2410C',
+  neutral: '#78716C',
 };
 
 export const CHART_TOOLTIP_STYLE = {
