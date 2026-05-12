@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══ Global box-sizing + overflow ═══ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+body {
+  overflow-x: hidden;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
 
 /* ═══════════════════════════════════════════
