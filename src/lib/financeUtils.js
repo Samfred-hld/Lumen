@@ -4,7 +4,7 @@
 
 // Re-export category constants/functions from canonical source
 export { CAT_COLORS, MONTH_NAMES, MONTH_SHORT, DAY_NAMES, getCategories } from './categories';
-import { DEFAULT_CATEGORIES as _DC } from './categories';
+import { DEFAULT_CATEGORIES as _DC, MONTH_SHORT } from './categories';
 import { format, subMonths, getDaysInMonth as dfGetDaysInMonth, startOfMonth } from 'date-fns';
 export const DEFAULT_CATEGORIES = _DC;
 export const CATEGORIES = _DC;
