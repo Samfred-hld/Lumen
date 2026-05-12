@@ -160,7 +160,7 @@ export default function Budgets() {
 
   return (
     <div className="p-4 lg:p-6 max-w-4xl mx-auto space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Orçamentos</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Controle de gastos por categoria</p>
@@ -179,7 +179,7 @@ export default function Budgets() {
 
       {/* Summary */}
       {monthBudgets.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 animate-fade-in">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-fade-in">
           <Card className="border-0 shadow-card gradient-blue"><CardContent className="p-4"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Orçamento Total</p><p className="text-xl font-bold mt-1 tabular-nums">{formatCurrency(totalLimit)}</p></CardContent></Card>
           <Card className="border-0 shadow-card gradient-red"><CardContent className="p-4"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total Gasto</p><p className="text-xl font-bold mt-1 text-red-500 tabular-nums">{formatCurrency(totalSpent)}</p></CardContent></Card>
           <Card className="border-0 shadow-card gradient-emerald"><CardContent className="p-4"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Disponível</p><p className={cn("text-xl font-bold mt-1 tabular-nums", totalLimit - totalSpent >= 0 ? 'text-emerald-600' : 'text-red-500')}>{formatCurrency(totalLimit - totalSpent)}</p></CardContent></Card>
@@ -210,7 +210,7 @@ export default function Budgets() {
               <Card key={b.id} className="border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300 overflow-hidden">
                 <div className="h-1" style={{ background: color }} />
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: color }} />
                       <span className="font-semibold text-sm">{b.category}</span>
