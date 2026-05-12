@@ -6,7 +6,7 @@
 
 import { base44 } from '@/api/base44Client';
 
-const LS_PREFIX = 'rattio_'; // Mantido para compatibilidade com dados existentes — não alterar
+import { LS_PREFIX } from './store/helpers'; // Prefix dinâmico por usuário
 
 /** Verifica se uma limpeza de dados está em andamento */
 function isClearing() {
