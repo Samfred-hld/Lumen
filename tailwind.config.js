@@ -12,7 +12,8 @@ module.exports = {
   		borderRadius: {
   			lg: '2px',
   			md: '1px',
-  			sm: '1px'
+  			sm: '1px',
+  			DEFAULT: '2px',
   		},
   		colors: {
   			background: 'hsl(var(--background))',
