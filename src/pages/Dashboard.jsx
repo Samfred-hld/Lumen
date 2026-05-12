@@ -9,6 +9,7 @@ import { formatCurrency, formatDate, filterByMonth, calcTotals, groupByCategory,
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { CHART_COLORS, CHART_TOOLTIP_STYLE, AXIS_STYLE, GRID_STYLE } from '@/lib/chartTheme';
 import TransactionModal from '@/components/finance/TransactionModal';
 import DashCustomizeModal from '@/components/finance/DashCustomizeModal';
 import FinancialHealthScore from '@/components/finance/FinancialHealthScore';
@@ -359,26 +360,12 @@ export default function Dashboard() {
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={barData} barSize={12}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
-                <Tooltip
-                  formatter={(v, name) => [formatCurrency(v), name]}
-                  contentStyle={{
-                    borderRadius: '10px',
-                    border: '1px solid hsl(var(--border))',
-                    background: 'hsl(var(--card))',
-                    color: 'hsl(var(--foreground))',
-                    fontSize: '12px',
-                    padding: '8px 12px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
-                    fontFamily: 'inherit',
-                  }}
-                  cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
-                  wrapperStyle={{ outline: 'none' }}
-                />
-                <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expense" name="Despesas" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <CartesianGrid {...GRID_STYLE} />
+                <XAxis {...AXIS_STYLE} dataKey="name" />
+                <YAxis {...AXIS_STYLE} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
+                <Bar dataKey="income" name="Receitas" fill={CHART_COLORS.income} radius={[6, 6, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="expense" name="Despesas" fill={CHART_COLORS.expense} radius={[6, 6, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -400,20 +387,7 @@ export default function Dashboard() {
                     <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value">
                       {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                     </Pie>
-                    <Tooltip
-                      formatter={(v, name) => [formatCurrency(v), name]}
-                      contentStyle={{
-                        borderRadius: '10px',
-                        border: '1px solid hsl(var(--border))',
-                        background: 'hsl(var(--card))',
-                        color: 'hsl(var(--foreground))',
-                        fontSize: '12px',
-                        padding: '8px 12px',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
-                        fontFamily: 'inherit',
-                      }}
-                      wrapperStyle={{ outline: 'none' }}
-                    />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [formatCurrency(v), name]} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="space-y-1.5 flex-1 min-w-0">
