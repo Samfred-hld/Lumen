@@ -4,7 +4,63 @@
 
 import { base44 } from '@/api/base44Client';
 
-export const LS_PREFIX = 'rattio_'; // Mantido como 'rattio_' para compatibilidade com dados existentes — não alterar
+// ── Legacy prefix (backward compat) ──
+export const LS_PREFIX = 'rattio_';
+
+// ── Dynamic per-user prefix ──
+function getCurrentUserId() {
+  try {
+    const user = base44.auth?.currentUser;
+    return user?.id || user?.uid || 'anonymous';
+  } catch {
+    return 'anonymous';
+  }
+}
+
+function getPrefix() {
+  return `rattio_${getCurrentUserId()}_`;
+}
+
+// ── Migration: copy legacy prefix → user-specific prefix ──
+// Called once per session from initStore(). Cloud sync will correct any stale data.
+let _migratedThisSession = false;
+
+export function migrateToUserPrefix() {
+  if (_migratedThisSession) return;
+  _migratedThisSession = true;
+
+  try {
+    const userId = getCurrentUserId();
+    if (userId === 'anonymous') return; // no user logged in — skip
+
+    const legacyMarked = localStorage.getItem('rattio_lastUserId');
+    if (legacyMarked === userId) return; // already migrated for this user
+
+    const userPrefix = `rattio_${userId}_`;
+    const allKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('rattio_') && !k.startsWith(userPrefix) && k !== 'rattio_lastUserId') {
+        allKeys.push(k);
+      }
+    }
+
+    for (const oldKey of allKeys) {
+      const suffix = oldKey.slice('rattio_'.length); // e.g. "cards", "theme"
+      const newKey = userPrefix + suffix;
+      try {
+        const val = localStorage.getItem(oldKey);
+        if (val !== null && localStorage.getItem(newKey) === null) {
+          localStorage.setItem(newKey, val);
+        }
+      } catch {}
+    }
+
+    localStorage.setItem('rattio_lastUserId', userId);
+  } catch (err) {
+    console.error('[Store] Erro na migração de prefix:', err);
+  }
+}
 
 // ── Internal helpers ──
 const _entityValid = new Map(); // name → true|false (connectivity cache)
@@ -35,7 +91,7 @@ export async function ensureEntity(name) {
 
 export function getLocal(key, fallback = null) {
   try {
-    const r = localStorage.getItem(LS_PREFIX + key);
+    const r = localStorage.getItem(getPrefix() + key);
     return r ? JSON.parse(r) : fallback;
   } catch (err) {
     console.error('[Store] Erro em getLocal:', err);
@@ -44,11 +100,11 @@ export function getLocal(key, fallback = null) {
 }
 
 export function setLocal(key, val) {
-  try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(val)); } catch (err) { console.error('[Store] Erro em setLocal:', err); }
+  try { localStorage.setItem(getPrefix() + key, JSON.stringify(val)); } catch (err) { console.error('[Store] Erro em setLocal:', err); }
 }
 
 export function removeLocal(key) {
-  try { localStorage.removeItem(LS_PREFIX + key); } catch (err) { console.error('[Store] Erro em removeLocal:', err); }
+  try { localStorage.removeItem(getPrefix() + key); } catch (err) { console.error('[Store] Erro em removeLocal:', err); }
 }
 
 // ── Primitivos (localStorage direto) ──
