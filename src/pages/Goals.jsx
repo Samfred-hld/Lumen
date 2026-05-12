@@ -208,6 +208,13 @@ function GoalModal({ open, onClose, onSave, goal }) {
   );
 }
 
+function calcMonthsToGoal(goal) {
+  const remaining = (goal.targetValue || 0) - (goal.currentValue || 0);
+  if (remaining <= 0) return null;
+  const avgMonthly = goal.targetValue / 12;
+  return Math.ceil(remaining / avgMonthly);
+}
+
 function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }) {
   const current = getGoalProgress(goal, transactions);
   const pct = Math.min(100, goal.targetValue > 0 ? (current / goal.targetValue) * 100 : 0);
@@ -256,12 +263,27 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
               </span>
             )}
           </div>
+          {!done && (() => {
+            const months = calcMonthsToGoal(goal);
+            if (!months) return null;
+            return (
+              <p className="text-[10px] text-muted-foreground text-center mt-1">
+                📈 Projecao: ~{months} mes(es) para concluir
+              </p>
+            );
+          })()}
         </div>
 
         {!done && (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="flex-1 text-xs h-8 rounded hover:bg-primary hover:text-primary-foreground transition-colors" onClick={() => onDeposit(goal)}>
-              + Depositar
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onDeposit(goal)}
+              title="Registra manualmente o valor alocado para esta meta. Nao movimenta sua conta automaticamente."
+              className="flex-1 text-xs h-8 rounded hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              <Plus size={12} className="mr-1" /> Registrar progresso
             </Button>
             <Button size="sm" variant="outline" className="h-8 rounded text-xs" onClick={() => onHistory(goal)}>
               <History size={12} />
@@ -284,7 +306,7 @@ function DepositModal({ open, onClose, onSave, goal }) {
     <AdaptiveModal
       open={open}
       onOpenChange={onClose}
-      title={`Depositar em "${goal?.name}"`}
+      title={`Registrar progresso em "${goal?.name}"`}
       className="max-w-xs"
     >
         <div>
@@ -293,7 +315,7 @@ function DepositModal({ open, onClose, onSave, goal }) {
         </div>
         <div className="flex gap-2 pt-2">
           <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
-          <Button className="flex-1" onClick={() => { onSave(parseFloat(value)); setValue(''); }}>Depositar</Button>
+          <Button className="flex-1" onClick={() => { onSave(parseFloat(value)); setValue(''); }}>Registrar</Button>
         </div>
     </AdaptiveModal>
   );
