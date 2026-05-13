@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Layers, Calendar, Checkbox as CheckboxIcon, Edit3, TrendingDown, TrendingUp, Search } from 'lucide-react';
+import { Layers, Calendar, Edit3, TrendingDown, TrendingUp, Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { formatCurrency, clampDateInput } from '@/lib/financeUtils';
