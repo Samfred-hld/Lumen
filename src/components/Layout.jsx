@@ -359,7 +359,7 @@ export default function Layout() {
       </header>
 
       {/* ═══ Main Content ═══ */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className={cn("flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300", collapsed ? "md:ml-sidebar-collapsed" : "md:ml-sidebar-w")}>
         <main className="flex-1 overflow-y-auto pt-header-height pb-mobile-nav-height md:pb-xl px-lg md:px-xl max-w-7xl mx-auto" role="main">
           <Outlet />
         </main>
