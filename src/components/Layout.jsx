@@ -24,11 +24,10 @@ function MsIcon({ name, className, size = 24, filled = false }) {
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: 'grid_view', shortcut: '1' },
   { path: '/transactions', label: 'Transações', icon: 'receipt_long', shortcut: '2' },
-  { path: '/budgets', label: 'Orçamentos', icon: 'account_balance', shortcut: '3' },
-  { path: '/goals', label: 'Metas', icon: 'monitoring', shortcut: '4' },
-  { path: '/calendar', label: 'Calendário', icon: 'calendar_today', shortcut: '5' },
-  { path: '/reports', label: 'Relatórios', icon: 'bar_chart', shortcut: '6' },
-  { path: '/settings', label: 'Configurações', icon: 'settings', shortcut: '7' },
+  { path: '/planejamento', label: 'Planejamento', icon: 'account_balance', shortcut: '3' },
+  { path: '/calendar', label: 'Calendário', icon: 'calendar_today', shortcut: '4' },
+  { path: '/reports', label: 'Relatórios', icon: 'bar_chart', shortcut: '5' },
+  { path: '/settings', label: 'Configurações', icon: 'settings', shortcut: '6' },
 ];
 
 const BOTTOM_NAV = [

@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
+import Planejamento from './pages/Planejamento';
 import CalendarPage from './pages/CalendarPage';
 import Reports from './pages/Reports';
 import SettingsPage from './pages/Settings';
@@ -57,6 +58,7 @@ const AuthenticatedApp = () => {
       <Route element={<Layout />}>
         <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
         <Route path="/transactions" element={<ErrorBoundary><Transactions /></ErrorBoundary>} />
+        <Route path="/planejamento" element={<ErrorBoundary><Planejamento /></ErrorBoundary>} />
         <Route path="/budgets" element={<ErrorBoundary><Budgets /></ErrorBoundary>} />
         <Route path="/goals" element={<ErrorBoundary><Goals /></ErrorBoundary>} />
         <Route path="/calendar" element={<ErrorBoundary><CalendarPage /></ErrorBoundary>} />
