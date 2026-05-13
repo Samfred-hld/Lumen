@@ -97,28 +97,28 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
           Mantenha seus dados seguros. Você pode exportar seu histórico em formato CSV (para Excel/Google Sheets), gerar um relatório em PDF ou criar um Backup completo em JSON para restaurar futuramente.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-3 p-4 rounded-md border border-slate-200 bg-slate-50">
-            <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-              <Download size={16} className="text-slate-500" /> Exportar Dados
+          <div className="space-y-3 p-4 rounded-md border border-surface-border bg-surface-low">
+            <h4 className="text-sm font-semibold text-on-surface flex items-center gap-2">
+              <Download size={16} className="text-muted-foreground" /> Exportar Dados
             </h4>
             <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" size="sm" className="w-full justify-start bg-white hover:bg-slate-50" onClick={handleExportCSV}>
+              <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportCSV}>
                 <FileText size={14} className="mr-2 text-emerald-600" /> CSV (Planilha)
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start bg-white hover:bg-slate-50" onClick={handleExportJSON}>
+              <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportJSON}>
                 <FileText size={14} className="mr-2 text-blue-600" /> JSON (Backup Completo)
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start bg-white hover:bg-slate-50" onClick={handleExportPDF}>
+              <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportPDF}>
                 <Receipt size={14} className="mr-2 text-red-600" /> PDF (Relatório Mensal)
               </Button>
             </div>
           </div>
 
-          <div className="space-y-3 p-4 rounded-md border border-slate-200 bg-slate-50 flex flex-col">
-            <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-              <Upload size={16} className="text-slate-500" /> Importar Backup
+          <div className="space-y-3 p-4 rounded-md border border-surface-border bg-surface-low flex flex-col">
+            <h4 className="text-sm font-semibold text-on-surface flex items-center gap-2">
+              <Upload size={16} className="text-muted-foreground" /> Importar Backup
             </h4>
-            <p className="text-xs text-slate-500 flex-1">
+            <p className="text-xs text-muted-foreground flex-1">
               Restaure todo o seu histórico enviando o arquivo JSON gerado pela exportação de backup completo.
             </p>
             <label className="block mt-auto w-full">

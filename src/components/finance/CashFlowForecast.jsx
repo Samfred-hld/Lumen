@@ -107,8 +107,8 @@ export default function CashFlowForecast({ transactions }) {
   }).filter(c => c.invoiceAmount > 0);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-      <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+    <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+      <div className="p-3 border-b border-surface-border flex items-center justify-between">
         <h3 className="text-sm font-semibold flex items-center gap-2">
           <CalendarClock size={18} /> Fluxo de Caixa — Previsão
         </h3>
@@ -124,16 +124,16 @@ export default function CashFlowForecast({ transactions }) {
       <div className="p-4 flex-1 space-y-4">
         {/* Summary KPIs */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="bg-slate-50 rounded p-3 text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Receita Média/Mês</p>
+          <div className="bg-surface-low rounded p-3 text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Receita Média/Mês</p>
             <p className="text-sm font-bold text-emerald-600 font-mono-number tracking-tight mt-1">{formatCurrency(avgIncome)}</p>
           </div>
-          <div className="bg-slate-50 rounded p-3 text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Despesa Média/Mês</p>
+          <div className="bg-surface-low rounded p-3 text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Despesa Média/Mês</p>
             <p className="text-sm font-bold text-red-500 font-mono-number tracking-tight mt-1">{formatCurrency(avgExpense)}</p>
           </div>
-          <div className="bg-slate-50 rounded p-3 text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Saldo Médio/Mês</p>
+          <div className="bg-surface-low rounded p-3 text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Saldo Médio/Mês</p>
             <p className={cn("text-sm font-bold font-mono-number tracking-tight mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
               {formatCurrency(avgIncome - avgExpense)}
             </p>
@@ -166,7 +166,7 @@ export default function CashFlowForecast({ transactions }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium"
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-on-surface transition-colors font-medium"
           >
             {showDetails ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
             {showDetails ? 'Ocultar' : 'Ver'} detalhamento mensal
@@ -177,19 +177,19 @@ export default function CashFlowForecast({ transactions }) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Mês</th>
-                  <th className="text-right px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Receita</th>
-                  <th className="text-right px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Despesa</th>
-                  <th className="text-right px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Saldo</th>
+                <tr className="border-b border-surface-border">
+                  <th className="text-left px-2 py-1.5 font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Mês</th>
+                  <th className="text-right px-2 py-1.5 font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Receita</th>
+                  <th className="text-right px-2 py-1.5 font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Despesa</th>
+                  <th className="text-right px-2 py-1.5 font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Saldo</th>
                 </tr>
               </thead>
               <tbody>
                 {forecast.map((f) => (
-                  <tr key={f.key} className={cn("border-b border-slate-100 last:border-0 hover:bg-slate-50", f.isCurrentMonth && "bg-slate-50/50 font-medium")}>
-                    <td className="px-2 py-1.5 capitalize text-slate-700">
+                  <tr key={f.key} className={cn("border-b border-surface-border/50 last:border-0 hover:bg-surface-low", f.isCurrentMonth && "bg-surface-low/50 font-medium")}>
+                    <td className="px-2 py-1.5 capitalize text-on-surface">
                       {MONTH_NAMES[parseInt(f.key.split('-')[1]) - 1]} {f.key.split('-')[0]}
-                      {f.isCurrentMonth && <Badge variant="outline" className="ml-1 text-[9px] py-0 text-slate-500 border-slate-200">Atual</Badge>}
+                      {f.isCurrentMonth && <Badge variant="outline" className="ml-1 text-[9px] py-0 text-muted-foreground border-surface-border">Atual</Badge>}
                     </td>
                     <td className="text-right px-2 py-1.5 text-emerald-600 font-mono-number tracking-tight">{formatCurrency(f.income)}</td>
                     <td className="text-right px-2 py-1.5 text-red-500 font-mono-number tracking-tight">{formatCurrency(f.expense)}</td>
@@ -205,22 +205,22 @@ export default function CashFlowForecast({ transactions }) {
 
         {/* Upcoming card invoices */}
         {upcomingInvoices.length > 0 && (
-          <div className="border-t border-slate-200 pt-3 space-y-2">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Faturas Próximas</p>
+          <div className="border-t border-surface-border pt-3 space-y-2">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Faturas Próximas</p>
             {upcomingInvoices.map(c => (
-              <div key={c.id} className="flex items-center gap-2 p-2 rounded bg-slate-50 border border-slate-100 text-xs">
+              <div key={c.id} className="flex items-center gap-2 p-2 rounded bg-surface-low border border-surface-border/50 text-xs">
                 <div className="w-6 h-4 rounded-sm flex items-center justify-center text-white text-[8px] font-bold" style={{ background: c.color }}>
                   {c.brand === 'visa' ? 'V' : c.brand === 'mastercard' ? 'MC' : c.brand === 'elo' ? 'E' : 'CC'}
                 </div>
-                <span className="font-medium flex-1 text-slate-700">{c.name}</span>
-                <span className="text-slate-500 text-[11px]">Vence {c.dueDate}</span>
+                <span className="font-medium flex-1 text-on-surface">{c.name}</span>
+                <span className="text-muted-foreground text-[11px]">Vence {c.dueDate}</span>
                 <span className="font-semibold text-red-500 font-mono-number tracking-tight">{formatCurrency(c.invoiceAmount)}</span>
               </div>
             ))}
           </div>
         )}
 
-        <p className="text-[10px] text-slate-400 italic">
+        <p className="text-[10px] text-muted-foreground italic">
           * Previsão baseada na média dos últimos 6 meses. Transações fixas têm peso garantido.
         </p>
       </div>

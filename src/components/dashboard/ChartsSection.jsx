@@ -10,8 +10,8 @@ export default function ChartsSection({ barData, processedPieData }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+        <div className="p-3 border-b border-surface-border flex items-center justify-between">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <div className="w-1.5 h-4 rounded-full bg-primary" aria-hidden="true" /> Evolução Mensal
           </h3>
@@ -33,8 +33,8 @@ export default function ChartsSection({ barData, processedPieData }) {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+        <div className="p-3 border-b border-surface-border flex items-center justify-between">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <div className="w-1.5 h-4 rounded-full bg-amber-500" aria-hidden="true" /> Gastos por Categoria
           </h3>

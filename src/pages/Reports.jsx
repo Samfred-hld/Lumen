@@ -337,7 +337,7 @@ export default function Reports() {
           { label: 'Dia c/ Mais Gastos', value: topDay ? dayNames[parseInt(topDay[0])] : '—' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
-            <div className="bg-white border border-slate-200 rounded-lg shadow-sm">
+            <div className="bg-surface border border-surface-border rounded-lg shadow-sm">
               <div className="p-4">
                 <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
                 <p className="text-lg font-bold mt-0.5 font-mono-number tracking-tight">{kpi.value}</p>
@@ -353,7 +353,7 @@ export default function Reports() {
           { label: 'Maior Gasto', value: maxExpense.value > 0 ? formatCurrency(maxExpense.value) : '—' },
           { label: 'Dia c/ Mais Gastos', value: topDay ? dayNames[parseInt(topDay[0])] : '—' },
         ].map(kpi => (
-          <div key={kpi.label} className="bg-white border border-slate-200 rounded-lg shadow-sm">
+          <div key={kpi.label} className="bg-surface border border-surface-border rounded-lg shadow-sm">
             <div className="p-4">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
               <p className="text-lg font-bold mt-0.5 font-mono-number tracking-tight">{kpi.value}</p>
@@ -369,8 +369,8 @@ export default function Reports() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Area chart - evolution */}
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+        <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-surface-border flex items-center justify-between">
             <h3 className="text-sm font-semibold flex items-center gap-2">
               <div className="w-1.5 h-4 rounded-full bg-primary" />Evolução Mensal
             </h3>
@@ -400,8 +400,8 @@ export default function Reports() {
         </div>
 
         {/* Pie chart */}
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+        <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-surface-border flex items-center justify-between">
             <h3 className="text-sm font-semibold flex items-center gap-2">
               <div className="w-1.5 h-4 rounded-full bg-amber-500" />Despesas por Categoria
             </h3>
@@ -439,8 +439,8 @@ export default function Reports() {
 
       {/* Category bar chart */}
       {catBarData.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+        <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-surface-border flex items-center justify-between">
             <h3 className="text-sm font-semibold flex items-center gap-2">
               <div className="w-1.5 h-4 rounded-full bg-violet-500" />Gastos por Categoria — Detalhe
             </h3>
@@ -463,8 +463,8 @@ export default function Reports() {
 
       {/* Real vs Planejado */}
       {realVsPlanned.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+        <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-surface-border flex items-center justify-between">
             <h3 className="text-sm font-semibold flex items-center gap-2">
               <div className="w-1.5 h-4 rounded-full bg-blue-500" /> Real vs Planejado
             </h3>
@@ -500,14 +500,14 @@ export default function Reports() {
                 </thead>
                 <tbody>
                   {realVsPlanned.map((r, i) => (
-                    <tr key={i} className="border-b last:border-0 hover:bg-slate-50 transition-colors">
-                      <td className="px-2 py-1.5 font-medium text-slate-700">
+                    <tr key={i} className="border-b last:border-0 hover:bg-surface-low transition-colors">
+                      <td className="px-2 py-1.5 font-medium text-on-surface">
                         {r.category}
                         {r.semOrcamento && (
                           <Badge variant="outline" className="ml-1.5 text-[9px] py-0 text-muted-foreground">Sem orçamento</Badge>
                         )}
                       </td>
-                      <td className="text-right px-2 py-1.5 font-mono-number tracking-tight text-slate-500">{r.orcado > 0 ? formatCurrency(r.orcado) : '—'}</td>
+                      <td className="text-right px-2 py-1.5 font-mono-number tracking-tight text-muted-foreground">{r.orcado > 0 ? formatCurrency(r.orcado) : '—'}</td>
                       <td className="text-right px-2 py-1.5 font-mono-number tracking-tight font-medium">{formatCurrency(r.realizado)}</td>
                       <td className={cn("text-right px-2 py-1.5 font-semibold font-mono-number tracking-tight",
                         r.desvio <= 0 ? 'text-emerald-600' : 'text-red-500'
@@ -524,16 +524,16 @@ export default function Reports() {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t-2 border-slate-200 font-bold bg-slate-50">
-                    <td className="px-2 py-2 text-slate-700">Total</td>
-                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-slate-700">{formatCurrency(rvTotalOrcado)}</td>
-                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-slate-700">{formatCurrency(rvTotalReal)}</td>
+                  <tr className="border-t-2 border-surface-border font-bold bg-surface-low">
+                    <td className="px-2 py-2 text-on-surface">Total</td>
+                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-on-surface">{formatCurrency(rvTotalOrcado)}</td>
+                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-on-surface">{formatCurrency(rvTotalReal)}</td>
                     <td className={cn("text-right px-2 py-2 font-bold font-mono-number tracking-tight",
                       rvTotalDesvio <= 0 ? 'text-emerald-600' : 'text-red-500'
                     )}>
                       {rvTotalDesvio <= 0 ? '' : '+'}{formatCurrency(rvTotalDesvio)}
                     </td>
-                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-slate-700">
+                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-on-surface">
                       {rvTotalOrcado > 0 ? `${Math.round((rvTotalReal / rvTotalOrcado) * 100)}%` : '—'}
                     </td>
                   </tr>
@@ -545,8 +545,8 @@ export default function Reports() {
       )}
 
       {/* Transactions */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
-        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
+        <div className="p-3 border-b border-surface-border flex items-center justify-between">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <div className="w-1.5 h-4 rounded-full bg-emerald-500" /> Detalhamento de Transações
           </h3>
@@ -555,10 +555,10 @@ export default function Reports() {
           {/* Mobile: card list */}
           <div className="sm:hidden divide-y divide-slate-100">
             {pagedDetailTx.map(t => (
-              <div key={t.id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors">
+              <div key={t.id} className="flex items-center justify-between px-4 py-3 hover:bg-surface-low transition-colors">
                 <div>
                   <p className="text-sm font-medium truncate max-w-[180px]">{t.description}</p>
-                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{t.category || '—'} · {t.date?.split('-').reverse().join('/')}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{t.category || '—'} · {t.date?.split('-').reverse().join('/')}</p>
                 </div>
                 <p className={cn("text-sm font-semibold shrink-0 font-mono-number tracking-tight",
                   t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-violet-600'
@@ -568,7 +568,7 @@ export default function Reports() {
               </div>
             ))}
             {detailTotalPages > 1 && (
-              <div className="px-4 py-3 border-t border-slate-100">
+              <div className="px-4 py-3 border-t border-surface-border/50">
                 <Pagination page={detailPage} totalPages={detailTotalPages} onPageChange={setDetailPage} />
               </div>
             )}
@@ -581,20 +581,20 @@ export default function Reports() {
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Data</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Descrição</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Categoria</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Tipo</th>
-                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Valor</th>
+                <tr className="border-b border-surface-border">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Data</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Descrição</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Categoria</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Tipo</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Valor</th>
                 </tr>
               </thead>
               <tbody>
                 {pagedDetailTx.map(t => (
-                  <tr key={t.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap font-mono-number tracking-tight">{t.date?.split('-').reverse().join('/')}</td>
-                    <td className="px-4 py-3 max-w-[180px] truncate font-medium text-slate-700">{t.description}</td>
-                    <td className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider hidden sm:table-cell">{t.category || '—'}</td>
+                  <tr key={t.id} className="border-b border-surface-border/50 last:border-0 hover:bg-surface-low transition-colors">
+                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap font-mono-number tracking-tight">{t.date?.split('-').reverse().join('/')}</td>
+                    <td className="px-4 py-3 max-w-[180px] truncate font-medium text-on-surface">{t.description}</td>
+                    <td className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">{t.category || '—'}</td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       <span className={cn("text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider",
                         t.type === 'income' ? 'bg-emerald-100 text-emerald-700' :
@@ -611,9 +611,9 @@ export default function Reports() {
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t-2 border-slate-200 bg-slate-50">
+              <tfoot className="border-t-2 border-surface-border bg-surface-low">
                 <tr>
-                  <td colSpan={3} className="px-4 py-3 text-xs font-semibold text-slate-500">
+                  <td colSpan={3} className="px-4 py-3 text-xs font-semibold text-muted-foreground">
                     Subtotal ({pagedDetailTx.length} itens)
                   </td>
                   <td className="px-4 py-3 text-right text-xs font-bold text-emerald-600 tabular-nums hidden md:table-cell" />
@@ -627,7 +627,7 @@ export default function Reports() {
               </tfoot>
             </table>
             {detailTotalPages > 1 && (
-              <div className="px-4 py-3 border-t border-slate-200">
+              <div className="px-4 py-3 border-t border-surface-border">
                 <Pagination page={detailPage} totalPages={detailTotalPages} onPageChange={setDetailPage} />
               </div>
             )}

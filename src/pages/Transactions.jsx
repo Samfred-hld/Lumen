@@ -325,25 +325,25 @@ export default function Transactions() {
       {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Transações</h2>
-          <p className="text-slate-500 text-sm mt-0.5">Controle todos os seus lançamentos</p>
+          <h2 className="text-2xl font-bold text-on-background">Transações</h2>
+          <p className="text-muted-foreground text-sm mt-0.5">Controle todos os seus lançamentos</p>
         </div>
         
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <button onClick={() => setShowCSVImport(true)} disabled={isImporting} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[11px] font-bold uppercase tracking-widest text-slate-700 bg-white shadow-sm">
+            <button onClick={() => setShowCSVImport(true)} disabled={isImporting} className="flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
               <Upload size={16} /> CSV
             </button>
-            <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[11px] font-bold uppercase tracking-widest text-slate-700 bg-white shadow-sm">
+            <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
               <FileSpreadsheet size={16} /> EXCEL
             </button>
-            <button onClick={() => { setEditing(null); setShowModal(true); }} className="lg:hidden flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-slate-800 shadow-sm transition-all">
+            <button onClick={() => { setEditing(null); setShowModal(true); }} className="lg:hidden flex items-center gap-2 px-6 py-2 bg-inverse-surface text-inverse-on-surface rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-surface-container-highest shadow-sm transition-all">
               <Plus size={16} /> NOVA
             </button>
           </div>
           
           <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar">
-            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-900 transition-colors mr-2"><ChevronLeft size={18} /></button>
+            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-surface-container rounded text-muted-foreground hover:text-on-background transition-colors mr-2"><ChevronLeft size={18} /></button>
             {MONTH_SHORT.map((monthStr, index) => {
               const isActive = index === currentMonth;
               const hasData = monthsWithData && monthsWithData.has ? monthsWithData.has(getMonthKey(currentYear, index)) : false;
@@ -357,8 +357,8 @@ export default function Transactions() {
                   className={cn(
                     "relative px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
                     isActive 
-                      ? "bg-slate-900 text-white shadow-sm" 
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                      ? "bg-inverse-surface text-inverse-on-surface shadow-sm" 
+                      : "text-muted-foreground hover:text-on-background hover:bg-surface-low"
                   )}
                 >
                   {monthStr}
@@ -368,10 +368,10 @@ export default function Transactions() {
                 </button>
               );
             })}
-            <button onClick={() => navigate(1)} className="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-900 transition-colors ml-2"><ChevronRight size={18} /></button>
+            <button onClick={() => navigate(1)} className="p-1.5 hover:bg-surface-container rounded text-muted-foreground hover:text-on-background transition-colors ml-2"><ChevronRight size={18} /></button>
             
-            <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
-            <span className="px-2 font-bold text-[11px] text-slate-800 uppercase tracking-widest">{currentYear}</span>
+            <div className="h-4 w-[1px] bg-surface-border mx-2"></div>
+            <span className="px-2 font-bold text-[11px] text-on-surface uppercase tracking-widest">{currentYear}</span>
           </div>
         </div>
       </div>
@@ -379,36 +379,36 @@ export default function Transactions() {
       {/* KPI Summary Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Receitas */}
-        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
           <div className="absolute top-0 left-0 w-full h-[3px] bg-emerald-500"></div>
-          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
             <TrendingUp size={16} className="text-emerald-500" /> RECEITAS
           </div>
           <div className="tabular-nums text-2xl font-bold text-emerald-600">{formatCurrency(totals.income)}</div>
         </div>
         
         {/* Despesas */}
-        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
           <div className="absolute top-0 left-0 w-full h-[3px] bg-red-500"></div>
-          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
             <TrendingDown size={16} className="text-red-500" /> DESPESAS
           </div>
           <div className="tabular-nums text-2xl font-bold text-red-600">{formatCurrency(totals.expense)}</div>
         </div>
         
         {/* Saldo em Conta */}
-        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-slate-400"></div>
-          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-muted-foreground"></div>
+          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
             <Wallet size={16} /> SALDO EM CONTA
           </div>
-          <div className="tabular-nums text-2xl font-bold text-slate-900">{formatCurrency(totals.balance)}</div>
+          <div className="tabular-nums text-2xl font-bold text-on-background">{formatCurrency(totals.balance)}</div>
         </div>
         
         {/* Fatura Cartão */}
-        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
           <div className="absolute top-0 left-0 w-full h-[3px] bg-amber-500"></div>
-          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
             <CreditCard size={16} className="text-amber-500" /> FATURA CARTÃO
           </div>
           <div className="tabular-nums text-2xl font-bold text-amber-600">{formatCurrency(totals.creditCard)}</div>
@@ -440,7 +440,7 @@ export default function Transactions() {
           />
 
           {/* Small Insight Card */}
-          <div className="bg-slate-900 text-white p-5 rounded-lg shadow-xl relative overflow-hidden group">
+          <div className="bg-inverse-surface text-inverse-on-surface p-5 rounded-lg shadow-xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
             <h4 className="font-bold text-sm mb-2 relative z-10">Meta de Economia</h4>
             <div className="flex justify-between items-end mb-4 relative z-10">
@@ -457,24 +457,24 @@ export default function Transactions() {
         <div className="lg:col-span-8 space-y-4">
           
           {/* Filters */}
-          <div className="bg-white border border-slate-200 p-3 space-y-3">
+          <div className="bg-surface border border-surface-border p-3 space-y-3">
             {/* Row 1: Type pills */}
             <div className="flex gap-1 overflow-x-auto no-scrollbar">
               <button 
                 onClick={() => setFilterType('all')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'all' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'all' ? "bg-inverse-surface text-inverse-on-surface" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >TODOS</button>
               <button 
                 onClick={() => setFilterType('income')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'income' ? "bg-emerald-600 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'income' ? "bg-emerald-600 text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >RECEITAS</button>
               <button 
                 onClick={() => setFilterType('expense')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'expense' ? "bg-red-600 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'expense' ? "bg-red-600 text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >DESPESAS</button>
               <button 
                 onClick={() => setFilterType('investment')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'investment' ? "bg-violet-600 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'investment' ? "bg-violet-600 text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >INVESTIMENTOS</button>
             </div>
 
@@ -485,30 +485,30 @@ export default function Transactions() {
                   <div className="flex gap-1">
                     <button 
                       onClick={() => setFilterExpType('all')} 
-                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'all' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'all' ? "bg-inverse-surface text-inverse-on-surface" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
                     >TODAS</button>
                     <button 
                       onClick={() => setFilterExpType('fixed')}
-                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'fixed' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'fixed' ? "bg-inverse-surface text-inverse-on-surface" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
                     >FIXAS</button>
                     <button 
                       onClick={() => setFilterExpType('variable')}
-                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'variable' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'variable' ? "bg-inverse-surface text-inverse-on-surface" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
                     >VARIÁVEIS</button>
                     <button 
                       onClick={() => setFilterExpType('installment')}
-                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'installment' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'installment' ? "bg-inverse-surface text-inverse-on-surface" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
                     >PARCELADAS</button>
                   </div>
-                  <div className="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+                  <div className="h-6 w-[1px] bg-surface-border hidden md:block"></div>
                 </>
               )}
               
-              <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg outline-none min-w-0">
+              <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="bg-surface border border-surface-border text-[11px] font-bold uppercase tracking-wider text-on-surface py-1.5 px-2 rounded-lg outline-none min-w-0">
                 <option value="all">Categoria</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <select value={filterPM} onChange={e => setFilterPM(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg outline-none min-w-0">
+              <select value={filterPM} onChange={e => setFilterPM(e.target.value)} className="bg-surface border border-surface-border text-[11px] font-bold uppercase tracking-wider text-on-surface py-1.5 px-2 rounded-lg outline-none min-w-0">
                 <option value="all">Pagamento</option>
                 {paymentMethods.map(p => <option key={p} value={p}>{p}</option>)}
                 {cards.map(c => <option key={`card:${c.id}`} value={`card:${c.id}`}>💳 {c.name}</option>)}
@@ -524,14 +524,14 @@ export default function Transactions() {
           </div>
 
           {/* List Container */}
-          <div className="bg-white border border-slate-200">
+          <div className="bg-surface border border-surface-border">
             {filtered.length === 0 ? (
-              <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-slate-50/50">
-                <div className="w-16 h-16 mb-5 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center">
-                  <Search size={24} className="text-slate-400" />
+              <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-surface-low/50">
+                <div className="w-16 h-16 mb-5 rounded-full bg-surface shadow-sm border border-surface-border flex items-center justify-center">
+                  <Search size={24} className="text-muted-foreground" />
                 </div>
-                <h3 className="text-base font-semibold text-slate-800 mb-1">Nenhuma transação encontrada</h3>
-                <p className="text-sm text-slate-500 max-w-[260px]">Ajuste os filtros de busca ou adicione um novo registro para começar.</p>
+                <h3 className="text-base font-semibold text-on-surface mb-1">Nenhuma transação encontrada</h3>
+                <p className="text-sm text-muted-foreground max-w-[260px]">Ajuste os filtros de busca ou adicione um novo registro para começar.</p>
               </div>
             ) : (
               <>
@@ -548,7 +548,7 @@ export default function Transactions() {
                   ))}
                 </div>
                 {totalPages > 1 && (
-                  <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex justify-center">
+                  <div className="px-4 py-3 border-t border-surface-border bg-surface-low flex justify-center">
                     <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
                   </div>
                 )}
@@ -588,7 +588,7 @@ export default function Transactions() {
       {/* Floating Action Button (Mobile Contextual) */}
       <button 
         onClick={() => { setEditing(null); setShowModal(true); }}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-slate-900 text-white rounded-full shadow-2xl flex items-center justify-center lg:hidden z-50 hover:scale-110 active:scale-95 transition-transform"
+        className="fixed bottom-24 right-6 w-14 h-14 bg-inverse-surface text-inverse-on-surface rounded-full shadow-2xl flex items-center justify-center lg:hidden z-50 hover:scale-110 active:scale-95 transition-transform"
       >
         <Plus size={24} />
       </button>
