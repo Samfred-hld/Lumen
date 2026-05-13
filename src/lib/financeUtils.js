@@ -51,7 +51,7 @@ export function calcTotals(transactions) {
     if (t.type === 'income') income += t.value || 0;
     else if (t.type === 'expense') {
       expense += t.value || 0;
-      if (t.invoiceMonth || t.paymentMethod === 'Cartão de Crédito') creditCard += t.value || 0;
+      if (t.invoiceMonth || t.paymentMethod === 'Crédito') creditCard += t.value || 0;
     }
     else if (t.type === 'investment') investment += t.value || 0;
   });

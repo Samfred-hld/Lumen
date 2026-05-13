@@ -185,6 +185,11 @@ export default function CalendarPage() {
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-xs font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-700">+{formatCurrency(monthTotals.income)}</span>
             <span className="text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-700">-{formatCurrency(monthTotals.expense)}</span>
+            {monthTotals.creditCard > 0 && (
+              <span className="text-xs font-bold px-2 py-1 rounded bg-amber-100 text-amber-700">
+                Cartão: {formatCurrency(monthTotals.creditCard)}
+              </span>
+            )}
             <span className={cn("text-xs font-bold px-2 py-1 rounded", monthTotals.balance >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700')}>
               {monthTotals.balance >= 0 ? '+' : ''}{formatCurrency(monthTotals.balance)}
             </span>
@@ -451,6 +456,12 @@ export default function CalendarPage() {
                 <span>Despesas</span>
                 <span className="font-semibold text-red-500">{formatCurrency(monthTotals.expense)}</span>
               </div>
+              {monthTotals.creditCard > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground ml-2 text-xs">↳ Cartão de Crédito</span>
+                  <span className="font-semibold text-amber-600 text-xs">{formatCurrency(monthTotals.creditCard)}</span>
+                </div>
+              )}
               {monthTotals.investment > 0 && (
                 <div className="flex justify-between text-sm">
                   <span>Investimentos</span>

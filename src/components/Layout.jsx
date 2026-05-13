@@ -381,23 +381,27 @@ export default function Layout() {
         role="navigation"
         aria-label="Navegação principal"
       >
+        {/* Collapse toggle (Floating on the right edge) */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="hidden lg:flex absolute -right-3 top-6 w-6 h-6 bg-card border border-border rounded-full items-center justify-center text-muted-foreground hover:text-foreground shadow-sm z-50 transition-transform"
+          aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
         {/* Logo */}
         <div className={cn(
           "flex items-center h-16 px-5 border-b border-white/[0.08] shrink-0",
           collapsed && "justify-center px-0"
         )}>
-          {!collapsed && (
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 gradient-primary flex items-center justify-center shadow-lg" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-                <span className="text-white font-bold text-sm font-mono">L</span>
-              </div>
-              <span className="font-display text-white text-xl tracking-tight">Lúmen</span>
+          {!collapsed ? (
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="Rattio Logo" className="w-8 h-8 object-contain drop-shadow-md" />
+              <span className="font-display text-white text-xl tracking-tight">Rattio</span>
             </div>
-          )}
-          {collapsed && (
-            <div className="w-9 h-9 gradient-primary flex items-center justify-center shadow-lg" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              <span className="text-white font-bold text-sm font-mono">L</span>
-            </div>
+          ) : (
+            <img src="/logo.png" alt="Rattio Logo" className="w-8 h-8 object-contain drop-shadow-md" />
           )}
         </div>
 
@@ -436,7 +440,7 @@ export default function Layout() {
           })}
         </nav>
 
-        {/* Theme toggle + Shortcuts + Collapse toggle */}
+        {/* Theme toggle + Shortcuts */}
         <div className="border-t border-white/[0.08] p-2 shrink-0 space-y-0.5">
           <button
             onClick={toggleTheme}
@@ -462,16 +466,6 @@ export default function Layout() {
             <Keyboard size={16} />
             {!collapsed && <span>Atalhos (?)</span>}
           </button>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className={cn(
-              "hidden lg:flex items-center gap-2 w-full px-3 py-2 rounded text-white/40 hover:text-white hover:bg-white/[0.07] transition-all text-sm",
-              collapsed && "justify-center"
-            )}
-            aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
-          >
-            {collapsed ? <ChevronRight size={16} /> : <><ChevronLeft size={16} /><span>Recolher</span></>}
-          </button>
         </div>
       </aside>
 
@@ -494,7 +488,10 @@ export default function Layout() {
           >
             <Menu size={20} />
           </button>
-          <span className="font-display text-lg ml-2">Lúmen</span>
+          <div className="flex items-center gap-2 ml-2">
+            <img src="/logo.png" alt="Rattio Logo" className="w-6 h-6 object-contain" />
+            <span className="font-display text-lg">Rattio</span>
+          </div>
           <div className="ml-auto">
             <NotificationCenter />
           </div>
