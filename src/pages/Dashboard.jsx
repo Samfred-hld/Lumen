@@ -54,10 +54,16 @@ export default function Dashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  const { data: transactions = [], refetch: refetchTx } = useTransactions();
-  const { data: goals = [] } = useGoals();
-  const { data: budgets = [] } = useBudgets();
-  const { data: cards = [] } = useCards();
+  const { data: rawTransactions, refetch: refetchTx } = useTransactions();
+  const { data: rawGoals } = useGoals();
+  const { data: rawBudgets } = useBudgets();
+  const { data: rawCards } = useCards();
+
+  // Defensive: ensure arrays (Base44 SDK may return null instead of [])
+  const transactions = Array.isArray(rawTransactions) ? rawTransactions : [];
+  const goals = Array.isArray(rawGoals) ? rawGoals : [];
+  const budgets = Array.isArray(rawBudgets) ? rawBudgets : [];
+  const cards = Array.isArray(rawCards) ? rawCards : [];
 
   useEffect(() => {
     if (transactions.length > 0) {
