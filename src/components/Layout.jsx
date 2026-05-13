@@ -255,27 +255,21 @@ export default function Layout() {
       >
         {/* Logo Header — light in light theme, dark in dark theme */}
         <div className="bg-sidebar-header border-b border-sidebar-header-border">
-          <div className={cn("px-lg py-lg flex items-center gap-base", collapsed && "justify-center px-0")}>
+          <div className={cn("px-lg py-lg flex items-center justify-center", collapsed && "px-0")}>
             <img
               src={theme === 'dark' ? '/DarkTheme_logo.png' : '/LightTheme_logo.png'}
               alt="Lúmen"
-              className="w-10 h-10 object-contain shrink-0"
+              className="w-14 h-14 object-contain shrink-0"
             />
-            {!collapsed && (
-              <div className="flex flex-col">
-                <span className="font-display-sm text-display-sm font-bold tracking-tighter text-sidebar-header-text">Lúmen</span>
-                <span className="font-body-sm text-body-sm text-sidebar-header-text/60">Wealth Management</span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Nav Body — dark in light theme, light in dark theme */}
+        {/* Nav Body — Navy in both themes (DESIGN.md constant) */}
         <div className="flex-1 flex flex-col bg-sidebar-body overflow-hidden">
           {/* Collapse toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex absolute -right-3 top-[88px] w-6 h-6 bg-surface border border-surface-border rounded-full items-center justify-center text-muted-foreground hover:text-on-surface shadow-sm z-50 transition-transform"
+            className="hidden lg:flex absolute -right-3 top-[104px] w-6 h-6 bg-surface border border-surface-border rounded-full items-center justify-center text-muted-foreground hover:text-on-surface shadow-sm z-50 transition-transform"
             aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
           >
             <MsIcon name={collapsed ? "chevron_right" : "chevron_left"} size={14} />
