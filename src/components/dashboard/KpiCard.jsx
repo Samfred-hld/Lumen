@@ -16,14 +16,13 @@ export function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, 
     ? `${delta > 0 ? 'Aumentou' : delta < 0 ? 'Diminuiu' : 'Sem alteração'} ${Math.abs(delta).toFixed(1)}% ${deltaLabel || ''}`
     : '';
   return (
-    <Card
-      className="relative overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300"
+    <div
+      className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col justify-between shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md"
       role="region"
       aria-label={`${label}: ${value}${deltaText ? '. ' + deltaText : ''}`}
     >
-      <CardContent className="p-5 relative">
-        <div className={cn("absolute top-0 left-0 right-0 h-[3px] rounded-t-xl", s.accent)} />
-        <div className="flex items-start justify-between flex-wrap gap-3">
+      <div className={cn("absolute top-0 left-0 right-0 h-[3px]", s.accent)} />
+      <div className="flex items-start justify-between flex-wrap gap-3">
           <div className="space-y-1">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
             <p className={cn("text-[22px] font-bold tabular-nums tracking-tight", s.valueColor)} aria-hidden="true">{value}</p>
@@ -51,8 +50,8 @@ export function KpiCard({ label, value, icon: Icon, variant = 'balance', delta, 
             <Icon size={20} className={s.iconColor} />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

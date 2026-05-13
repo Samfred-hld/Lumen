@@ -81,7 +81,12 @@ function CardStatementModal({ open, onClose, card, transactions }) {
   if (!card) return null;
   const stmtTx = (transactions || [])
     .filter(t => t.cardId === card.id && t.type === 'expense' && t.date)
-    .filter(t => { const [y, m] = t.date.split('-'); return parseInt(y) === stmtYear && parseInt(m) === stmtMonth + 1; })
+    .filter(t => {
+      const stmtKey = `${stmtYear}-${String(stmtMonth + 1).padStart(2, '0')}`;
+      if (t.invoiceMonth) return t.invoiceMonth === stmtKey;
+      const [y, m] = t.date.split('-'); 
+      return parseInt(y) === stmtYear && parseInt(m) === stmtMonth + 1;
+    })
     .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const total = stmtTx.reduce((s, t) => s + (t.value || 0), 0);
   const changeStmtMonth = (delta) => {

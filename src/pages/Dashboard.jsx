@@ -532,31 +532,31 @@ export default function Dashboard() {
       ))}
 
       {/* Recent transactions (always shown at bottom) */}
-      <Card className="border-0 shadow-card overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
-        <CardHeader className="pb-3 border-b border-border/40">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
+        <div className="p-4 pb-3 border-b border-slate-200">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
             <div className="w-1.5 h-4 rounded-full bg-emerald-500" /> Últimas Transações
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 pt-4">
+          </h3>
+        </div>
+        <div className="space-y-2 p-4 pt-4">
           {monthTx.length === 0 ? (
             <p className="text-muted-foreground text-sm">Sem transações neste mês</p>
           ) : (
             monthTx.slice(0, 5).map(t => (
-              <div key={t.id} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
+              <div key={t.id} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-slate-50 transition-colors">
                 <div className={cn(
                   "w-9 h-9 rounded flex items-center justify-center text-xs font-bold shrink-0 shadow-sm",
-                  t.type === 'income' ? 'gradient-emerald text-emerald-700' :
-                  t.type === 'expense' ? 'gradient-red text-red-700' : 'gradient-violet text-amber-700'
+                  t.type === 'income' ? 'bg-emerald-100 text-emerald-700' :
+                  t.type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
                 )}>
                   {(t.description || '?')[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{t.description}</p>
-                  <p className="text-xs text-muted-foreground">{t.category ? <>{getCategoryIcon(t.category)} {t.category}</> : '—'}</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500">{t.category ? <>{t.category}</> : '—'}</p>
                 </div>
                 <span className={cn(
-                  "text-sm font-semibold shrink-0",
+                  "text-sm font-semibold shrink-0 font-mono-number tracking-tight",
                   t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-amber-600'
                 )}>
                   {t.type !== 'income' ? '-' : '+'}{formatCurrency(t.value)}
@@ -564,8 +564,8 @@ export default function Dashboard() {
               </div>
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <TransactionModal open={showModal} onClose={() => setShowModal(false)} onSave={handleSave} goals={goals} defaultType={defaultType} />
       <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} />

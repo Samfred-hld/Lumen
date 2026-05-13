@@ -28,6 +28,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import * as XLSX from 'xlsx';
 
 import TransactionRow from '@/components/finance/TransactionRow';
+import TransactionInlineForm from '@/components/finance/TransactionInlineForm';
+import { TrendingUp, TrendingDown, Wallet, CreditCard } from 'lucide-react';
 
 export default function Transactions() {
   const [searchParams] = useSearchParams();
@@ -322,108 +324,97 @@ export default function Transactions() {
   };
 
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
-      {/* ── Sticky Header Wrapper ── */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur pt-4 pb-4 border-b border-border space-y-4 -mx-4 px-4 lg:-mx-6 lg:px-6">
+    <div className="max-w-[1400px] mx-auto p-4 lg:p-6 space-y-6 pb-24 lg:pb-6">
+      {/* ── Page Header ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">Transações</h2>
+          <p className="text-slate-500 text-sm mt-0.5">Controle todos os seus lançamentos</p>
+        </div>
         
-        {/* Title & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Transações</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Controle todos os seus lançamentos</p>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <button onClick={() => setShowCSVImport(true)} disabled={isImporting} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[11px] font-bold uppercase tracking-widest text-slate-700 bg-white shadow-sm">
+              <Upload size={16} /> CSV
+            </button>
+            <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[11px] font-bold uppercase tracking-widest text-slate-700 bg-white shadow-sm">
+              <FileSpreadsheet size={16} /> EXCEL
+            </button>
+            <button onClick={() => { setEditing(null); setShowModal(true); }} className="lg:hidden flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-slate-800 shadow-sm transition-all">
+              <Plus size={16} /> NOVA
+            </button>
           </div>
           
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Year Navigation */}
-            <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-md p-1 shadow-sm">
-              <button onClick={() => navigate(-12)} className="p-1 hover:bg-slate-100 rounded text-slate-600" aria-label="Ano anterior"><ChevronLeft size={14} /></button>
-              <span className="text-sm font-semibold px-2 min-w-[50px] text-center text-slate-800">
-                {currentYear}
-              </span>
-              <button onClick={() => navigate(12)} className="p-1 hover:bg-slate-100 rounded text-slate-600" aria-label="Próximo ano"><ChevronRight size={14} /></button>
-            </div>
+          <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar">
+            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-900 transition-colors mr-2"><ChevronLeft size={18} /></button>
+            {MONTH_SHORT.map((monthStr, index) => {
+              const isActive = index === currentMonth;
+              const hasData = monthsWithData && monthsWithData.has ? monthsWithData.has(getMonthKey(currentYear, index)) : false;
+              return (
+                <button
+                  key={index}
+                  onClick={() => {
+                    const diff = index - currentMonth;
+                    if (diff !== 0) navigate(diff);
+                  }}
+                  className={cn(
+                    "relative px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
+                    isActive 
+                      ? "bg-slate-900 text-white shadow-sm" 
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  )}
+                >
+                  {monthStr}
+                  {hasData && !isActive && (
+                    <span className="absolute top-1.5 right-1.5 w-1 h-1 rounded-full bg-emerald-500" />
+                  )}
+                </button>
+              );
+            })}
+            <button onClick={() => navigate(1)} className="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-900 transition-colors ml-2"><ChevronRight size={18} /></button>
             
-            <Button size="sm" variant="outline" className="h-8 bg-white" onClick={() => setShowCSVImport(true)} disabled={isImporting}>
-              <Upload size={14} className="mr-1.5" /> CSV
-            </Button>
-            <Button size="sm" variant="outline" className="h-8 bg-white" onClick={handleExportExcel}>
-              <FileSpreadsheet size={14} className="mr-1.5" /> Excel
-            </Button>
-            <Button size="sm" className="h-8" onClick={() => { setEditing(null); setShowModal(true); }}>
-              <Plus size={14} className="mr-1.5" /> Nova
-            </Button>
+            <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
+            <span className="px-2 font-bold text-[11px] text-slate-800 uppercase tracking-widest">{currentYear}</span>
           </div>
         </div>
+      </div>
 
-        {/* Month Navigation Pills */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-2 pt-1 no-scrollbar -mx-2 px-2">
-          {MONTH_SHORT.map((monthStr, index) => {
-            const isActive = index === currentMonth;
-            const hasData = monthsWithData.has(getMonthKey(currentYear, index));
-            return (
-              <button
-                key={index}
-                onClick={() => {
-                  const diff = index - currentMonth;
-                  if (diff !== 0) navigate(diff);
-                }}
-                className={cn(
-                  "relative px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-all whitespace-nowrap",
-                  isActive 
-                    ? "bg-slate-900 text-white shadow-sm" 
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
-                )}
-              >
-                {monthStr}
-                {hasData && !isActive && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
-                )}
-              </button>
-            );
-          })}
+      {/* KPI Summary Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Receitas */}
+        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-emerald-500"></div>
+          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+            <TrendingUp size={16} className="text-emerald-500" /> RECEITAS
+          </div>
+          <div className="tabular-nums text-2xl font-bold text-emerald-600">{formatCurrency(totals.income)}</div>
         </div>
-
-        {/* 4-Card Balance Layout */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Receitas */}
-          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-              <span className="text-emerald-500 text-sm">↗</span> Receitas
-            </div>
-            <div className="text-lg font-extrabold text-emerald-600 tabular-nums">
-              {formatCurrency(totals.income)}
-            </div>
+        
+        {/* Despesas */}
+        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-red-500"></div>
+          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+            <TrendingDown size={16} className="text-red-500" /> DESPESAS
           </div>
-          
-          {/* Despesas */}
-          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-              <span className="text-red-500 text-sm">↘</span> Despesas
-            </div>
-            <div className="text-lg font-extrabold text-red-600 tabular-nums">
-              {formatCurrency(totals.expense)}
-            </div>
+          <div className="tabular-nums text-2xl font-bold text-red-600">{formatCurrency(totals.expense)}</div>
+        </div>
+        
+        {/* Saldo em Conta */}
+        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-slate-400"></div>
+          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+            <Wallet size={16} /> SALDO EM CONTA
           </div>
-          
-          {/* Saldo em Conta */}
-          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-              <span className="text-blue-500 text-sm">▤</span> Saldo em Conta
-            </div>
-            <div className="text-lg font-extrabold text-slate-900 tabular-nums">
-              {formatCurrency(totals.balance)}
-            </div>
+          <div className="tabular-nums text-2xl font-bold text-slate-900">{formatCurrency(totals.balance)}</div>
+        </div>
+        
+        {/* Fatura Cartão */}
+        <div className="bg-white border border-slate-200 p-5 relative group hover:shadow-lg transition-all duration-300">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-amber-500"></div>
+          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">
+            <CreditCard size={16} className="text-amber-500" /> FATURA CARTÃO
           </div>
-          
-          {/* Fatura Cartão */}
-          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-              <span className="text-violet-500 text-sm">💳</span> Fatura Cartão
-            </div>
-            <div className="text-lg font-extrabold text-violet-600 tabular-nums">
-              {formatCurrency(totals.creditCard)}
-            </div>
-          </div>
+          <div className="tabular-nums text-2xl font-bold text-amber-600">{formatCurrency(totals.creditCard)}</div>
         </div>
       </div>
 
@@ -438,220 +429,121 @@ export default function Transactions() {
         </div>
       )}
 
-      {/* Suggestion Banner */}
-      <SuggestionBanner
-        currentMonth={currentMonth}
-        currentYear={currentYear}
-        transactions={transactions}
-        onCreateTransaction={handleSave}
-      />
+      {/* Bento Layout: Form + Filter/List */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Novo Lançamento Form (Column Span 4) */}
+        <section className="hidden lg:block lg:col-span-4 space-y-6">
+          <TransactionInlineForm 
+            onSave={handleSave} 
+            goals={goals} 
+            defaultType={defaultType} 
+            transaction={editing}
+            onCancel={() => setEditing(null)}
+          />
 
-      {/* Quick Entry */}
-      <QuickEntry onSave={handleSave} />
-
-      {/* Filters */}
-      <div className="space-y-2">
-        <div className="flex flex-wrap gap-2">
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-8 h-9"
-              data-shortcut-search
-              aria-label="Buscar transações"
-            />
+          {/* Small Insight Card */}
+          <div className="bg-slate-900 text-white p-5 rounded-lg shadow-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+            <h4 className="font-bold text-sm mb-2 relative z-10">Meta de Economia</h4>
+            <div className="flex justify-between items-end mb-4 relative z-10">
+              <span className="tabular-nums text-2xl font-bold">R$ 0,00</span>
+              <span className="text-emerald-400 font-bold text-[10px] uppercase tracking-wider">0% concluído</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/10 rounded-full relative z-10">
+              <div className="h-full bg-emerald-400 rounded-full" style={{ width: '0%' }}></div>
+            </div>
           </div>
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-[130px] h-9">
-              <SelectValue placeholder="Tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="income">Receitas</SelectItem>
-              <SelectItem value="expense">Despesas</SelectItem>
-              <SelectItem value="investment">Investimentos</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            variant={advFilterCount > 0 ? "default" : "outline"}
-            size="sm"
-            className={cn("h-9 gap-1.5", advFilterCount > 0 && "bg-primary")}
-            onClick={() => setShowAdvFilters(!showAdvFilters)}
-          >
-            <SlidersHorizontal size={14} />
-            Filtros
-            {advFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-1 h-4 min-w-[16px] px-1 text-[10px] bg-white/20">
-                {advFilterCount}
-              </Badge>
-            )}
-          </Button>
-        </div>
+        </section>
 
-        {/* Expense sub-filters (only when type=expense or all) */}
-        {filterType !== 'income' && filterType !== 'investment' && (
-          <div className="flex gap-1.5 flex-wrap">
-            {[
-              { value: 'all', label: 'Todas', icon: null },
-              { value: 'fixed', label: 'Fixas', icon: null },
-              { value: 'variable', label: 'Variáveis', icon: null },
-              { value: 'installment', label: 'Parceladas', icon: null },
-            ].map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setFilterExpType(filterExpType === opt.value ? 'all' : opt.value)}
-                className={cn(
-                  "px-3 py-1.5 rounded text-xs font-medium transition-all border",
-                  filterExpType === opt.value
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Advanced Filters Panel */}
-        {showAdvFilters && (
-          <Card className="border border-border shadow-sm mt-2">
-            <CardContent className="p-4 space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Category */}
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Categoria</label>
-                  <Select value={filterCat} onValueChange={setFilterCat}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Todas" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
-                      {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* Payment Method */}
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Pagamento</label>
-                  <Select value={filterPM} onValueChange={setFilterPM}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Todos" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      {paymentMethods.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-                      {cards.length > 0 && cards.map(c => (
-                        <SelectItem key={`card:${c.id}`} value={`card:${c.id}`}>
-                          💳 {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* Value Range */}
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Valor (R$)</label>
-                  <div className="flex items-center gap-1.5">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="Mín"
-                      value={filterValMin}
-                      onChange={e => setFilterValMin(e.target.value)}
-                      className="h-8 text-xs"
-                    />
-                    <span className="text-xs text-muted-foreground">—</span>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="Máx"
-                      value={filterValMax}
-                      onChange={e => setFilterValMax(e.target.value)}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                </div>
+        {/* Transaction List & Filters (Column Span 8) */}
+        <div className="lg:col-span-8 space-y-4">
+          
+          {/* Filters */}
+          <div className="bg-white border border-slate-200 p-3 flex flex-wrap items-center gap-3">
+            <div className="flex gap-1 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+              <button 
+                onClick={() => setFilterExpType('all')} 
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'all' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >TODAS</button>
+              <button 
+                onClick={() => setFilterExpType('fixed')}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'fixed' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >FIXAS</button>
+              <button 
+                onClick={() => setFilterExpType('variable')}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'variable' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >VARIÁVEIS</button>
+              <button 
+                onClick={() => setFilterExpType('installment')}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'installment' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >PARCELADAS</button>
+            </div>
+            
+            <div className="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+            
+            <div className="flex-1 flex gap-2">
+              <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg flex-1 outline-none min-w-0">
+                <option value="all">Categoria</option>
+                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select value={filterPM} onChange={e => setFilterPM(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg flex-1 outline-none min-w-0">
+                <option value="all">Pagamento</option>
+                {paymentMethods.map(p => <option key={p} value={p}>{p}</option>)}
+                {cards.map(c => <option key={`card:${c.id}`} value={`card:${c.id}`}>💳 {c.name}</option>)}
+              </select>
+              <div className="relative group min-w-[120px] flex-1">
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="BUSCAR..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full pl-8 pr-2 py-1.5 bg-white border border-slate-200 text-[11px] font-bold text-slate-700 rounded-lg outline-none placeholder-slate-400 uppercase tracking-wider focus:border-slate-400"
+                />
               </div>
-              {advFilterCount > 0 && (
-                <div className="flex items-center justify-between pt-1">
-                  <div className="flex gap-1.5 flex-wrap">
-                    {filterCat !== 'all' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
-                        {getCategoryIcon(filterCat)} {filterCat}
-                        <button onClick={() => setFilterCat('all')} className="hover:text-destructive" aria-label="Limpar filtro de categoria"><X size={10} /></button>
-                      </span>
-                    )}
-                    {filterPM !== 'all' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-semibold">
-                        {filterPM.startsWith('card:') ? '💳 ' : ''}{filterPM.startsWith('card:') ? cards.find(c => c.id === filterPM.replace('card:', ''))?.name : filterPM}
-                        <button onClick={() => setFilterPM('all')} className="hover:text-destructive" aria-label="Limpar filtro de pagamento"><X size={10} /></button>
-                      </span>
-                    )}
-                    {filterValMin && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-[10px] font-semibold">
-                        ≥ {formatCurrency(parseFloat(filterValMin))}
-                        <button onClick={() => setFilterValMin('')} className="hover:text-destructive" aria-label="Limpar filtro de valor mínimo"><X size={10} /></button>
-                      </span>
-                    )}
-                    {filterValMax && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-[10px] font-semibold">
-                        ≤ {formatCurrency(parseFloat(filterValMax))}
-                        <button onClick={() => setFilterValMax('')} className="hover:text-destructive" aria-label="Limpar filtro de valor máximo"><X size={10} /></button>
-                      </span>
-                    )}
-                  </div>
-                  <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-600 hover:bg-red-50" onClick={clearAdvFilters}>
-                    Limpar filtros
-                  </Button>
+            </div>
+          </div>
+
+          {/* List Container */}
+          <div className="bg-white border border-slate-200">
+            {filtered.length === 0 ? (
+              <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-slate-50/50">
+                <div className="w-16 h-16 mb-5 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center">
+                  <Search size={24} className="text-slate-400" />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                <h3 className="text-base font-semibold text-slate-800 mb-1">Nenhuma transação encontrada</h3>
+                <p className="text-sm text-slate-500 max-w-[260px]">Ajuste os filtros de busca ou adicione um novo registro para começar.</p>
+              </div>
+            ) : (
+              <>
+                <div className="divide-y divide-slate-100">
+                  {paginatedTx.map((t, i) => (
+                    <TransactionRow
+                      key={t.id}
+                      t={t}
+                      index={i}
+                      onDelete={handleDelete}
+                      onEdit={handleEdit}
+                      onDuplicate={handleDuplicate}
+                    />
+                  ))}
+                </div>
+                {totalPages > 1 && (
+                  <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex justify-center">
+                    <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+        </div>
       </div>
 
-      {/* Transaction list */}
-      <Card className="border border-border shadow-sm overflow-hidden">
-        <CardContent className="p-0">
-          {filtered.length === 0 ? (
-            <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-slate-50/50">
-              <div className="w-16 h-16 mb-5 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center">
-                <Search size={24} className="text-slate-400" />
-              </div>
-              <h3 className="text-base font-semibold text-slate-800 mb-1">Nenhuma transação encontrada</h3>
-              <p className="text-sm text-slate-500 max-w-[260px]">Ajuste os filtros de busca ou adicione um novo registro para começar.</p>
-            </div>
-          ) : (
-            <>
-            <div className="divide-y divide-border/60">
-              {paginatedTx.map((t, i) => (
-                <TransactionRow
-                  key={t.id}
-                  t={t}
-                  index={i}
-                  onDelete={handleDelete}
-                  onEdit={handleEdit}
-                  onDuplicate={handleDuplicate}
-                />
-              ))}
-            </div>
-            {totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-border/40">
-                <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-              </div>
-            )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-
+      {/* Modals & Helpers */}
       <TransactionModal
-        open={showModal}
+        open={showModal || (editing && window.innerWidth < 1024)} 
         onClose={() => { setShowModal(false); setEditing(null); }}
         onSave={handleSave}
         transaction={editing}
@@ -674,6 +566,14 @@ export default function Transactions() {
         onConfirmAll={() => confirmDelete && deleteSeries(confirmDelete.installmentSeriesId)}
         transaction={confirmDelete}
       />
+      
+      {/* Floating Action Button (Mobile Contextual) */}
+      <button 
+        onClick={() => { setEditing(null); setShowModal(true); }}
+        className="fixed bottom-24 right-6 w-14 h-14 bg-slate-900 text-white rounded-full shadow-2xl flex items-center justify-center lg:hidden z-50 hover:scale-110 active:scale-95 transition-transform"
+      >
+        <Plus size={24} />
+      </button>
     </div>
   );
 }

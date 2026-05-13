@@ -299,19 +299,19 @@ export default function Reports() {
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
-            <Card className={cn("border-0 shadow-card overflow-hidden", kpi.gradient)}>
-              <CardContent className="p-4">
+            <div className={cn("bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden", kpi.gradient)}>
+              <div className="p-4">
                 <div className="flex items-start justify-between flex-wrap gap-3">
                   <div>
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                    <p className={cn("text-xl font-bold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
+                    <p className={cn("text-xl font-bold mt-0.5 font-mono-number tracking-tight", kpi.color)}>{kpi.value}</p>
                   </div>
                   <div className={cn("p-2 rounded", kpi.bg)}>
                     <kpi.icon size={16} className={kpi.color} />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -321,20 +321,19 @@ export default function Reports() {
           { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100' },
           { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100' },
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
-        ].map(kpi => (
-          <Card key={kpi.label} className={cn("border-0 shadow-card overflow-hidden", kpi.gradient)}>
-            <CardContent className="p-4">
+          <div key={kpi.label} className={cn("bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden", kpi.gradient)}>
+            <div className="p-4">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                  <p className={cn("text-xl font-bold mt-0.5 tabular-nums", kpi.color)}>{kpi.value}</p>
+                  <p className={cn("text-xl font-bold mt-0.5 font-mono-number tracking-tight", kpi.color)}>{kpi.value}</p>
                 </div>
                 <div className={cn("p-2 rounded", kpi.bg)}>
                   <kpi.icon size={16} className={kpi.color} />
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -347,12 +346,12 @@ export default function Reports() {
           { label: 'Dia c/ Mais Gastos', value: topDay ? dayNames[parseInt(topDay[0])] : '—' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
-            <Card className="border-0 shadow-card">
-              <CardContent className="p-4">
+            <div className="bg-white border border-slate-200 rounded-lg shadow-sm">
+              <div className="p-4">
                 <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                <p className="text-lg font-bold mt-0.5 tabular-nums">{kpi.value}</p>
-              </CardContent>
-            </Card>
+                <p className="text-lg font-bold mt-0.5 font-mono-number tracking-tight">{kpi.value}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -363,12 +362,12 @@ export default function Reports() {
           { label: 'Maior Gasto', value: maxExpense.value > 0 ? formatCurrency(maxExpense.value) : '—' },
           { label: 'Dia c/ Mais Gastos', value: topDay ? dayNames[parseInt(topDay[0])] : '—' },
         ].map(kpi => (
-          <Card key={kpi.label} className="border-0 shadow-card">
-            <CardContent className="p-4">
+          <div key={kpi.label} className="bg-white border border-slate-200 rounded-lg shadow-sm">
+            <div className="p-4">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-              <p className="text-lg font-bold mt-0.5 tabular-nums">{kpi.value}</p>
-            </CardContent>
-          </Card>
+              <p className="text-lg font-bold mt-0.5 font-mono-number tracking-tight">{kpi.value}</p>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -379,9 +378,13 @@ export default function Reports() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Area chart - evolution */}
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-primary" />Evolução Mensal</CardTitle></CardHeader>
-          <CardContent>
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-primary" />Evolução Mensal
+            </h3>
+          </div>
+          <div className="p-4 flex-1">
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={monthlyData}>
                 <defs>
@@ -402,13 +405,17 @@ export default function Reports() {
                 <Area type="monotone" dataKey="expense" name="Despesas" stroke="#ef4444" fill="url(#expenseGrad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Pie chart */}
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-amber-500" />Despesas por Categoria</CardTitle></CardHeader>
-          <CardContent>
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-amber-500" />Despesas por Categoria
+            </h3>
+          </div>
+          <div className="p-4 flex-1">
             {catData.length === 0 ? (
               <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">Sem dados para exibir</div>
             ) : (
@@ -426,14 +433,14 @@ export default function Reports() {
                     <div key={d.name} className="flex items-center gap-2 text-xs">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
                       <span className="text-muted-foreground truncate flex-1">{d.name}</span>
-                      <span className="font-semibold shrink-0">{formatCurrency(d.value)}</span>
+                      <span className="font-semibold shrink-0 font-mono-number tracking-tight">{formatCurrency(d.value)}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Cash Flow Forecast */}
@@ -441,9 +448,13 @@ export default function Reports() {
 
       {/* Category bar chart */}
       {catBarData.length > 0 && (
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-violet-500" />Gastos por Categoria — Detalhe</CardTitle></CardHeader>
-          <CardContent>
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-1.5 h-4 rounded-full bg-violet-500" />Gastos por Categoria — Detalhe
+            </h3>
+          </div>
+          <div className="p-4 flex-1">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={catBarData} barSize={24} layout="vertical">
                 <CartesianGrid {...GRID_STYLE} horizontal={false} />
@@ -455,19 +466,19 @@ export default function Reports() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Real vs Planejado */}
       {realVsPlanned.length > 0 && (
-        <Card className="border-0 shadow-card overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/40">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
               <div className="w-1.5 h-4 rounded-full bg-blue-500" /> Real vs Planejado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-4">
+            </h3>
+          </div>
+          <div className="p-4 flex-1 space-y-4">
             {/* Chart */}
             <div className="overflow-x-auto -mx-4 px-4">
               <div style={{ minWidth: Math.max(300, realVsPlanned.length * 60) }}>
@@ -498,21 +509,21 @@ export default function Reports() {
                 </thead>
                 <tbody>
                   {realVsPlanned.map((r, i) => (
-                    <tr key={i} className="border-b last:border-0 hover:bg-muted/40 transition-colors">
-                      <td className="px-2 py-1.5 font-medium">
+                    <tr key={i} className="border-b last:border-0 hover:bg-slate-50 transition-colors">
+                      <td className="px-2 py-1.5 font-medium text-slate-700">
                         {r.category}
                         {r.semOrcamento && (
                           <Badge variant="outline" className="ml-1.5 text-[9px] py-0 text-muted-foreground">Sem orçamento</Badge>
                         )}
                       </td>
-                      <td className="text-right px-2 py-1.5 tabular-nums">{r.orcado > 0 ? formatCurrency(r.orcado) : '—'}</td>
-                      <td className="text-right px-2 py-1.5 tabular-nums font-medium">{formatCurrency(r.realizado)}</td>
-                      <td className={cn("text-right px-2 py-1.5 font-semibold tabular-nums",
+                      <td className="text-right px-2 py-1.5 font-mono-number tracking-tight text-slate-500">{r.orcado > 0 ? formatCurrency(r.orcado) : '—'}</td>
+                      <td className="text-right px-2 py-1.5 font-mono-number tracking-tight font-medium">{formatCurrency(r.realizado)}</td>
+                      <td className={cn("text-right px-2 py-1.5 font-semibold font-mono-number tracking-tight",
                         r.desvio <= 0 ? 'text-emerald-600' : 'text-red-500'
                       )}>
                         {r.desvio <= 0 ? '' : '+'}{formatCurrency(r.desvio)}
                       </td>
-                      <td className={cn("text-right px-2 py-1.5 font-semibold tabular-nums",
+                      <td className={cn("text-right px-2 py-1.5 font-semibold font-mono-number tracking-tight",
                         r.semOrcamento ? 'text-muted-foreground' :
                         r.pct <= 100 ? 'text-emerald-600' : 'text-red-500'
                       )}>
@@ -522,39 +533,43 @@ export default function Reports() {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t-2 font-bold">
-                    <td className="px-2 py-2">Total</td>
-                    <td className="text-right px-2 py-2 tabular-nums">{formatCurrency(rvTotalOrcado)}</td>
-                    <td className="text-right px-2 py-2 tabular-nums">{formatCurrency(rvTotalReal)}</td>
-                    <td className={cn("text-right px-2 py-2 font-bold tabular-nums",
+                  <tr className="border-t-2 border-slate-200 font-bold bg-slate-50">
+                    <td className="px-2 py-2 text-slate-700">Total</td>
+                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-slate-700">{formatCurrency(rvTotalOrcado)}</td>
+                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-slate-700">{formatCurrency(rvTotalReal)}</td>
+                    <td className={cn("text-right px-2 py-2 font-bold font-mono-number tracking-tight",
                       rvTotalDesvio <= 0 ? 'text-emerald-600' : 'text-red-500'
                     )}>
                       {rvTotalDesvio <= 0 ? '' : '+'}{formatCurrency(rvTotalDesvio)}
                     </td>
-                    <td className="text-right px-2 py-2 tabular-nums">
+                    <td className="text-right px-2 py-2 font-mono-number tracking-tight text-slate-700">
                       {rvTotalOrcado > 0 ? `${Math.round((rvTotalReal / rvTotalOrcado) * 100)}%` : '—'}
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Transactions */}
-      <Card className="border-0 shadow-card overflow-hidden">
-        <CardHeader className="pb-2 border-b border-border/40"><CardTitle className="text-sm font-semibold flex items-center gap-2"><div className="w-1.5 h-4 rounded-full bg-emerald-500" />Detalhamento de Transações</CardTitle></CardHeader>
-        <CardContent className="p-0">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <div className="w-1.5 h-4 rounded-full bg-emerald-500" /> Detalhamento de Transações
+          </h3>
+        </div>
+        <div className="p-0 flex-1">
           {/* Mobile: card list */}
-          <div className="sm:hidden divide-y divide-border">
+          <div className="sm:hidden divide-y divide-slate-100">
             {pagedDetailTx.map(t => (
-              <div key={t.id} className="flex items-center justify-between px-4 py-3">
+              <div key={t.id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors">
                 <div>
                   <p className="text-sm font-medium truncate max-w-[180px]">{t.description}</p>
-                  <p className="text-xs text-muted-foreground">{t.category || '—'} · {t.date?.split('-').reverse().join('/')}</p>
+                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{t.category || '—'} · {t.date?.split('-').reverse().join('/')}</p>
                 </div>
-                <p className={cn("text-sm font-semibold shrink-0",
+                <p className={cn("text-sm font-semibold shrink-0 font-mono-number tracking-tight",
                   t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-violet-600'
                 )}>
                   {t.type === 'income' ? '+' : '-'}{formatCurrency(t.value)}
@@ -562,7 +577,7 @@ export default function Reports() {
               </div>
             ))}
             {detailTotalPages > 1 && (
-              <div className="px-4 py-3 border-t">
+              <div className="px-4 py-3 border-t border-slate-100">
                 <Pagination page={detailPage} totalPages={detailTotalPages} onPageChange={setDetailPage} />
               </div>
             )}
@@ -575,29 +590,29 @@ export default function Reports() {
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted-foreground">Data</th>
-                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted-foreground">Descrição</th>
-                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted-foreground hidden sm:table-cell">Categoria</th>
-                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted-foreground hidden md:table-cell">Tipo</th>
-                  <th className="text-right px-4 py-2 text-xs font-semibold text-muted-foreground">Valor</th>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Data</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Descrição</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Categoria</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Tipo</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Valor</th>
                 </tr>
               </thead>
               <tbody>
                 {pagedDetailTx.map(t => (
-                  <tr key={t.id} className="border-b last:border-0 hover:bg-muted/40 transition-colors">
-                    <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap tabular-nums">{t.date?.split('-').reverse().join('/')}</td>
-                    <td className="px-4 py-2.5 max-w-[180px] truncate">{t.description}</td>
-                    <td className="px-4 py-2.5 text-muted-foreground hidden sm:table-cell">{t.category || '—'}</td>
-                    <td className="px-4 py-2.5 hidden md:table-cell">
-                      <span className={cn("text-xs px-2 py-0.5 rounded-full border",
-                        t.type === 'income' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                        t.type === 'expense' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-violet-50 text-violet-700 border-violet-200'
+                  <tr key={t.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap font-mono-number tracking-tight">{t.date?.split('-').reverse().join('/')}</td>
+                    <td className="px-4 py-3 max-w-[180px] truncate font-medium text-slate-700">{t.description}</td>
+                    <td className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider hidden sm:table-cell">{t.category || '—'}</td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      <span className={cn("text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider",
+                        t.type === 'income' ? 'bg-emerald-100 text-emerald-700' :
+                        t.type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-violet-100 text-violet-700'
                       )}>
                         {t.type === 'income' ? 'Receita' : t.type === 'expense' ? 'Despesa' : 'Investimento'}
                       </span>
                     </td>
-                    <td className={cn("px-4 py-2.5 text-right font-bold whitespace-nowrap tabular-nums",
+                    <td className={cn("px-4 py-3 text-right font-bold whitespace-nowrap font-mono-number tracking-tight",
                       t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-violet-600'
                     )}>
                       {t.type !== 'income' ? '-' : '+'}{formatCurrency(t.value)}
@@ -605,14 +620,14 @@ export default function Reports() {
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t-2 bg-muted/30">
+              <tfoot className="border-t-2 border-slate-200 bg-slate-50">
                 <tr>
-                  <td colSpan={3} className="px-4 py-2 text-xs font-semibold text-muted-foreground">
+                  <td colSpan={3} className="px-4 py-3 text-xs font-semibold text-slate-500">
                     Subtotal ({pagedDetailTx.length} itens)
                   </td>
-                  <td className="px-4 py-2 text-right text-xs font-bold text-emerald-600 tabular-nums hidden md:table-cell" />
+                  <td className="px-4 py-3 text-right text-xs font-bold text-emerald-600 tabular-nums hidden md:table-cell" />
                   <td className={cn(
-                    "px-4 py-2 text-right text-xs font-bold tabular-nums",
+                    "px-4 py-3 text-right text-[13px] font-bold font-mono-number tracking-tight",
                     pageBalance >= 0 ? 'text-emerald-600' : 'text-red-600'
                   )}>
                     Saldo pagina: {formatCurrency(pageBalance)}
@@ -621,16 +636,16 @@ export default function Reports() {
               </tfoot>
             </table>
             {detailTotalPages > 1 && (
-              <div className="px-4 py-3 border-t">
+              <div className="px-4 py-3 border-t border-slate-200">
                 <Pagination page={detailPage} totalPages={detailTotalPages} onPageChange={setDetailPage} />
               </div>
             )}
-            <p className="text-center text-xs text-muted-foreground py-2">
+            <p className="text-center text-xs text-muted-foreground py-3">
               Exibindo {Math.min(detailPage * DETAIL_PAGE_SIZE, periodTx.length)} de {periodTx.length} transações
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -6,13 +6,13 @@ import { getCategoryIcon } from '@/lib/categories';
 
 export default function CategoryBreakdown({ expensesByCategory, totals }) {
   return (
-    <Card className="border-0 shadow-card overflow-hidden">
-      <CardHeader className="pb-3 border-b border-border/40">
-        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+    <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+      <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+        <h3 className="text-sm font-semibold flex items-center gap-2">
           <div className="w-1.5 h-4 rounded-full bg-amber-500" aria-hidden="true" /> Gastos por Categoria
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4 space-y-2">
+        </h3>
+      </div>
+      <div className="p-4 flex-1 space-y-2">
         {expensesByCategory.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center py-4">Sem despesas neste mês</p>
         ) : (
@@ -22,16 +22,16 @@ export default function CategoryBreakdown({ expensesByCategory, totals }) {
               <div key={cat} className="flex items-center gap-3">
                 <span className="text-sm shrink-0" aria-hidden="true">{getCategoryIcon(cat)}</span>
                 <span className="text-sm font-medium w-28 truncate shrink-0">{cat}</span>
-                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden" role="progressbar" aria-valuenow={pct.toFixed(0)} aria-valuemin="0" aria-valuemax="100" aria-label={`${cat}: ${pct.toFixed(0)}% das despesas`}>
+                <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={pct.toFixed(0)} aria-valuemin="0" aria-valuemax="100" aria-label={`${cat}: ${pct.toFixed(0)}% das despesas`}>
                   <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: CAT_COLORS[cat] || '#94a3b8' }} />
                 </div>
-                <span className="text-xs font-semibold tabular-nums w-20 text-right shrink-0">{formatCurrency(val)}</span>
-                <span className="text-xs text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
+                <span className="text-xs font-semibold font-mono-number tracking-tight w-20 text-right shrink-0">{formatCurrency(val)}</span>
+                <span className="text-[10px] text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
               </div>
             );
           })
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -107,36 +107,34 @@ export default function CashFlowForecast({ transactions }) {
   }).filter(c => c.invoiceAmount > 0);
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2">
-            <CalendarClock size={18} /> Fluxo de Caixa — Previsão
-          </CardTitle>
-          <Select value={months.toString()} onValueChange={v => setMonths(parseInt(v))}>
-            <SelectTrigger className="w-[100px] h-8 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">3 meses</SelectItem>
-              <SelectItem value="6">6 meses</SelectItem>
-              <SelectItem value="12">12 meses</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+      <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+        <h3 className="text-sm font-semibold flex items-center gap-2">
+          <CalendarClock size={18} /> Fluxo de Caixa — Previsão
+        </h3>
+        <Select value={months.toString()} onValueChange={v => setMonths(parseInt(v))}>
+          <SelectTrigger className="w-[100px] h-8 text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="3">3 meses</SelectItem>
+            <SelectItem value="6">6 meses</SelectItem>
+            <SelectItem value="12">12 meses</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="p-4 flex-1 space-y-4">
         {/* Summary KPIs */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="bg-muted/50 rounded p-3 text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">Receita Média/Mês</p>
-            <p className="text-sm font-bold text-emerald-600">{formatCurrency(avgIncome)}</p>
+          <div className="bg-slate-50 rounded p-3 text-center">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Receita Média/Mês</p>
+            <p className="text-sm font-bold text-emerald-600 font-mono-number tracking-tight mt-1">{formatCurrency(avgIncome)}</p>
           </div>
-          <div className="bg-muted/50 rounded p-3 text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">Despesa Média/Mês</p>
-            <p className="text-sm font-bold text-red-500">{formatCurrency(avgExpense)}</p>
+          <div className="bg-slate-50 rounded p-3 text-center">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Despesa Média/Mês</p>
+            <p className="text-sm font-bold text-red-500 font-mono-number tracking-tight mt-1">{formatCurrency(avgExpense)}</p>
           </div>
-          <div className="bg-muted/50 rounded p-3 text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">Saldo Médio/Mês</p>
-            <p className={cn("text-sm font-bold", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+          <div className="bg-slate-50 rounded p-3 text-center">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Saldo Médio/Mês</p>
+            <p className={cn("text-sm font-bold font-mono-number tracking-tight mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
               {formatCurrency(avgIncome - avgExpense)}
             </p>
           </div>
@@ -155,9 +153,9 @@ export default function CashFlowForecast({ transactions }) {
                 <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
             <Tooltip formatter={v => formatCurrency(v)} />
             <Area type="monotone" dataKey="income" name="Receita" stroke="#10b981" fill="url(#forecastIncomeGrad)" strokeWidth={2} strokeDasharray="4 2" />
             <Area type="monotone" dataKey="expense" name="Despesa" stroke="#ef4444" fill="url(#forecastExpenseGrad)" strokeWidth={2} strokeDasharray="4 2" />
@@ -168,7 +166,7 @@ export default function CashFlowForecast({ transactions }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium"
           >
             {showDetails ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
             {showDetails ? 'Ocultar' : 'Ver'} detalhamento mensal
@@ -179,23 +177,23 @@ export default function CashFlowForecast({ transactions }) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left px-2 py-1.5 font-semibold text-muted-foreground">Mês</th>
-                  <th className="text-right px-2 py-1.5 font-semibold text-muted-foreground">Receita</th>
-                  <th className="text-right px-2 py-1.5 font-semibold text-muted-foreground">Despesa</th>
-                  <th className="text-right px-2 py-1.5 font-semibold text-muted-foreground">Saldo</th>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Mês</th>
+                  <th className="text-right px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Receita</th>
+                  <th className="text-right px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Despesa</th>
+                  <th className="text-right px-2 py-1.5 font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Saldo</th>
                 </tr>
               </thead>
               <tbody>
                 {forecast.map((f) => (
-                  <tr key={f.key} className={cn("border-b last:border-0", f.isCurrentMonth && "bg-primary/5 font-medium")}>
-                    <td className="px-2 py-1.5 capitalize">
+                  <tr key={f.key} className={cn("border-b border-slate-100 last:border-0 hover:bg-slate-50", f.isCurrentMonth && "bg-slate-50/50 font-medium")}>
+                    <td className="px-2 py-1.5 capitalize text-slate-700">
                       {MONTH_NAMES[parseInt(f.key.split('-')[1]) - 1]} {f.key.split('-')[0]}
-                      {f.isCurrentMonth && <Badge variant="outline" className="ml-1 text-[9px] py-0">Atual</Badge>}
+                      {f.isCurrentMonth && <Badge variant="outline" className="ml-1 text-[9px] py-0 text-slate-500 border-slate-200">Atual</Badge>}
                     </td>
-                    <td className="text-right px-2 py-1.5 text-emerald-600">{formatCurrency(f.income)}</td>
-                    <td className="text-right px-2 py-1.5 text-red-500">{formatCurrency(f.expense)}</td>
-                    <td className={cn("text-right px-2 py-1.5 font-semibold", f.balance >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                    <td className="text-right px-2 py-1.5 text-emerald-600 font-mono-number tracking-tight">{formatCurrency(f.income)}</td>
+                    <td className="text-right px-2 py-1.5 text-red-500 font-mono-number tracking-tight">{formatCurrency(f.expense)}</td>
+                    <td className={cn("text-right px-2 py-1.5 font-semibold font-mono-number tracking-tight", f.balance >= 0 ? 'text-emerald-600' : 'text-red-500')}>
                       {f.balance >= 0 ? '+' : ''}{formatCurrency(f.balance)}
                     </td>
                   </tr>
@@ -207,25 +205,25 @@ export default function CashFlowForecast({ transactions }) {
 
         {/* Upcoming card invoices */}
         {upcomingInvoices.length > 0 && (
-          <div className="border-t pt-3 space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Faturas Próximas</p>
+          <div className="border-t border-slate-200 pt-3 space-y-2">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Faturas Próximas</p>
             {upcomingInvoices.map(c => (
-              <div key={c.id} className="flex items-center gap-2 p-2 rounded bg-muted/30 text-xs">
+              <div key={c.id} className="flex items-center gap-2 p-2 rounded bg-slate-50 border border-slate-100 text-xs">
                 <div className="w-6 h-4 rounded-sm flex items-center justify-center text-white text-[8px] font-bold" style={{ background: c.color }}>
                   {c.brand === 'visa' ? 'V' : c.brand === 'mastercard' ? 'MC' : c.brand === 'elo' ? 'E' : 'CC'}
                 </div>
-                <span className="font-medium flex-1">{c.name}</span>
-                <span className="text-muted-foreground">Vence {c.dueDate}</span>
-                <span className="font-semibold text-red-500">{formatCurrency(c.invoiceAmount)}</span>
+                <span className="font-medium flex-1 text-slate-700">{c.name}</span>
+                <span className="text-slate-500 text-[11px]">Vence {c.dueDate}</span>
+                <span className="font-semibold text-red-500 font-mono-number tracking-tight">{formatCurrency(c.invoiceAmount)}</span>
               </div>
             ))}
           </div>
         )}
 
-        <p className="text-[10px] text-muted-foreground italic">
+        <p className="text-[10px] text-slate-400 italic">
           * Previsão baseada na média dos últimos 6 meses. Transações fixas têm peso garantido.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

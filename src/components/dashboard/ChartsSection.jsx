@@ -10,13 +10,13 @@ export default function ChartsSection({ barData, processedPieData }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-      <Card className="border-0 shadow-card overflow-hidden">
-        <CardHeader className="pb-2 border-b border-border/40">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
             <div className="w-1.5 h-4 rounded-full bg-primary" aria-hidden="true" /> Evolução Mensal
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-4 flex-1">
           <div className="sr-only" role="img" aria-label={`Evolução mensal de receitas e despesas. ${barSummary}`}>
             Resumo: {barSummary}
           </div>
@@ -30,16 +30,16 @@ export default function ChartsSection({ barData, processedPieData }) {
               <Bar dataKey="expense" name="Despesas" fill={CHART_COLORS.expense} radius={[6, 6, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card className="border-0 shadow-card overflow-hidden">
-        <CardHeader className="pb-2 border-b border-border/40">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col group">
+        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
             <div className="w-1.5 h-4 rounded-full bg-amber-500" aria-hidden="true" /> Gastos por Categoria
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-4 flex-1">
           {processedPieData.length === 0 ? (
             <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Sem despesas neste mês</div>
           ) : (
@@ -61,15 +61,15 @@ export default function ChartsSection({ barData, processedPieData }) {
                     <div key={d.name} className="flex items-center gap-2 text-xs">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} aria-hidden="true" />
                       <span className="text-muted-foreground truncate flex-1">{d.name}</span>
-                      <span className="font-semibold shrink-0">{formatCurrency(d.value)}</span>
+                      <span className="font-semibold shrink-0 font-mono-number tracking-tight">{formatCurrency(d.value)}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

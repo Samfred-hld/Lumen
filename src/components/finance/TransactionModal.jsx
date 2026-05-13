@@ -15,6 +15,7 @@ import { formatCurrency, clampDateInput } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
 import { suggestCategoryFromRules, getTemplates, getPaymentMethods } from '@/lib/store';
 import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
+import { getInvoiceMonth } from '@/lib/csvParser';
 import { Checkbox } from '@/components/ui/checkbox';
 import { base44 } from '@/api/base44Client';
 import { useTransactions, useCards } from '@/hooks/useData';
@@ -222,14 +223,25 @@ export default function TransactionModal({ open, onClose, onSave, transaction, g
       return;
     }
 
+    let invoiceMonth = null;
+    const isCredit = watchedPaymentMethod === 'Crédito' && data.cardId && data.cardId !== 'none';
+    
+    if (isCredit) {
+      const card = cards.find(c => c.id === data.cardId);
+      if (card && card.closingDay) {
+        invoiceMonth = getInvoiceMonth(data.date, card.closingDay);
+      }
+    }
+
     onSave({
       ...data,
       value,
       paymentMethod: watchedPaymentMethod,
-      cardId: data.cardId && data.cardId !== 'none' ? data.cardId : null,
+      cardId: isCredit ? data.cardId : null,
       goalId: data.goalId && data.goalId !== 'none' ? data.goalId : null,
       isInstallment: false,
       installmentCount: null,
+      invoiceMonth: invoiceMonth || undefined,
     });
   };
 

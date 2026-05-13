@@ -82,7 +82,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
         if (data.rules) { saveRules(data.rules); }
         if (data.salaryConfig) { saveSalaryConfig(data.salaryConfig); }
         if (data.changelog) lsSet('changelog', data.changelog);
-        setImportMsg('Backup restaurado com sucesso! Atualize a página para ver os dados do Base44.');
+        setImportMsg('Backup restaurado com sucesso! Seus dados locais foram atualizados.');
         setTimeout(() => setImportMsg(''), 5000);
       } catch { setImportMsg('Erro ao importar. Verifique o formato JSON.'); setTimeout(() => setImportMsg(''), 3000); }
     };
@@ -180,8 +180,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
               <p className="text-sm text-muted-foreground">Isso vai <strong>apagar permanentemente</strong>:</p>
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• Todas as transações</li><li>• Todas as metas</li><li>• Todos os orçamentos</li>
-                <li>• Todos os cartões</li><li>• Todas as regras</li><li>• Todas as configurações</li>
-                <li>• Dados sincronizados na nuvem</li>
+                <li>• Todos os cartões</li><li>• Todas as regras</li><li>• Todas as configurações locais</li>
               </ul>
               <div className="bg-red-50 border border-red-200 rounded p-3 text-xs text-red-700">
                 <strong>⚠️ Esta ação é irreversível.</strong> Recomendamos fazer um backup JSON antes.
@@ -201,9 +200,8 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
                     setClearStep('Concluído!');
                     addChangelogEntry({ action: 'delete', entityType: 'todos os dados', entityName: 'Limpeza completa' });
                     const entitySummary = Object.entries(result.entities).filter(([, v]) => v.deleted > 0).map(([k, v]) => `${v.deleted} ${k}`).join(', ');
-                    let msg = `Cache limpo: ${result.localStorage.cleared} chaves.`;
+                    let msg = `Cache local limpo: ${result.localStorage.cleared} chaves.`;
                     if (entitySummary) msg = `Dados removidos: ${entitySummary}. ${msg}`;
-                    if (result.errors.length > 0) msg += ` ⚠️ ${result.errors.length} item(s) não removido(s) da nuvem.`;
                     setImportMsg(msg + ' Atualize a página.');
                     setTimeout(() => window.location.reload(), 2500);
                   } catch (e) { setImportMsg('Erro ao limpar dados: ' + e.message); setClearStep(''); }
