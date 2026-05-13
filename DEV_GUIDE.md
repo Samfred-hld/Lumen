@@ -156,6 +156,7 @@ Alterações feitas localmente são sincronizadas com o Base44 Builder. O `base4
 - [ ] Tokens do design system usados (não cores hardcoded)
 - [ ] Material Symbols para ícones visuais
 - [ ] `formatCurrency()` para valores monetários
+- [ ] Dados de localStorage validados com `Array.isArray` / tipo check antes de uso
 - [ ] Build passa: `npm run build`
 
 ### 7. Validar dados de localStorage/getLocal
