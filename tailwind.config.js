@@ -118,7 +118,14 @@ module.exports = {
           accent: 'hsl(var(--sidebar-accent))',
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
-          ring: 'hsl(var(--sidebar-ring))'
+          ring: 'hsl(var(--sidebar-ring))',
+          'header': 'var(--sidebar-header-bg)',
+          'header-border': 'var(--sidebar-header-border)',
+          'header-text': 'var(--sidebar-header-text)',
+          'body': 'var(--sidebar-body-bg)',
+          'body-text': 'var(--sidebar-body-text)',
+          'body-active': 'var(--sidebar-body-active)',
+          'body-hover': 'var(--sidebar-body-hover)',
         }
       },
       borderRadius: {

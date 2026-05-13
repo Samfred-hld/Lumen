@@ -247,81 +247,88 @@ export default function Layout() {
       {/* ═══ Desktop SideNav ═══ */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-screen bg-on-primary-fixed flex flex-col py-xl border-r border-editorial-rule hidden md:flex transition-all duration-300 z-50",
+          "fixed left-0 top-0 h-screen flex flex-col hidden md:flex transition-all duration-300 z-50",
           collapsed ? "w-sidebar-collapsed" : "w-sidebar-w"
         )}
         role="navigation"
         aria-label="Navegação principal"
       >
-        {/* Collapse toggle */}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="hidden lg:flex absolute -right-3 top-6 w-6 h-6 bg-surface border border-surface-border rounded-full items-center justify-center text-muted-foreground hover:text-on-surface shadow-sm z-50 transition-transform"
-          aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
-        >
-          <MsIcon name={collapsed ? "chevron_right" : "chevron_left"} size={14} />
-        </button>
-
-        {/* Logo */}
-        <div className={cn("px-lg mb-xl flex items-center gap-base", collapsed && "justify-center px-0")}>
-          <div className="w-8 h-8 bg-primary-light flex items-center justify-center" style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}>
-            <MsIcon name="diamond" className="text-on-primary-fixed" size={16} />
+        {/* Logo Header — light in light theme, dark in dark theme */}
+        <div className="bg-sidebar-header border-b border-sidebar-header-border">
+          <div className={cn("px-lg py-lg flex items-center gap-base", collapsed && "justify-center px-0")}>
+            <img
+              src={theme === 'dark' ? '/DarkTheme_logo.png' : '/LightTheme_logo.png'}
+              alt="Lúmen"
+              className="w-10 h-10 object-contain shrink-0"
+            />
+            {!collapsed && (
+              <div className="flex flex-col">
+                <span className="font-display-sm text-display-sm font-bold tracking-tighter text-sidebar-header-text">Lúmen</span>
+                <span className="font-body-sm text-body-sm text-sidebar-header-text/60">Wealth Management</span>
+              </div>
+            )}
           </div>
-          {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-display-sm text-display-sm font-bold tracking-tighter text-on-primary">Lúmen</span>
-              <span className="font-body-sm text-body-sm text-on-primary/60">Wealth Management</span>
-            </div>
-          )}
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto">
-          {NAV_ITEMS.map(({ path, label, icon, shortcut }) => {
-            const active = location.pathname === path;
-            return (
-              <Link
-                key={path}
-                to={path}
-                onClick={() => setSidebarOpen(false)}
-                className={cn(
-                  "flex items-center w-full px-lg py-sm font-body-lg transition-all",
-                  active
-                    ? "text-on-primary border-l-4 border-primary-light bg-on-secondary-fixed-variant/20 scale-100"
-                    : "text-on-primary/50 hover:bg-on-secondary-fixed-variant/10 hover:text-on-primary",
-                  collapsed && "justify-center px-0"
-                )}
-                title={collapsed ? `${label} (${shortcut})` : undefined}
-                aria-current={active ? 'page' : undefined}
-              >
-                <MsIcon name={icon} size={20} className={cn("mr-md", collapsed && "mr-0")} />
-                {!collapsed && (
-                  <>
-                    <span className="font-body-lg text-body-lg">{label}</span>
-                    <span className="ml-auto font-mono-kbd text-mono-kbd opacity-40">⌘{shortcut}</span>
-                  </>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Nav Body — dark in light theme, light in dark theme */}
+        <div className="flex-1 flex flex-col bg-sidebar-body overflow-hidden">
+          {/* Collapse toggle */}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="hidden lg:flex absolute -right-3 top-[88px] w-6 h-6 bg-surface border border-surface-border rounded-full items-center justify-center text-muted-foreground hover:text-on-surface shadow-sm z-50 transition-transform"
+            aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
+          >
+            <MsIcon name={collapsed ? "chevron_right" : "chevron_left"} size={14} />
+          </button>
 
-        {/* Bottom links */}
-        <div className="px-lg mt-auto pt-lg border-t border-on-primary/10">
-          <button
-            onClick={() => setShowShortcuts(true)}
-            className={cn("flex items-center w-full py-sm text-on-primary/50 font-body-lg hover:text-on-primary transition-colors", collapsed && "justify-center")}
-          >
-            <MsIcon name="help_outline" size={20} className={cn("mr-md", collapsed && "mr-0")} />
-            {!collapsed && <span>Support</span>}
-          </button>
-          <button
-            onClick={toggleTheme}
-            className={cn("flex items-center w-full py-sm text-on-primary/50 font-body-lg hover:text-on-primary transition-colors", collapsed && "justify-center")}
-          >
-            <MsIcon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} size={20} className={cn("mr-md", collapsed && "mr-0")} />
-            {!collapsed && <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>}
-          </button>
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto pt-md">
+            {NAV_ITEMS.map(({ path, label, icon, shortcut }) => {
+              const active = location.pathname === path;
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={cn(
+                    "flex items-center w-full px-lg py-sm font-body-lg transition-all",
+                    active
+                      ? "text-sidebar-body-text border-l-4 border-primary-light bg-sidebar-body-active scale-100"
+                      : "text-sidebar-body-text/50 hover:bg-sidebar-body-hover hover:text-sidebar-body-text",
+                    collapsed && "justify-center px-0"
+                  )}
+                  title={collapsed ? `${label} (${shortcut})` : undefined}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <MsIcon name={icon} size={20} className={cn("mr-md", collapsed && "mr-0")} />
+                  {!collapsed && (
+                    <>
+                      <span className="font-body-lg text-body-lg">{label}</span>
+                      <span className="ml-auto font-mono-kbd text-mono-kbd opacity-40">⌘{shortcut}</span>
+                    </>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Bottom links */}
+          <div className="px-lg mt-auto pt-lg border-t border-sidebar-body-text/10">
+            <button
+              onClick={() => setShowShortcuts(true)}
+              className={cn("flex items-center w-full py-sm text-sidebar-body-text/50 font-body-lg hover:text-sidebar-body-text transition-colors", collapsed && "justify-center")}
+            >
+              <MsIcon name="help_outline" size={20} className={cn("mr-md", collapsed && "mr-0")} />
+              {!collapsed && <span>Support</span>}
+            </button>
+            <button
+              onClick={toggleTheme}
+              className={cn("flex items-center w-full py-sm text-sidebar-body-text/50 font-body-lg hover:text-sidebar-body-text transition-colors", collapsed && "justify-center")}
+            >
+              <MsIcon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} size={20} className={cn("mr-md", collapsed && "mr-0")} />
+              {!collapsed && <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>}
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -365,7 +372,7 @@ export default function Layout() {
 
       {/* ═══ Mobile Bottom Nav ═══ */}
       <nav
-        className="fixed bottom-0 w-full z-50 md:hidden bg-on-primary-fixed border-t border-editorial-rule shadow-lg flex justify-around items-center h-mobile-nav-height px-md"
+        className="fixed bottom-0 w-full z-50 md:hidden bg-surface border-t border-surface-border shadow-lg flex justify-around items-center h-mobile-nav-height px-md"
         role="navigation"
         aria-label="Navegação principal"
       >
@@ -377,7 +384,7 @@ export default function Layout() {
               to={path}
               className={cn(
                 "flex flex-col items-center font-bold transition-colors active:scale-95",
-                active ? "text-on-primary" : "text-on-primary/50"
+                active ? "text-primary" : "text-muted-foreground"
               )}
               aria-current={active ? 'page' : undefined}
             >
@@ -390,7 +397,7 @@ export default function Layout() {
 
       {/* FAB (Mobile) */}
       <button
-        className="fixed bottom-24 right-6 w-14 h-14 bg-primary-light rounded-full shadow-2xl flex items-center justify-center text-on-primary-fixed z-50 md:hidden scale-100 active:scale-90 transition-transform"
+        className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center z-50 md:hidden scale-100 active:scale-90 transition-transform"
         onClick={() => useTransactionModal.open()}
       >
         <MsIcon name="add" size={28} />

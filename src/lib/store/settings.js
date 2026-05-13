@@ -47,7 +47,7 @@ export async function saveSalaryConfig(c) {
 export function getTheme() {
   const saved = getLocal('theme', null);
   if (saved) return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'light'; // Default to light theme
 }
 export async function fetchTheme() {
   const cloud = await getSettingFromCloud('theme');

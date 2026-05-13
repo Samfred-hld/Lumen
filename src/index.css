@@ -101,8 +101,102 @@ body {
     --sidebar-border: 217 50% 15%;
     --sidebar-ring: 173 80% 26%;
 
+    /* ── Sidebar sections (light theme) ── */
+    --sidebar-header-bg: #FFFFFF;
+    --sidebar-header-border: #E2E8F0;
+    --sidebar-header-text: #0F172A;
+    --sidebar-body-bg: #0A1628;
+    --sidebar-body-text: #FFFFFF;
+    --sidebar-body-active: rgba(255,255,255,0.15);
+    --sidebar-body-hover: rgba(255,255,255,0.07);
+
     --skeleton-base: #E2E8F0;
     --skeleton-shine: #F1F5F9;
+  }
+
+  /* ═══════════════════════════════════════════
+     DARK THEME
+     ═══════════════════════════════════════════ */
+  [data-theme="dark"] {
+    /* ── Brand ── */
+    --brand-primary: #14B8A6; /* Teal 500 — brighter in dark */
+    --brand-secondary: #2DD4BF; /* Teal 400 */
+    --brand-cta: #38BDF8; /* Sky 400 */
+    --brand-navy: #0A1628;
+    --brand-navy-light: #1E293B;
+    --brand-bg: #0F172A; /* Slate 900 */
+    --brand-surface: #1E293B; /* Slate 800 */
+
+    /* ── Semantic ── */
+    --bg-page: var(--brand-bg);
+    --bg-light: #1E293B;
+    --card-bg: var(--brand-surface);
+    --text-main: #F1F5F9; /* Slate 100 */
+    --text-muted: #94A3B8; /* Slate 400 */
+    --text-light: #FFFFFF;
+    --border-color: #334155; /* Slate 700 */
+    --input-bg: #1E293B;
+
+    --success: #34D399; /* Emerald 400 */
+    --success-light: #064E3B; /* Emerald 900 */
+    --danger: #F87171; /* Red 400 */
+    --danger-light: #7F1D1D; /* Red 900 */
+    --warning: #FBBF24; /* Amber 400 */
+    --warning-light: #78350F; /* Amber 900 */
+    --info: #38BDF8; /* Sky 400 */
+    --info-light: #0C4A6E; /* Sky 900 */
+
+    /* ── Shadows — deeper for dark ── */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+
+    /* ── Layout — inverted sidebar ── */
+    --header-bg: #1E293B;
+    --sidebar-bg: #F1F5F9; /* Light sidebar in dark mode */
+
+    /* ── shadcn/ui CSS vars ── */
+    --background: 222.2 84% 4.9%;        /* #0F172A */
+    --foreground: 210 40% 98%;           /* #F8FAFC */
+    --card: 217.2 32.6% 17.5%;          /* #1E293B */
+    --card-foreground: 210 40% 98%;
+    --popover: 217.2 32.6% 17.5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 173 80% 40%;              /* Teal 500 */
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 173 80% 40%;
+
+    --sidebar-background: 215 25% 95%;   /* Light sidebar */
+    --sidebar-foreground: 222.2 84% 4.9%; /* Dark text on light sidebar */
+    --sidebar-primary: 173 80% 40%;
+    --sidebar-primary-foreground: 222.2 84% 4.9%;
+    --sidebar-accent: 215 25% 90%;
+    --sidebar-accent-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 215 20% 85%;
+    --sidebar-ring: 173 80% 40%;
+
+    /* ── Sidebar sections (dark theme — inverted) ── */
+    --sidebar-header-bg: #0A1628;
+    --sidebar-header-border: #1E293B;
+    --sidebar-header-text: #FFFFFF;
+    --sidebar-body-bg: #F1F5F9;
+    --sidebar-body-text: #0F172A;
+    --sidebar-body-active: rgba(15,23,42,0.10);
+    --sidebar-body-hover: rgba(15,23,42,0.05);
+
+    --skeleton-base: #334155;
+    --skeleton-shine: #475569;
   }
 }
 
@@ -225,6 +319,9 @@ body {
   padding-right: 4px;
   transition: all 0.2s ease;
 }
+[data-theme="dark"] .transaction-row:hover {
+  background-color: #1E293B;
+}
 
 /* ═══════════════════════════════════════════
    Scrollbar — minimal, warm
@@ -245,6 +342,12 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(23,20,18,0.22);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.22);
 }
 
 
