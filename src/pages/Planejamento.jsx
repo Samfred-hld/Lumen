@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════
 
 import React, { useState, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { base44 } from '@/api/base44Client';
@@ -71,15 +71,6 @@ const CAT_MATERIAL_ICONS = {
   'Aluguel de Veículos': 'directions_car',
 };
 
-// ═══ Budget Schema ═══
-const budgetSchema = z.object({
-  category: z.string().min(1, 'Selecione uma categoria'),
-  limit: z.number({ invalid_type_error: 'Informe um valor numérico' })
-    .positive('O limite deve ser maior que zero'),
-  month: z.string().regex(/^\d{4}-\d{2}$/, 'Mês inválido'),
-  isRecurring: z.boolean().optional(),
-});
-
 // ═══ Goal Schema ═══
 const GOAL_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316'];
 
@@ -92,57 +83,8 @@ const goalSchema = z.object({
 });
 
 // ══════════════════════════════════════════
-// MODALS
+// MODALS (Goals only — Budgets use inline manager)
 // ══════════════════════════════════════════
-
-function BudgetModal({ open, onClose, onSave, budget, monthKey }) {
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
-    resolver: zodResolver(budgetSchema),
-    defaultValues: { category: '', limit: undefined, month: monthKey, isRecurring: false },
-  });
-
-  React.useEffect(() => {
-    if (budget) {
-      reset({ category: budget.category, limit: budget.limit, month: budget.month, isRecurring: budget.isRecurring || false });
-    } else {
-      reset({ category: '', limit: undefined, month: monthKey, isRecurring: false });
-    }
-  }, [budget, open, monthKey, reset]);
-
-  return (
-    <AdaptiveModal open={open} onOpenChange={onClose} title={budget ? 'Editar Orçamento' : 'Novo Orçamento'}>
-      <form className="space-y-3" onSubmit={handleSubmit(onSave)}>
-        <div>
-          <Label>Categoria</Label>
-          <Controller name="category" control={control} render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder="Selecionar" /></SelectTrigger>
-              <SelectContent>{DEFAULT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-            </Select>
-          )} />
-          {errors.category && <p className="text-sm text-destructive mt-1">{errors.category.message}</p>}
-        </div>
-        <div>
-          <Label>Limite (R$)</Label>
-          <Input {...register('limit', { valueAsNumber: true })} type="number" min="0" step="0.01" className="mt-1" placeholder="0,00" />
-          {errors.limit && <p className="text-sm text-destructive mt-1">{errors.limit.message}</p>}
-        </div>
-        <div className="flex items-center gap-2 pt-1">
-          <Controller name="isRecurring" control={control} render={({ field }) => (
-            <Checkbox id="isRecurring" checked={field.value} onCheckedChange={field.onChange} />
-          )} />
-          <Label htmlFor="isRecurring" className="cursor-pointer font-normal text-sm flex items-center gap-1.5">
-            <Repeat size={12} /> Repetir todo mês
-          </Label>
-        </div>
-        <div className="flex gap-2 pt-2">
-          <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
-          <Button className="flex-1" type="submit">{budget ? 'Salvar' : 'Criar'}</Button>
-        </div>
-      </form>
-    </AdaptiveModal>
-  );
-}
 
 function GoalModal({ open, onClose, onSave, goal }) {
   const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -279,7 +221,9 @@ export default function Planejamento() {
   const goals = Array.isArray(rawGoals) ? rawGoals : [];
 
   // Modals
-  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [showBudgetManager, setShowBudgetManager] = useState(false);
+  const [budgetValues, setBudgetValues] = useState({}); // { category: limit }
+  const [newCategory, setNewCategory] = useState('');
   const [editingBudget, setEditingBudget] = useState(null);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
@@ -302,14 +246,60 @@ export default function Planejamento() {
 
   const projectedSavings = totals.income - totalBudgetSpent - totals.investment;
 
-  // Handlers — Budgets
-  const handleSaveBudget = async (data) => {
-    const payload = { ...data, month: monthKey };
-    if (editingBudget) await base44.entities.Budget.update(editingBudget.id, payload);
-    else await base44.entities.Budget.create(payload);
+  // Handlers — Budgets (inline manager)
+  const openBudgetManager = () => {
+    // Initialize with existing budget limits
+    const vals = {};
+    monthBudgets.forEach(b => { vals[b.category] = String(b.limit || ''); });
+    setBudgetValues(vals);
+    setNewCategory('');
+    setShowBudgetManager(true);
+  };
+
+  const handleBudgetValueChange = (category, value) => {
+    setBudgetValues(prev => ({ ...prev, [category]: value }));
+  };
+
+  const handleAddCategory = () => {
+    if (newCategory && !budgetValues.hasOwnProperty(newCategory)) {
+      setBudgetValues(prev => ({ ...prev, [newCategory]: '' }));
+      setNewCategory('');
+    }
+  };
+
+  const handleRemoveCategory = (category) => {
+    setBudgetValues(prev => {
+      const next = { ...prev };
+      delete next[category];
+      return next;
+    });
+  };
+
+  const handleSaveAllBudgets = async () => {
+    // Save each category with a value > 0
+    const entries = Object.entries(budgetValues).filter(([, v]) => parseFloat(v) > 0);
+
+    for (const [category, value] of entries) {
+      const limit = parseFloat(value);
+      const existing = monthBudgets.find(b => b.category === category);
+      if (existing) {
+        if (existing.limit !== limit) {
+          await base44.entities.Budget.update(existing.id, { limit });
+        }
+      } else {
+        await base44.entities.Budget.create({ category, limit, month: monthKey, isRecurring: false });
+      }
+    }
+
+    // Delete budgets for categories removed (had budget, now empty/removed)
+    for (const b of monthBudgets) {
+      if (!budgetValues.hasOwnProperty(b.category) || parseFloat(budgetValues[b.category]) <= 0) {
+        await base44.entities.Budget.delete(b.id);
+      }
+    }
+
     refetchBudgets();
-    setShowBudgetModal(false);
-    setEditingBudget(null);
+    setShowBudgetManager(false);
   };
 
   const handleDeleteBudget = async (id) => {
@@ -351,21 +341,21 @@ export default function Planejamento() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
-          <div className="space-y-xs">
+          <div className="space-y-xs min-w-0">
             <p className="font-label-caps text-label-caps text-muted-foreground">TOTAL ALOCADO</p>
-            <h3 className="font-display-hero text-display-hero tabular-nums text-on-surface">{formatCurrency(totalBudgetLimit)}</h3>
+            <h3 className="font-display-sm text-display-sm tabular-nums text-on-surface truncate">{formatCurrency(totalBudgetLimit)}</h3>
             <div className="h-[1px] w-full bg-editorial-rule" />
           </div>
-          <div className="space-y-xs">
+          <div className="space-y-xs min-w-0">
             <p className="font-label-caps text-label-caps text-muted-foreground">ECONOMIA PROJETADA</p>
-            <h3 className={cn("font-display-hero text-display-hero tabular-nums", projectedSavings >= 0 ? 'text-success' : 'text-danger')}>
+            <h3 className={cn("font-display-sm text-display-sm tabular-nums truncate", projectedSavings >= 0 ? 'text-success' : 'text-danger')}>
               {formatCurrency(projectedSavings)}
             </h3>
             <div className="h-[1px] w-full bg-editorial-rule" />
           </div>
-          <div className="space-y-xs">
+          <div className="space-y-xs min-w-0">
             <p className="font-label-caps text-label-caps text-muted-foreground">PROGRESSO DAS METAS</p>
-            <h3 className="font-display-hero text-display-hero tabular-nums text-on-surface">{goalProgressPct}%</h3>
+            <h3 className="font-display-sm text-display-sm tabular-nums text-on-surface">{goalProgressPct}%</h3>
             <div className="h-[1px] w-full bg-editorial-rule" />
           </div>
         </div>
@@ -391,20 +381,86 @@ export default function Planejamento() {
                 </button>
               </div>
               <button
-                onClick={() => { setEditingBudget(null); setShowBudgetModal(true); }}
+                onClick={openBudgetManager}
                 className="font-label-caps text-label-caps text-primary-light hover:underline"
               >
-                NOVO ORÇAMENTO
+                GERENCIAR ORÇAMENTOS
               </button>
             </div>
           </div>
 
-          {monthBudgets.length === 0 ? (
+          {/* ── Inline Budget Manager ── */}
+          {showBudgetManager && (
+            <div className="bg-surface border border-surface-border p-card-padding space-y-md animate-fade-in-up">
+              <div className="flex items-center justify-between mb-sm">
+                <h4 className="font-title text-title">Gerenciar Orçamentos</h4>
+                <button onClick={() => setShowBudgetManager(false)} className="text-muted-foreground hover:text-on-surface">
+                  <MsIcon name="close" size={18} />
+                </button>
+              </div>
+
+              {/* Existing categories with values */}
+              <div className="space-y-sm">
+                {Object.entries(budgetValues).map(([category, value]) => {
+                  const icon = CAT_MATERIAL_ICONS[category] || 'category';
+                  return (
+                    <div key={category} className="flex items-center gap-sm">
+                      <MsIcon name={icon} size={18} className="text-on-surface-variant shrink-0" />
+                      <span className="text-sm font-medium flex-1 truncate">{category}</span>
+                      <div className="relative w-32 shrink-0">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={value}
+                          onChange={e => handleBudgetValueChange(category, e.target.value)}
+                          className="w-full h-8 pl-8 pr-2 text-right text-sm font-mono-number border border-surface-border rounded bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+                          placeholder="0,00"
+                        />
+                      </div>
+                      <button onClick={() => handleRemoveCategory(category)}
+                        className="p-1 hover:bg-red-50 rounded text-red-400 shrink-0" aria-label="Remover">
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Add new category */}
+              <div className="flex items-center gap-sm pt-sm border-t border-surface-border">
+                <Select value={newCategory} onValueChange={setNewCategory}>
+                  <SelectTrigger className="flex-1 h-8 text-sm">
+                    <SelectValue placeholder="Adicionar categoria..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEFAULT_CATEGORIES
+                      .filter(c => !budgetValues.hasOwnProperty(c))
+                      .map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <button onClick={handleAddCategory} disabled={!newCategory}
+                  className="p-1.5 rounded bg-primary-container text-on-primary-container disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">
+                  <MsIcon name="add" size={16} />
+                </button>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-sm pt-sm">
+                <Button variant="outline" className="flex-1" onClick={() => setShowBudgetManager(false)}>Cancelar</Button>
+                <Button className="flex-1" onClick={handleSaveAllBudgets}>Salvar Tudo</Button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Budget Cards ── */}
+          {!showBudgetManager && monthBudgets.length === 0 ? (
             <div className="bg-surface border border-surface-border p-xl text-center">
               <MsIcon name="account_balance" size={40} className="text-muted-foreground mx-auto mb-md" />
               <p className="text-muted-foreground text-sm mb-md">Nenhum orçamento para este mês</p>
-              <Button size="sm" onClick={() => setShowBudgetModal(true)}>
-                <Plus size={14} className="mr-1" /> Criar primeiro orçamento
+              <Button size="sm" onClick={openBudgetManager}>
+                <Plus size={14} className="mr-1" /> Gerenciar orçamentos
               </Button>
             </div>
           ) : (
@@ -616,8 +672,6 @@ export default function Planejamento() {
       </div>
 
       {/* ═══ Modals ═══ */}
-      <BudgetModal open={showBudgetModal} onClose={() => { setShowBudgetModal(false); setEditingBudget(null); }}
-        onSave={handleSaveBudget} budget={editingBudget} monthKey={monthKey} />
       <GoalModal open={showGoalModal} onClose={() => { setShowGoalModal(false); setEditingGoal(null); }}
         onSave={handleSaveGoal} goal={editingGoal} />
       <DepositModal open={!!depositGoal} onClose={() => setDepositGoal(null)} onSave={handleDeposit} goal={depositGoal} />
