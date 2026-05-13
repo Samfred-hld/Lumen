@@ -253,11 +253,11 @@ export default function Layout() {
         role="navigation"
         aria-label="Navegação principal"
       >
-        {/* Logo Header — light in light theme, dark in dark theme */}
+        {/* Logo Header — Navy in both themes */}
         <div className="bg-sidebar-header border-b border-sidebar-header-border">
           <div className={cn("px-lg py-lg flex items-center justify-center", collapsed && "px-0")}>
             <img
-              src={theme === 'dark' ? '/DarkTheme_logo.png' : '/LightTheme_logo.png'}
+              src="/DarkTheme_logo.png"
               alt="Lúmen"
               className="w-14 h-14 object-contain shrink-0"
             />

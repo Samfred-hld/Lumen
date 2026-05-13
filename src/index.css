@@ -101,10 +101,10 @@ body {
     --sidebar-border: 217 50% 15%;
     --sidebar-ring: 173 80% 26%;
 
-    /* ── Sidebar sections (light theme) ── */
-    --sidebar-header-bg: #FFFFFF;
-    --sidebar-header-border: #E2E8F0;
-    --sidebar-header-text: #0F172A;
+    /* ── Sidebar sections (light theme — all navy for consistency) ── */
+    --sidebar-header-bg: #0A1628;
+    --sidebar-header-border: #1E293B;
+    --sidebar-header-text: #FFFFFF;
     --sidebar-body-bg: #0A1628;
     --sidebar-body-text: #FFFFFF;
     --sidebar-body-active: rgba(255,255,255,0.15);
