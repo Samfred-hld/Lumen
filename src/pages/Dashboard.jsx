@@ -35,7 +35,10 @@ export default function Dashboard() {
   const [defaultType, setDefaultType] = useState('expense');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
-  const [dashSections, setDashSections] = useState(getDashSections());
+  const [dashSections, setDashSections] = useState(() => {
+    const raw = getDashSections();
+    return Array.isArray(raw) ? raw : [];
+  });
 
   useEffect(() => {
     let cancelled = false;

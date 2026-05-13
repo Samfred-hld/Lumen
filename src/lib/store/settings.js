@@ -113,14 +113,17 @@ const DEFAULT_DASH_SECTIONS = [
   { id: 'previsao', label: 'Previsão', visible: true },
   { id: 'vencimentos', label: 'Próximos Vencimentos', visible: true },
 ];
-export function getDashSections() { return getLocal('dashSections', DEFAULT_DASH_SECTIONS); }
+export function getDashSections() {
+  const raw = getLocal('dashSections', DEFAULT_DASH_SECTIONS);
+  return Array.isArray(raw) ? raw : DEFAULT_DASH_SECTIONS;
+}
 export async function saveDashSections(sections) {
   setLocal('dashSections', sections);
   await setSettingToCloud('dashSections', sections);
 }
 export async function fetchDashSections() {
   const cloud = await getSettingFromCloud('dashSections');
-  if (cloud) { setLocal('dashSections', cloud); return cloud; }
+  if (cloud && Array.isArray(cloud)) { setLocal('dashSections', cloud); return cloud; }
   return getDashSections();
 }
 

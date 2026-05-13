@@ -25,8 +25,9 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
     if (open) {
       const saved = getDashSections();
       // Merge with defaults to ensure new sections appear
+      const safe = Array.isArray(saved) ? saved : [];
       const merged = DEFAULT_SECTIONS.map(def => {
-        const found = saved.find(s => s.id === def.id);
+        const found = safe.find(s => s.id === def.id);
         return found || { ...def };
       });
       setSections(merged);
