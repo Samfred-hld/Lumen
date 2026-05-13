@@ -157,3 +157,35 @@ Alterações feitas localmente são sincronizadas com o Base44 Builder. O `base4
 - [ ] Material Symbols para ícones visuais
 - [ ] `formatCurrency()` para valores monetários
 - [ ] Build passa: `npm run build`
+
+### 7. Validar dados de localStorage/getLocal
+
+`getLocal()` retorna `JSON.parse(localStorage.getItem(...))`. Se o localStorage tiver dados corrompidos, o valor retornado pode não ser o tipo esperado.
+
+**Regra**: Sempre validar o tipo ao usar dados de localStorage:
+
+```jsx
+// ❌ Perigoso — assume que é array
+const [sections, setSections] = useState(getDashSections());
+
+// ✅ Seguro — valida antes de usar
+const [sections, setSections] = useState(() => {
+  const raw = getDashSections();
+  return Array.isArray(raw) ? raw : [];
+});
+```
+
+**Na fonte (funções de store)**:
+```js
+export function getDashSections() {
+  const raw = getLocal('dashSections', DEFAULT_DASH_SECTIONS);
+  return Array.isArray(raw) ? raw : DEFAULT_DASH_SECTIONS;
+}
+```
+
+**Em componentes que recebem dados de store**:
+```jsx
+const saved = getDashSections();
+const safe = Array.isArray(saved) ? saved : [];
+const merged = DEFAULT_SECTIONS.map(def => safe.find(s => s.id === def.id) || { ...def });
+```
