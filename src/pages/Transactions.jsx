@@ -323,70 +323,108 @@ export default function Transactions() {
 
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3 pb-5 mb-2 border-b border-border">
-        <div>
-          <h1 className="text-2xl font-bold">Transações</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Controle todos os seus lançamentos</p>
+      {/* ── Sticky Header Wrapper ── */}
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur pt-4 pb-4 border-b border-border space-y-4 -mx-4 px-4 lg:-mx-6 lg:px-6">
+        
+        {/* Title & Actions */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Transações</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Controle todos os seus lançamentos</p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Year Navigation */}
+            <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-md p-1 shadow-sm">
+              <button onClick={() => navigate(-12)} className="p-1 hover:bg-slate-100 rounded text-slate-600" aria-label="Ano anterior"><ChevronLeft size={14} /></button>
+              <span className="text-sm font-semibold px-2 min-w-[50px] text-center text-slate-800">
+                {currentYear}
+              </span>
+              <button onClick={() => navigate(12)} className="p-1 hover:bg-slate-100 rounded text-slate-600" aria-label="Próximo ano"><ChevronRight size={14} /></button>
+            </div>
+            
+            <Button size="sm" variant="outline" className="h-8 bg-white" onClick={() => setShowCSVImport(true)} disabled={isImporting}>
+              <Upload size={14} className="mr-1.5" /> CSV
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 bg-white" onClick={handleExportExcel}>
+              <FileSpreadsheet size={14} className="mr-1.5" /> Excel
+            </Button>
+            <Button size="sm" className="h-8" onClick={() => { setEditing(null); setShowModal(true); }}>
+              <Plus size={14} className="mr-1.5" /> Nova
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
-            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
-            <span className="text-sm font-medium px-2 min-w-[110px] text-center">
-              {MONTH_NAMES[currentMonth]} {currentYear}
-            </span>
-            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
-            {/* Indicador de meses com dados */}
-            <div className="flex gap-0.5 ml-1" title={`Dados em ${monthsWithData.size} mês(es)`}>
-              {Array.from(monthsWithData).sort().slice(-6).map(ym => {
-                const [y, m] = ym.split('-');
-                const isCurrent = ym === currentMonthKey;
-                return (
-                  <button
-                    key={ym}
-                    onClick={() => {
-                      const targetMonth = parseInt(m) - 1;
-                      const targetYear = parseInt(y);
-                      // Navega até o mês alvo
-                      const diff = (targetYear - currentYear) * 12 + (targetMonth - currentMonth);
-                      if (diff !== 0) navigate(diff);
-                    }}
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full transition-all",
-                      isCurrent ? "bg-primary scale-125" : "bg-primary/30 hover:bg-primary/60"
-                    )}
-                    title={`${MONTH_SHORT[parseInt(m) - 1]} ${y}`}
-                  />
-                );
-              })}
-              {monthsWithData.size > 6 && (
-                <span className="text-[8px] text-muted-foreground ml-0.5">+{monthsWithData.size - 6}</span>
-              )}
+
+        {/* Month Navigation Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar -mx-2 px-2">
+          {MONTH_SHORT.map((monthStr, index) => {
+            const isActive = index === currentMonth;
+            const hasData = monthsWithData.has(getMonthKey(currentYear, index));
+            return (
+              <button
+                key={index}
+                onClick={() => {
+                  const diff = index - currentMonth;
+                  if (diff !== 0) navigate(diff);
+                }}
+                className={cn(
+                  "relative px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all whitespace-nowrap border",
+                  isActive 
+                    ? "bg-slate-900 text-white border-slate-900 shadow-sm" 
+                    : "bg-white text-slate-500 border-slate-200 hover:text-slate-800 hover:bg-slate-50"
+                )}
+              >
+                /{monthStr.toLowerCase()}/
+                {hasData && !isActive && (
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-slate-900" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 4-Card Balance Layout */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Receitas */}
+          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+              <span className="text-emerald-500 text-sm">↗</span> Receitas
+            </div>
+            <div className="text-lg font-extrabold text-emerald-600 tabular-nums">
+              {formatCurrency(totals.income)}
             </div>
           </div>
-          <Button size="sm" onClick={() => { setEditing(null); setShowModal(true); }}>
-            <Plus size={14} className="mr-1" /> Novo
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => setShowCSVImport(true)} disabled={isImporting}>
-            <Upload size={14} className="mr-1" /> CSV
-          </Button>
-          <Button size="sm" variant="outline" onClick={handleExportExcel}>
-            <FileSpreadsheet size={14} className="mr-1" /> Excel
-          </Button>
+          
+          {/* Despesas */}
+          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+              <span className="text-red-500 text-sm">↘</span> Despesas
+            </div>
+            <div className="text-lg font-extrabold text-red-600 tabular-nums">
+              {formatCurrency(totals.expense)}
+            </div>
+          </div>
+          
+          {/* Saldo em Conta */}
+          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+              <span className="text-blue-500 text-sm">▤</span> Saldo em Conta
+            </div>
+            <div className="text-lg font-extrabold text-slate-900 tabular-nums">
+              {formatCurrency(totals.balance)}
+            </div>
+          </div>
+          
+          {/* Fatura Cartão */}
+          <div className="bg-white border border-slate-200 rounded p-3 shadow-sm flex flex-col justify-between min-h-[76px]">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+              <span className="text-violet-500 text-sm">💳</span> Fatura Cartão
+            </div>
+            <div className="text-lg font-extrabold text-violet-600 tabular-nums">
+              {formatCurrency(totals.creditCard)}
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Summary pills */}
-      <div className="flex flex-wrap gap-2 animate-fade-in">
-        <span className="summary-pill income">
-          ↑ Receitas: {formatCurrency(totals.income)}
-        </span>
-        <span className="summary-pill expense">
-          ↓ Despesas: {formatCurrency(totals.expense)}
-        </span>
-        <span className="summary-pill">
-          ◆ Investido: {formatCurrency(totals.investment)}
-        </span>
       </div>
 
       {/* Aviso de transações em outros meses */}

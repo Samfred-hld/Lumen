@@ -91,88 +91,46 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
 
   return (
     <>
-      {/* ── Cloud Sync ── */}
-      <Section icon={Cloud} title="Sincronização na Nuvem">
-        <p className="text-xs text-muted-foreground mb-3">Seus dados são sincronizados automaticamente via entidades Base44 (Card, Rule, Template, Setting).</p>
-        <div className="flex gap-2 flex-wrap">
-          <Button size="sm" variant="outline" className="text-xs" onClick={async () => {
-            setImportMsg('Testando entidades...');
-            try {
-              const { lumenSetup } = await import('@/lib/entitySetup');
-              const status = await lumenSetup.run();
-              const ok = Object.values(status).every(v => v.exists);
-              setImportMsg(ok ? 'Todas as entidades OK!' : 'Algumas entidades falharam. Verifique o console.');
-            } catch (e) { setImportMsg('Erro: ' + e.message); }
-            setTimeout(() => setImportMsg(''), 5000);
-          }}>
-            <Cloud size={12} className="mr-1" />Testar Entidades
-          </Button>
-          <Button size="sm" variant="outline" className="text-xs" onClick={async () => {
-            setImportMsg('Migrando para entidades próprias...');
-            try {
-              const { lumenSetup } = await import('@/lib/entitySetup');
-              const result = await lumenSetup.migrateToEntities();
-              const total = result.cards + result.rules + result.templates + result.settings;
-              setImportMsg(result.errors.length
-                ? `Migrados: ${total}. Erros: ${result.errors.join(', ')}`
-                : `Migrado! ${result.cards} cartões, ${result.rules} regras, ${result.templates} templates, ${result.settings} configs.`
-              );
-            } catch (e) { setImportMsg('Erro: ' + e.message); }
-            setTimeout(() => setImportMsg(''), 8000);
-          }}>
-            <Wand2 size={12} className="mr-1" />Migrar para Entidades
-          </Button>
-        </div>
-      </Section>
-
       {/* ── Export / Import ── */}
       <Section icon={Download} title="Exportar / Importar Dados">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <Button variant="outline" size="sm" className="text-xs" onClick={handleExportCSV}><FileText size={12} className="mr-1" />CSV Transações</Button>
-          <Button variant="outline" size="sm" className="text-xs" onClick={handleExportPDF}><FileText size={12} className="mr-1" />PDF Relatório</Button>
-          <Button variant="outline" size="sm" className="text-xs" onClick={handleExportJSON}><Download size={12} className="mr-1" />Backup JSON</Button>
-          <label className="inline-flex">
-            <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" id="import-json-settings" />
-            <Button variant="outline" size="sm" className="text-xs w-full" asChild><label htmlFor="import-json-settings" className="cursor-pointer inline-flex items-center justify-center"><Upload size={12} className="mr-1" />Restaurar Backup</label></Button>
-          </label>
-        </div>
-      </Section>
-
-      {/* ── Fix Invoice Month ── */}
-      <Section icon={Receipt} title="Corrigir Mês de Fatura">
-        <p className="text-xs text-muted-foreground mb-3">
-          Corrige transações importadas sem <code>invoiceMonth</code> calculando automaticamente com base no dia de fechamento do cartão.
+        <p className="text-xs text-muted-foreground mb-4">
+          Mantenha seus dados seguros. Você pode exportar seu histórico em formato CSV (para Excel/Google Sheets), gerar um relatório em PDF ou criar um Backup completo em JSON para restaurar futuramente.
         </p>
-        <div className="flex items-center gap-3">
-          <Button size="sm" variant="outline" className="text-xs" disabled={fixProgress !== null} onClick={async () => {
-            setFixResult(null); setFixProgress({ current: 0, total: 0 });
-            try {
-              const { fixNullInvoiceMonth } = await import('@/lib/fixNullInvoiceMonth');
-              const result = await fixNullInvoiceMonth(setFixProgress);
-              setFixResult(result);
-            } catch (e) { setFixResult({ error: e.message }); }
-            setFixProgress(null);
-          }}>
-            <Receipt size={12} className="mr-1" />
-            {fixProgress ? 'Corrigindo...' : 'Corrigir Mês de Fatura'}
-          </Button>
-          {fixProgress && (
-            <span className="text-xs text-muted-foreground">
-              {fixProgress.current}/{fixProgress.total} transações...
-            </span>
-          )}
-        </div>
-        {fixResult && !fixResult.error && (
-          <div className="mt-2 text-xs space-y-1">
-            <p className="text-emerald-600">✅ Corrigidas: {fixResult.fixed}</p>
-            {fixResult.needsReview.length > 0 && (
-              <p className="text-amber-600">⚠️ Precisam revisão manual: {fixResult.needsReview.length}</p>
-            )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-3 p-4 rounded-md border border-slate-200 bg-slate-50">
+            <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+              <Download size={16} className="text-slate-500" /> Exportar Dados
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-white hover:bg-slate-50" onClick={handleExportCSV}>
+                <FileText size={14} className="mr-2 text-emerald-600" /> CSV (Planilha)
+              </Button>
+              <Button variant="outline" size="sm" className="w-full justify-start bg-white hover:bg-slate-50" onClick={handleExportJSON}>
+                <FileText size={14} className="mr-2 text-blue-600" /> JSON (Backup Completo)
+              </Button>
+              <Button variant="outline" size="sm" className="w-full justify-start bg-white hover:bg-slate-50" onClick={handleExportPDF}>
+                <Receipt size={14} className="mr-2 text-red-600" /> PDF (Relatório Mensal)
+              </Button>
+            </div>
           </div>
-        )}
-        {fixResult?.error && (
-          <p className="mt-2 text-xs text-red-500">Erro: {fixResult.error}</p>
-        )}
+
+          <div className="space-y-3 p-4 rounded-md border border-slate-200 bg-slate-50 flex flex-col">
+            <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+              <Upload size={16} className="text-slate-500" /> Importar Backup
+            </h4>
+            <p className="text-xs text-slate-500 flex-1">
+              Restaure todo o seu histórico enviando o arquivo JSON gerado pela exportação de backup completo.
+            </p>
+            <label className="block mt-auto w-full">
+              <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" id="import-json-settings" />
+              <Button size="sm" className="w-full" asChild>
+                <label htmlFor="import-json-settings" className="cursor-pointer inline-flex items-center justify-center">
+                  <Upload size={14} className="mr-2" /> Restaurar Arquivo JSON
+                </label>
+              </Button>
+            </label>
+          </div>
+        </div>
       </Section>
 
       {/* ── Changelog ── */}

@@ -46,13 +46,16 @@ export function filterByMonth(transactions, year, month) {
 }
 
 export function calcTotals(transactions) {
-  let income = 0, expense = 0, investment = 0;
+  let income = 0, expense = 0, investment = 0, creditCard = 0;
   transactions.forEach(t => {
     if (t.type === 'income') income += t.value || 0;
-    else if (t.type === 'expense') expense += t.value || 0;
+    else if (t.type === 'expense') {
+      expense += t.value || 0;
+      if (t.invoiceMonth || t.paymentMethod === 'Cartão de Crédito') creditCard += t.value || 0;
+    }
     else if (t.type === 'investment') investment += t.value || 0;
   });
-  return { income, expense, investment, balance: income - expense - investment };
+  return { income, expense, investment, creditCard, balance: income - expense - investment };
 }
 
 export function groupByCategory(transactions) {
