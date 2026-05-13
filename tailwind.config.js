@@ -4,9 +4,9 @@ module.exports = {
   theme: {
   	extend: {
   		fontFamily: {
-  			display: ['Playfair Display', 'Georgia', 'serif'],
-  			mono: ['JetBrains Mono', 'Consolas', 'monospace'],
-  			body: ['Source Serif 4', 'Georgia', 'serif'],
+  			display: ['Inter', 'system-ui', 'sans-serif'],
+  			mono: ['Fira Code', 'monospace'],
+  			body: ['Inter', 'system-ui', 'sans-serif'],
   		},
   		borderRadius: {
   			lg: '2px',

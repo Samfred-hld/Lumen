@@ -378,13 +378,13 @@ export default function Transactions() {
 
       {/* Summary pills */}
       <div className="flex flex-wrap gap-2 animate-fade-in">
-        <span className="px-3.5 py-2 rounded gradient-emerald text-emerald-700 text-sm font-semibold shadow-card tabular-nums border border-emerald-200/50">
+        <span className="summary-pill income">
           ↑ Receitas: {formatCurrency(totals.income)}
         </span>
-        <span className="px-3.5 py-2 rounded gradient-red text-red-600 text-sm font-semibold shadow-card tabular-nums border border-red-200/50">
+        <span className="summary-pill expense">
           ↓ Despesas: {formatCurrency(totals.expense)}
         </span>
-        <span className="px-3.5 py-2 rounded gradient-violet text-violet-600 text-sm font-semibold shadow-card tabular-nums border border-violet-200/50">
+        <span className="summary-pill">
           ◆ Investido: {formatCurrency(totals.investment)}
         </span>
       </div>
@@ -479,7 +479,7 @@ export default function Transactions() {
 
         {/* Advanced Filters Panel */}
         {showAdvFilters && (
-          <Card className="border-0 shadow-card">
+          <Card className="border border-border shadow-sm mt-2">
             <CardContent className="p-4 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Category */}
@@ -578,7 +578,7 @@ export default function Transactions() {
       </div>
 
       {/* Transaction list */}
-      <Card className="border-0 shadow-card overflow-hidden">
+      <Card className="border border-border shadow-sm overflow-hidden">
         <CardContent className="p-0">
           {filtered.length === 0 ? (
             <div className="p-12 text-center">
