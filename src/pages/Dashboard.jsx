@@ -134,6 +134,26 @@ export default function Dashboard() {
 
   const orderedSections = dashSections.filter(s => s.visible);
 
+  // ── Charts data (must be at top level — Rules of Hooks) ──
+  const barData = React.useMemo(() => {
+    const data = [];
+    for (let i = 5; i >= 0; i--) {
+      let m = currentMonth - i, y = currentYear;
+      if (m < 0) { m += 12; y -= 1; }
+      const t = calcTotals(filterByMonth(transactions, y, m));
+      data.push({ name: MONTH_NAMES[m].slice(0, 3), income: t.income, expense: t.expense });
+    }
+    return data;
+  }, [transactions, currentMonth, currentYear]);
+
+  const processedPieData = React.useMemo(() => {
+    const pieData = expensesByCategory.map(([cat, val]) => ({ name: cat, value: val, color: CAT_COLORS[cat] || '#94a3b8' }));
+    if (pieData.length <= 6) return pieData;
+    const sorted = [...pieData].sort((a, b) => b.value - a.value);
+    const rest = sorted.slice(6).reduce((sum, d) => sum + d.value, 0);
+    return [...sorted.slice(0, 6), { name: 'Outros', value: rest, color: '#94a3b8' }];
+  }, [expensesByCategory]);
+
   // ═══ Health Score calculation (inline) ═══
   const healthScore = React.useMemo(() => {
     let score = 0;
@@ -166,23 +186,7 @@ export default function Dashboard() {
       case 'graficos':
         return (
           <DashSection id="graficos" title="Evolução Mensal" color="bg-primary" defaultOpen={true}>
-            <ChartsSection barData={React.useMemo(() => {
-              const data = [];
-              for (let i = 5; i >= 0; i--) {
-                let m = currentMonth - i, y = currentYear;
-                if (m < 0) { m += 12; y -= 1; }
-                const t = calcTotals(filterByMonth(transactions, y, m));
-                data.push({ name: MONTH_NAMES[m].slice(0, 3), income: t.income, expense: t.expense });
-              }
-              return data;
-            }, [transactions, currentMonth, currentYear])}
-            processedPieData={React.useMemo(() => {
-              const pieData = expensesByCategory.map(([cat, val]) => ({ name: cat, value: val, color: CAT_COLORS[cat] || '#94a3b8' }));
-              if (pieData.length <= 6) return pieData;
-              const sorted = [...pieData].sort((a, b) => b.value - a.value);
-              const rest = sorted.slice(6).reduce((sum, d) => sum + d.value, 0);
-              return [...sorted.slice(0, 6), { name: 'Outros', value: rest, color: '#94a3b8' }];
-            }, [expensesByCategory])} />
+            <ChartsSection barData={barData} processedPieData={processedPieData} />
           </DashSection>
         );
       case 'gastos':
