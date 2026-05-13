@@ -27,18 +27,18 @@ export default function StatusLine({ budgets, monthBudgets, goals, upcomingItems
   const goalItem = React.useMemo(() => {
     if (!goals || goals.length === 0) return null;
     const active = goals.filter(g => {
-      const current = g.currentAmount || 0;
-      const target = g.targetAmount || 0;
+      const current = g.currentValue || 0;
+      const target = g.targetValue || 0;
       return target > 0 && current < target;
     });
     if (active.length === 0) return null;
     // Pick the one closest to completion
     const best = active.reduce((a, b) => {
-      const pctA = (a.currentAmount || 0) / (a.targetAmount || 1);
-      const pctB = (b.currentAmount || 0) / (b.targetAmount || 1);
+      const pctA = (a.currentValue || 0) / (a.targetValue || 1);
+      const pctB = (b.currentValue || 0) / (b.targetValue || 1);
       return pctB > pctA ? b : a;
     });
-    const remaining = (best.targetAmount || 0) - (best.currentAmount || 0);
+    const remaining = (best.targetValue || 0) - (best.currentValue || 0);
     if (remaining <= 0) return null;
     return { name: best.name, remaining };
   }, [goals]);

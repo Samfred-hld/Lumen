@@ -489,7 +489,7 @@ export default function Planejamento() {
                       <div className="flex items-center gap-sm">
                         <MsIcon name={icon} size={20} className="text-on-surface-variant" />
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => { setEditingBudget(b); setShowBudgetModal(true); }}
+                          <button onClick={() => { setEditingBudget(b); openBudgetManager(); }}
                             className="p-1 hover:bg-surface-container-low rounded text-muted-foreground" aria-label="Editar">
                             <Pencil size={12} />
                           </button>
@@ -657,11 +657,8 @@ export default function Planejamento() {
                 <div className="relative z-10 space-y-sm">
                   <h4 className="font-title text-title">Acelere seus planos</h4>
                   <p className="font-body-sm opacity-70">
-                    Nossa IA identificou {formatCurrency(topOver.over)} que podem ser realocados de "{topOver.category}" para "{leastProgressGoal.name}".
+                    Identificamos {formatCurrency(topOver.over)} que podem ser realocados de "{topOver.category}" para "{leastProgressGoal.name}".
                   </p>
-                  <button className="text-primary-light font-label-caps border border-primary-light px-md py-xs hover:bg-primary-light hover:text-on-primary transition-all">
-                    OTIMIZAR AGORA
-                  </button>
                 </div>
                 <MsIcon name="bolt" size={128}
                   className="absolute -bottom-4 -right-4 opacity-10 rotate-12 group-hover:scale-110 transition-transform text-on-primary" />

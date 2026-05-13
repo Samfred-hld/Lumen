@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus, CreditCard, Settings } from 'lucide-react';
-import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey } from '@/lib/financeUtils';
+import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey, getGoalProgress } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import TransactionModal from '@/components/finance/TransactionModal';
@@ -164,12 +164,13 @@ export default function Dashboard() {
   }, [expensesByCategory]);
 
   // ═══ Health Score calculation (inline) ═══
-  const healthScore = React.useMemo(() => {
+  const healthData = React.useMemo(() => {
     let score = 0;
     // Savings rate
+    let savingsRate = 0;
     if (totals.income > 0) {
-      const rate = (totals.investment / totals.income) * 100;
-      if (rate >= 20) score += 25; else if (rate >= 10) score += 15; else if (rate >= 5) score += 10;
+      savingsRate = (totals.investment / totals.income) * 100;
+      if (savingsRate >= 20) score += 25; else if (savingsRate >= 10) score += 15; else if (savingsRate >= 5) score += 10;
     }
     // Budgets
     if (monthBudgets.length > 0) {
@@ -182,13 +183,36 @@ export default function Dashboard() {
     } else { score += 25; }
     // Goals
     if (goals.length > 0) {
-      const withProgress = goals.filter(g => (g.currentAmount || 0) / (g.targetValue || 1) >= 0.10).length;
+      const withProgress = goals.filter(g => {
+        const current = getGoalProgress(g, transactions);
+        return (g.targetValue || 0) > 0 && (current / g.targetValue) >= 0.10;
+      }).length;
       score += Math.round(25 * (withProgress / goals.length));
     } else { score += 25; }
     // Balance
     if (totals.balance > 0) score += 25; else if (totals.balance === 0) score += 10;
-    return score;
-  }, [totals, monthBudgets, monthTx, goals]);
+
+    // Emergency reserve
+    const last3Expenses = [];
+    for (let i = 0; i < 3; i++) {
+      let m = currentMonth - i, y = currentYear;
+      if (m < 0) { m += 12; y--; }
+      const tx = filterByMonth(transactions, y, m);
+      const t = calcTotals(tx);
+      last3Expenses.push(t.expense + t.investment);
+    }
+    const avgMonthlyExpense = last3Expenses.reduce((s, v) => s + v, 0) / 3;
+    const emergencyMonths = avgMonthlyExpense > 0 ? allTotals.balance / avgMonthlyExpense : 0;
+    const emergencyPct = Math.min(100, Math.round((emergencyMonths / 6) * 100));
+    const savingsPct = Math.min(100, Math.round(savingsRate * 5));
+
+    // Diversification
+    const uniqueCats = new Set(transactions.filter(t => t.type === 'expense').map(t => t.category).filter(Boolean));
+    const diversificationPct = Math.min(100, Math.round((uniqueCats.size / 10) * 100));
+
+    return { score, savingsRate, emergencyMonths, emergencyPct, savingsPct, diversificationPct };
+  }, [totals, monthBudgets, monthTx, goals, transactions, allTotals, currentMonth, currentYear]);
+  const healthScore = healthData.score;
 
   const renderSection = (sectionId) => {
     switch (sectionId) {
@@ -304,48 +328,72 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="space-y-md">
-              {/* Emergency Reserve */}
+              {/* Emergency Reserve — real */}
               <div className="flex flex-col gap-xs">
                 <div className="flex justify-between font-label-caps text-label-caps">
                   <span>RESERVA DE EMERGÊNCIA</span>
-                  <span className="text-success">EXCELENTE</span>
+                  <span className={healthData.emergencyMonths >= 3 ? 'text-success' : healthData.emergencyMonths >= 1 ? 'text-warning' : 'text-danger'}>
+                    {healthData.emergencyMonths >= 6 ? 'EXCELENTE' : healthData.emergencyMonths >= 3 ? 'BOM' : healthData.emergencyMonths >= 1 ? 'ATENÇÃO' : 'CRÍTICO'} ({healthData.emergencyMonths.toFixed(1)}m)
+                  </span>
                 </div>
                 <div className="h-1 bg-surface-container-high w-full">
-                  <div className="h-full bg-success w-[90%]" />
+                  <div className={cn("h-full transition-all duration-700", healthData.emergencyPct >= 70 ? 'bg-success' : healthData.emergencyPct >= 40 ? 'bg-warning' : 'bg-danger')}
+                    style={{ width: `${healthData.emergencyPct}%` }} />
                 </div>
               </div>
-              {/* Savings Rate */}
+              {/* Savings Rate — real */}
               <div className="flex flex-col gap-xs">
                 <div className="flex justify-between font-label-caps text-label-caps">
                   <span>TAXA DE POUPANÇA</span>
-                  <span className="text-warning">ATENÇÃO</span>
+                  <span className={healthData.savingsRate >= 10 ? 'text-success' : healthData.savingsRate >= 5 ? 'text-warning' : 'text-danger'}>
+                    {healthData.savingsRate.toFixed(1)}%
+                  </span>
                 </div>
                 <div className="h-1 bg-surface-container-high w-full">
-                  <div className="h-full bg-warning w-[45%]" />
+                  <div className={cn("h-full transition-all duration-700", healthData.savingsPct >= 70 ? 'bg-success' : healthData.savingsPct >= 40 ? 'bg-warning' : 'bg-danger')}
+                    style={{ width: `${healthData.savingsPct}%` }} />
                 </div>
               </div>
-              {/* Diversification */}
+              {/* Diversification — real */}
               <div className="flex flex-col gap-xs">
                 <div className="flex justify-between font-label-caps text-label-caps">
                   <span>DIVERSIFICAÇÃO</span>
-                  <span className="text-success">BOM</span>
+                  <span className={healthData.diversificationPct >= 70 ? 'text-success' : healthData.diversificationPct >= 40 ? 'text-warning' : 'text-danger'}>
+                    {healthData.diversificationPct >= 70 ? 'BOM' : healthData.diversificationPct >= 40 ? 'MÉDIO' : 'BAIXO'}
+                  </span>
                 </div>
                 <div className="h-1 bg-surface-container-high w-full">
-                  <div className="h-full bg-primary-light w-[72%]" />
+                  <div className="h-full bg-primary-light transition-all duration-700" style={{ width: `${healthData.diversificationPct}%` }} />
                 </div>
               </div>
             </div>
-            <button className="w-full mt-xl py-md bg-primary-container text-on-primary-container font-label-caps text-label-caps tracking-widest hover:brightness-110 transition-all uppercase">
-              Otimizar Carteira
-            </button>
           </div>
 
-          {/* AI Analysis Card */}
-          <div className="mt-lg bg-on-primary-fixed p-lg text-on-primary flex flex-col gap-sm">
-            <MsIcon name="auto_awesome" className="text-primary-light" size={24} />
-            <h3 className="font-title text-title">Análise de IA</h3>
-            <p className="font-body-sm text-body-sm text-on-primary/70">Identificamos uma oportunidade de redução de 12% em taxas fixas migrando seu fundo de reserva.</p>
-          </div>
+          {/* AI Analysis Card — real data driven */}
+          {(() => {
+            const overBudgetCategories = monthBudgets.filter(b => {
+              const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
+              return spent > b.limit;
+            });
+            const topExpense = expensesByCategory.length > 0 ? expensesByCategory[0] : null;
+            const hasInsight = overBudgetCategories.length > 0 || topExpense;
+
+            if (!hasInsight) return null;
+
+            const insightText = overBudgetCategories.length > 0
+              ? `${overBudgetCategories.length} orçamento(s) ultrapassado(s). Considere ajustar os limites ou reduzir gastos em ${overBudgetCategories[0].category}.`
+              : topExpense
+                ? `Seu maior gasto é ${topExpense[0]} (${formatCurrency(topExpense[1])}). Analise se há espaço para otimização.`
+                : null;
+
+            return (
+              <div className="mt-lg bg-on-primary-fixed p-lg text-on-primary flex flex-col gap-sm">
+                <MsIcon name="auto_awesome" className="text-primary-light" size={24} />
+                <h3 className="font-title text-title">Análise de IA</h3>
+                <p className="font-body-sm text-body-sm text-on-primary/70">{insightText}</p>
+              </div>
+            );
+          })()}
         </section>
       </div>
 

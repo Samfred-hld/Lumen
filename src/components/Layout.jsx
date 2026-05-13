@@ -33,8 +33,8 @@ const NAV_ITEMS = [
 const BOTTOM_NAV = [
   { path: '/', label: 'Home', icon: 'home' },
   { path: '/transactions', label: 'Ledger', icon: 'list_alt' },
-  { path: '/budgets', label: 'Stats', icon: 'insights' },
-  { path: '/goals', label: 'Profile', icon: 'person' },
+  { path: '/planejamento', label: 'Stats', icon: 'insights' },
+  { path: '/settings', label: 'Config', icon: 'settings' },
 ];
 
 // ═══ ARIA Live Announcer ═══
