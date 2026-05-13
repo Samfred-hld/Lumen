@@ -324,7 +324,7 @@ export default function Transactions() {
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3 pb-5 mb-2 border-b border-border">
         <div>
           <h1 className="text-2xl font-bold">Transações</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Controle todos os seus lançamentos</p>
@@ -581,12 +581,12 @@ export default function Transactions() {
       <Card className="border border-border shadow-sm overflow-hidden">
         <CardContent className="p-0">
           {filtered.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded bg-muted/50 flex items-center justify-center">
-                <Search size={24} className="text-muted-foreground/50" />
+            <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-slate-50/50">
+              <div className="w-16 h-16 mb-5 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center">
+                <Search size={24} className="text-slate-400" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground">Nenhuma transação encontrada</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Tente ajustar os filtros ou adicione uma nova transação</p>
+              <h3 className="text-base font-semibold text-slate-800 mb-1">Nenhuma transação encontrada</h3>
+              <p className="text-sm text-slate-500 max-w-[260px]">Ajuste os filtros de busca ou adicione um novo registro para começar.</p>
             </div>
           ) : (
             <>
