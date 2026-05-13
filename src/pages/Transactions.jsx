@@ -356,7 +356,7 @@ export default function Transactions() {
         </div>
 
         {/* Month Navigation Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar -mx-2 px-2">
+        <div className="flex items-center gap-1 overflow-x-auto pb-2 pt-1 no-scrollbar -mx-2 px-2">
           {MONTH_SHORT.map((monthStr, index) => {
             const isActive = index === currentMonth;
             const hasData = monthsWithData.has(getMonthKey(currentYear, index));
@@ -368,15 +368,15 @@ export default function Transactions() {
                   if (diff !== 0) navigate(diff);
                 }}
                 className={cn(
-                  "relative px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all whitespace-nowrap border",
+                  "relative px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-all whitespace-nowrap",
                   isActive 
-                    ? "bg-slate-900 text-white border-slate-900 shadow-sm" 
-                    : "bg-white text-slate-500 border-slate-200 hover:text-slate-800 hover:bg-slate-50"
+                    ? "bg-slate-900 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                 )}
               >
-                /{monthStr.toLowerCase()}/
+                {monthStr}
                 {hasData && !isActive && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-slate-900" />
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
                 )}
               </button>
             );
