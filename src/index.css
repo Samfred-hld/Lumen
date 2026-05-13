@@ -206,6 +206,26 @@ body {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
+/* ═══ Material Symbols ═══ */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ═══ Editorial border ═══ */
+.editorial-border {
+  border-bottom: 1px solid rgba(194, 65, 12, 0.3);
+}
+
+/* ═══ Transaction row hover ═══ */
+.transaction-row:hover {
+  background-color: #F1F5F9;
+  margin-left: -4px;
+  margin-right: -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  transition: all 0.2s ease;
+}
+
 /* ═══════════════════════════════════════════
    Scrollbar — minimal, warm
    ═══════════════════════════════════════════ */

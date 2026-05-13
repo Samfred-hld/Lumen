@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, ArrowRight, CreditCard, Target, Calendar, Upload, Settings, ArrowUpRight, ArrowDownRight, Minus, Layers, Bell } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { formatCurrency, formatDate, filterByMonth, calcTotals, groupByCategory, getGoalProgress, getCurrentMonthKey, getMonthKey } from '@/lib/financeUtils';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus, CreditCard, Settings } from 'lucide-react';
+import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import TransactionModal from '@/components/finance/TransactionModal';
 import DashCustomizeModal from '@/components/finance/DashCustomizeModal';
-import FinancialHealthScore from '@/components/finance/FinancialHealthScore';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useTransactions, useBudgets, useGoals, useCards } from '@/hooks/useData';
 import { cn } from '@/lib/utils';
@@ -18,15 +14,20 @@ import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded, fetchOnbo
 import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications } from '@/lib/notifications';
 import { KpiCard, getDelta } from '@/components/dashboard/KpiCard';
-import HeroBalance from '@/components/dashboard/HeroBalance';
-import StatusLine from '@/components/dashboard/StatusLine';
 import DashSection from '@/components/dashboard/DashSection';
 import OnboardingModal from '@/components/dashboard/OnboardingModal';
 import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
 import GoalsSection from '@/components/dashboard/GoalsSection';
 
-// ═══ Onboarding, KPI, and helpers moved to src/components/dashboard/ ═══
+// Material Symbols icon component
+function MsIcon({ name, className, size = 24 }) {
+  return (
+    <span className={cn('material-symbols-outlined', className)} style={{ fontSize: size }}>
+      {name}
+    </span>
+  );
+}
 
 export default function Dashboard() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
@@ -34,35 +35,18 @@ export default function Dashboard() {
   const [defaultType, setDefaultType] = useState('expense');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
-  const [dashSections, setDashSections] = useState(getDashSections());
-  const [showKpiResumo, setShowKpiResumo] = useState(() => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return true;
-    return false;
-  });
+  const [dashSections, setDashSections] = getDashSections();
 
   useEffect(() => {
     let cancelled = false;
-
     async function checkOnboarding() {
-      // 1. Verifica localStorage imediatamente
-      if (isOnboarded()) {
-        checkDueDateNotifications();
-        return;
-      }
-      // 2. Nao esta no localStorage — busca na nuvem (pode ter completado em outro dispositivo)
+      if (isOnboarded()) { checkDueDateNotifications(); return; }
       const cloudResult = await fetchOnboarded();
       if (cancelled) return;
-      if (cloudResult && cloudResult !== 'false') {
-        checkDueDateNotifications();
-        return;
-      }
-      // 3. Realmente nao onboardou — exibe apos delay
-      const timer = setTimeout(() => {
-        if (!cancelled) setShowOnboarding(true);
-      }, 800);
+      if (cloudResult && cloudResult !== 'false') { checkDueDateNotifications(); return; }
+      const timer = setTimeout(() => { if (!cancelled) setShowOnboarding(true); }, 800);
       return () => clearTimeout(timer);
     }
-
     checkOnboarding();
     return () => { cancelled = true; };
   }, []);
@@ -74,71 +58,30 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (transactions.length > 0) {
-      // Guard: mark current month as handled to avoid duplicate cron triggers client-side.
-      // Actual generation is handled by the backend generateRecurring cron.
       const currentKey = getCurrentMonthKey();
       const lastGen = lsGet('lastRecurringGen', '');
-      if (lastGen !== currentKey) {
-        lsSet('lastRecurringGen', currentKey);
-      }
+      if (lastGen !== currentKey) lsSet('lastRecurringGen', currentKey);
     }
   }, [transactions.length]);
 
-  // Budget alerts are generated by Layout's NotificationCenter (single source of truth)
-
   useEffect(() => {
     const unsub = useTransactionModal.subscribe(({ isOpen, defaultType }) => {
-      if (isOpen) {
-        setDefaultType(defaultType);
-        setShowModal(true);
-      }
+      if (isOpen) { setDefaultType(defaultType); setShowModal(true); }
     });
     return unsub;
   }, []);
 
   const monthTx = React.useMemo(() => filterByMonth(transactions, currentYear, currentMonth), [transactions, currentYear, currentMonth]);
   const totals = React.useMemo(() => calcTotals(monthTx), [monthTx]);
-  const expensesByCategory = React.useMemo(
-    () => groupByCategory(monthTx.filter(t => t.type === 'expense')),
-    [monthTx]
-  );
+  const expensesByCategory = React.useMemo(() => groupByCategory(monthTx.filter(t => t.type === 'expense')), [monthTx]);
 
-  // Previous month for comparison
   const prevMonthData = React.useMemo(() => {
     let pm = currentMonth - 1, py = currentYear;
     if (pm < 0) { pm = 11; py--; }
     const prevTx = filterByMonth(transactions, py, pm);
     return { prevTx, prevTotals: calcTotals(prevTx) };
   }, [transactions, currentMonth, currentYear]);
-  const { prevTx: prevMonthTx, prevTotals } = prevMonthData;
-
-  const pieData = React.useMemo(() => expensesByCategory.map(([cat, val]) => ({
-    name: cat, value: val, color: CAT_COLORS[cat] || '#94a3b8'
-  })), [expensesByCategory]);
-
-  const MAX_PIE_SLICES = 6;
-
-  const processedPieData = React.useMemo(() => {
-    if (!pieData || pieData.length === 0) return [];
-    if (pieData.length <= MAX_PIE_SLICES) return pieData;
-    const sorted = [...pieData].sort((a, b) => b.value - a.value);
-    const top = sorted.slice(0, MAX_PIE_SLICES);
-    const rest = sorted.slice(MAX_PIE_SLICES);
-    const othersValue = rest.reduce((sum, d) => sum + d.value, 0);
-    return [...top, { name: 'Outros', value: othersValue, color: '#94a3b8' }];
-  }, [pieData]);
-
-  const barData = React.useMemo(() => {
-    const data = [];
-    for (let i = 5; i >= 0; i--) {
-      let m = currentMonth - i, y = currentYear;
-      if (m < 0) { m += 12; y -= 1; }
-      const txs = filterByMonth(transactions, y, m);
-      const t = calcTotals(txs);
-      data.push({ name: MONTH_NAMES[m].slice(0, 3), income: t.income, expense: t.expense });
-    }
-    return data;
-  }, [transactions, currentMonth, currentYear]);
+  const { prevTotals } = prevMonthData;
 
   const monthBudgets = React.useMemo(() => {
     const key = getMonthKey(currentYear, currentMonth);
@@ -156,16 +99,6 @@ export default function Dashboard() {
     return spent > b.limit;
   }), [monthBudgets, monthTx]);
 
-  // Section visibility helper
-  const isSectionVisible = (id) => {
-    const s = dashSections.find(s => s.id === id);
-    return s ? s.visible : true;
-  };
-
-  // ── Installment transactions ──
-  const installmentTx = React.useMemo(() => monthTx.filter(t => t.isInstallment), [monthTx]);
-  const installmentTotal = React.useMemo(() => installmentTx.reduce((s, t) => s + Math.abs(t.value), 0), [installmentTx]);
-
   // ── Upcoming due dates ──
   const salaryConfig = getSalaryConfig();
   const upcomingItems = React.useMemo(() => {
@@ -175,47 +108,81 @@ export default function Dashboard() {
       const diff = c.dueDay - today.getDate();
       if (diff >= 0 && diff <= 7) {
         const cardTotal = monthTx.filter(t => t.cardId === c.id && t.type === 'expense').reduce((s, t) => s + t.value, 0);
-        items.push({ label: `Fatura ${c.name}`, date: `dia ${c.dueDay}`, value: cardTotal, color: 'text-red-500', icon: CreditCard });
+        items.push({ label: `Fatura ${c.name}`, date: `dia ${c.dueDay}`, value: cardTotal });
       }
     });
-    if (salaryConfig.autoGenerate || salaryConfig.value > 0) {
-      const salaryDiff = salaryConfig.day - today.getDate();
-      if (salaryDiff >= 0 && salaryDiff <= 7) {
-        items.push({ label: 'Salário', date: `dia ${salaryConfig.day}`, value: salaryConfig.value, color: 'text-emerald-500', icon: Wallet });
-      }
-    }
     return items;
-  }, [cards, monthTx, salaryConfig]);
+  }, [cards, monthTx]);
 
-  // ── Patrimônio total (saldo acumulado de todos os meses) ──
+  // ── Installments ──
+  const installmentTx = React.useMemo(() => monthTx.filter(t => t.isInstallment), [monthTx]);
+
+  // ── Patrimônio ──
   const allTotals = React.useMemo(() => calcTotals(transactions), [transactions]);
   const patrimonio = allTotals.balance;
 
-  // ── Forecast (simple: avg of last 3 months) ──
+  // ── Forecast ──
   const { avgIncome, avgExpense } = React.useMemo(() => {
     const data = [];
     for (let i = 2; i >= 0; i--) {
       let m = currentMonth - 1 - i, y = currentYear;
       if (m < 0) { m += 12; y -= 1; }
-      const txs = filterByMonth(transactions, y, m);
-      data.push(calcTotals(txs));
+      data.push(calcTotals(filterByMonth(transactions, y, m)));
     }
-    return {
-      avgIncome: data.reduce((s, t) => s + t.income, 0) / 3,
-      avgExpense: data.reduce((s, t) => s + t.expense, 0) / 3,
-    };
+    return { avgIncome: data.reduce((s, t) => s + t.income, 0) / 3, avgExpense: data.reduce((s, t) => s + t.expense, 0) / 3 };
   }, [transactions, currentMonth, currentYear]);
 
-  // Render sections in order
   const orderedSections = dashSections.filter(s => s.visible);
+
+  // ═══ Health Score calculation (inline) ═══
+  const healthScore = React.useMemo(() => {
+    let score = 0;
+    // Savings rate
+    if (totals.income > 0) {
+      const rate = (totals.investment / totals.income) * 100;
+      if (rate >= 20) score += 25; else if (rate >= 10) score += 15; else if (rate >= 5) score += 10;
+    }
+    // Budgets
+    if (monthBudgets.length > 0) {
+      const respected = monthBudgets.filter(b => {
+        const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
+        return spent <= b.limit;
+      }).length;
+      const pct = (respected / monthBudgets.length) * 100;
+      if (pct >= 100) score += 25; else if (pct >= 75) score += 18; else if (pct >= 50) score += 10;
+    } else { score += 25; }
+    // Goals
+    if (goals.length > 0) {
+      const withProgress = goals.filter(g => (g.currentAmount || 0) / (g.targetValue || 1) >= 0.10).length;
+      score += Math.round(25 * (withProgress / goals.length));
+    } else { score += 25; }
+    // Balance
+    if (totals.balance > 0) score += 25; else if (totals.balance === 0) score += 10;
+    return score;
+  }, [totals, monthBudgets, monthTx, goals]);
 
   const renderSection = (sectionId) => {
     switch (sectionId) {
-      case 'resumo': return renderResumo();
       case 'graficos':
         return (
           <DashSection id="graficos" title="Evolução Mensal" color="bg-primary" defaultOpen={true}>
-            <ChartsSection barData={barData} processedPieData={processedPieData} />
+            <ChartsSection barData={React.useMemo(() => {
+              const data = [];
+              for (let i = 5; i >= 0; i--) {
+                let m = currentMonth - i, y = currentYear;
+                if (m < 0) { m += 12; y -= 1; }
+                const t = calcTotals(filterByMonth(transactions, y, m));
+                data.push({ name: MONTH_NAMES[m].slice(0, 3), income: t.income, expense: t.expense });
+              }
+              return data;
+            }, [transactions, currentMonth, currentYear])}
+            processedPieData={React.useMemo(() => {
+              const pieData = expensesByCategory.map(([cat, val]) => ({ name: cat, value: val, color: CAT_COLORS[cat] || '#94a3b8' }));
+              if (pieData.length <= 6) return pieData;
+              const sorted = [...pieData].sort((a, b) => b.value - a.value);
+              const rest = sorted.slice(6).reduce((sum, d) => sum + d.value, 0);
+              return [...sorted.slice(0, 6), { name: 'Outros', value: rest, color: '#94a3b8' }];
+            }, [expensesByCategory])} />
           </DashSection>
         );
       case 'gastos':
@@ -230,346 +197,166 @@ export default function Dashboard() {
             <GoalsSection goals={goals} transactions={transactions} />
           </DashSection>
         );
-      case 'parcelas': return renderParcelas();
-      case 'planejado': return renderPlanejado();
-      case 'previsao': return renderPrevisao();
-      case 'vencimentos': return renderVencimentos();
-      case 'patrimonio': return renderPatrimonio();
-      case 'tendencia': return renderTendencia();
       default: return null;
     }
   };
 
-  // ═══ Section Renderers ═══
-
-  function renderResumo() {
-    return (
-      <div key="resumo">
-        {/* Collapsible header */}
-        <button
-          onClick={() => setShowKpiResumo(v => !v)}
-          className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors mb-3 w-full"
-        >
-          <ChevronRight size={14} className={cn('transition-transform duration-200', showKpiResumo && 'rotate-90')} />
-          Resumo do Mês
-        </button>
-
-        {showKpiResumo && (
-          <>
-            {/* Mobile: horizontal scroll carousel */}
-            <div className="flex lg:hidden gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide animate-fade-in">
-              <div className="shrink-0 w-44 snap-start">
-                <KpiCard label="Receitas" value={formatCurrency(totals.income)} icon={TrendingUp} variant="income"
-                  delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
-              </div>
-              <div className="shrink-0 w-44 snap-start">
-                <KpiCard label="Despesas" value={formatCurrency(totals.expense)} icon={TrendingDown} variant="expense"
-                  delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
-              </div>
-              <div className="shrink-0 w-44 snap-start">
-                <KpiCard label="Saldo" value={formatCurrency(totals.balance)} icon={Wallet} variant="balance"
-                  delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
-              </div>
-              <div className="shrink-0 w-44 snap-start">
-                <KpiCard label="Investido" value={formatCurrency(totals.investment)} icon={PiggyBank} variant="investment" />
-              </div>
-            </div>
-
-            {/* Desktop: 4-column grid */}
-            <div className="hidden lg:grid grid-cols-4 gap-3 animate-fade-in">
-              <KpiCard label="Receitas" value={formatCurrency(totals.income)} icon={TrendingUp} variant="income"
-                delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
-              <KpiCard label="Despesas" value={formatCurrency(totals.expense)} icon={TrendingDown} variant="expense"
-                delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
-              <KpiCard label="Saldo" value={formatCurrency(totals.balance)} icon={Wallet} variant="balance"
-                delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
-              <KpiCard label="Investido" value={formatCurrency(totals.investment)} icon={PiggyBank} variant="investment" />
-            </div>
-          </>
-        )}
-
-        <div className="mt-3 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-          <FinancialHealthScore
-            transactions={transactions}
-            budgets={budgets}
-            goals={goals}
-            month={currentMonth}
-            year={currentYear}
-          />
-        </div>
-      </div>
-    );
-  }
-
-
-
-  function renderParcelas() {
-    if (installmentTx.length === 0) return null;
-    return (
-      <DashSection id="parcelas" title="Parcelas Ativas" color="bg-pink-500" defaultOpen={false}>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs text-muted-foreground">{installmentTx.length} parcela(s)</span>
-          <span className="text-sm font-bold text-red-500 tabular-nums">{formatCurrency(installmentTotal)}</span>
-        </div>
-        <div className="space-y-2">
-          {installmentTx.slice(0, 5).map(t => (
-            <div key={t.id} className="flex items-center justify-between p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{t.description}</p>
-                <p className="text-xs text-muted-foreground">
-                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-50 border-blue-200 text-blue-600 mr-1">
-                    {t.installmentCurrent}/{t.installmentCount}
-                  </Badge>
-                  {formatDate(t.date)}
-                </p>
-              </div>
-              <span className="text-sm font-bold text-red-500 tabular-nums shrink-0">{formatCurrency(Math.abs(t.value))}</span>
-            </div>
-          ))}
-          {installmentTx.length > 5 && (
-            <Link to="/transactions" className="block text-center text-xs text-primary font-medium hover:underline mt-2">
-              Ver todas ({installmentTx.length})
-            </Link>
-          )}
-        </div>
-      </DashSection>
-    );
-  }
-
-  function renderPlanejado() {
-    if (monthBudgets.length === 0) return null;
-    return (
-      <DashSection id="planejado" title="Planejado vs Real" color="bg-amber-500" defaultOpen={false}>
-        <div className="space-y-3">
-          {monthBudgets.map(b => {
-            const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + t.value, 0);
-            const pct = b.limit > 0 ? Math.min(100, (spent / b.limit) * 100) : 0;
-            const over = spent > b.limit;
-            return (
-              <div key={b.id}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium">{getCategoryIcon(b.category)} {b.category}</span>
-                  <span className={cn("text-xs font-semibold", over ? 'text-red-500' : 'text-muted-foreground')}>
-                    {formatCurrency(spent)} / {formatCurrency(b.limit)}
-                  </span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className={cn("h-full rounded-full transition-all duration-500", over ? 'bg-red-500' : 'bg-primary')} style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </DashSection>
-    );
-  }
-
-  function renderPrevisao() {
-    return (
-      <DashSection id="previsao" title="Previsão Próximo Mês" color="bg-cyan-500" defaultOpen={false}>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Receita Prev.</p>
-            <p className="text-lg font-bold text-emerald-600 tabular-nums mt-1">{formatCurrency(avgIncome)}</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Despesa Prev.</p>
-            <p className="text-lg font-bold text-red-500 tabular-nums mt-1">{formatCurrency(avgExpense)}</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Saldo Prev.</p>
-            <p className={cn("text-lg font-bold tabular-nums mt-1", avgIncome - avgExpense >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-              {formatCurrency(avgIncome - avgExpense)}
-            </p>
-          </div>
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-3">Baseado na média dos últimos 3 meses</p>
-      </DashSection>
-    );
-  }
-
-  function renderVencimentos() {
-    if (upcomingItems.length === 0) return null;
-    return (
-      <DashSection id="vencimentos" title="Próximos Vencimentos" color="bg-orange-500" defaultOpen={false}>
-        <div className="space-y-2">
-          {upcomingItems.map((item, i) => (
-            <div key={i} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-muted/50 transition-colors">
-              <div className="w-9 h-9 rounded flex items-center justify-center bg-muted">
-                <item.icon size={16} className={item.color} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{item.label}</p>
-                <p className="text-xs text-muted-foreground">{item.date}</p>
-              </div>
-              <span className={cn("text-sm font-bold tabular-nums", item.color)}>{formatCurrency(item.value)}</span>
-            </div>
-          ))}
-        </div>
-      </DashSection>
-    );
-  }
-
-  function renderPatrimonio() {
-    return (
-      <DashSection id="patrimonio" title="Patrimônio Total" color="bg-indigo-500" defaultOpen={false}>
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded bg-indigo-100">
-            <PiggyBank size={24} className="text-indigo-600" />
-          </div>
-          <div>
-            <p className={cn("text-2xl font-bold tabular-nums", patrimonio >= 0 ? 'text-foreground' : 'text-red-500')}>
-              {formatCurrency(patrimonio)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-0.5">Saldo acumulado total (receitas − despesas − investimentos)</p>
-          </div>
-        </div>
-      </DashSection>
-    );
-  }
-
-  function renderTendencia() {
-    return (
-      <DashSection id="tendencia" title="Tendência vs Mês Anterior" color="bg-teal-500" defaultOpen={false}>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Receitas</p>
-            <div className="flex items-center justify-center gap-1">
-              {getDelta(totals.income, prevTotals.income) > 0 ? (
-                <ArrowUpRight size={16} className="text-emerald-500" />
-              ) : getDelta(totals.income, prevTotals.income) < 0 ? (
-                <ArrowDownRight size={16} className="text-red-500" />
-              ) : <Minus size={16} className="text-muted-foreground" />}
-              <span className={cn("text-lg font-bold", getDelta(totals.income, prevTotals.income) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                {getDelta(totals.income, prevTotals.income).toFixed(1)}%
-              </span>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.income)} vs {formatCurrency(prevTotals.income)}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Despesas</p>
-            <div className="flex items-center justify-center gap-1">
-              {getDelta(totals.expense, prevTotals.expense) > 0 ? (
-                <ArrowUpRight size={16} className="text-red-500" />
-              ) : getDelta(totals.expense, prevTotals.expense) < 0 ? (
-                <ArrowDownRight size={16} className="text-emerald-500" />
-              ) : <Minus size={16} className="text-muted-foreground" />}
-              <span className={cn("text-lg font-bold", getDelta(totals.expense, prevTotals.expense) <= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                {getDelta(totals.expense, prevTotals.expense).toFixed(1)}%
-              </span>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.expense)} vs {formatCurrency(prevTotals.expense)}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">Saldo</p>
-            <div className="flex items-center justify-center gap-1">
-              {getDelta(totals.balance, prevTotals.balance) > 0 ? (
-                <ArrowUpRight size={16} className="text-emerald-500" />
-              ) : getDelta(totals.balance, prevTotals.balance) < 0 ? (
-                <ArrowDownRight size={16} className="text-red-500" />
-              ) : <Minus size={16} className="text-muted-foreground" />}
-              <span className={cn("text-lg font-bold", getDelta(totals.balance, prevTotals.balance) >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                {getDelta(totals.balance, prevTotals.balance).toFixed(1)}%
-              </span>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-1">{formatCurrency(totals.balance)} vs {formatCurrency(prevTotals.balance)}</p>
-          </div>
-        </div>
-      </DashSection>
-    );
-  }
-
   return (
-    <div className="p-4 lg:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold font-display">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Visão geral das suas finanças</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
-            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
-            <span className="text-sm font-medium px-2 min-w-[120px] text-center">
-              {MONTH_NAMES[currentMonth]} {currentYear}
-            </span>
-            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
-          </div>
-          <Button size="sm" variant="outline" onClick={() => setShowCustomize(true)}>
-            <Settings size={14} className="mr-1" /> Personalizar
-          </Button>
-          <Button size="sm" onClick={() => setShowModal(true)}>
-            <Plus size={14} className="mr-1" /> Novo
-          </Button>
-        </div>
-      </div>
+    <>
+      {/* ═══ Hero Balance Section ═══ */}
+      <section className="py-xl mb-md">
+        <p className="font-label-caps text-label-caps text-on-surface-variant tracking-[0.15em] mb-xs">DISPONÍVEL ESTE MÊS</p>
+        <h1 className="font-display-hero text-display-hero text-on-surface mb-md">{formatCurrency(totals.balance)}</h1>
+        <div className="h-[1px] w-full bg-editorial-rule" />
+      </section>
 
-      {/* Alerts */}
+      {/* ═══ Alerts ═══ */}
       {alerts.length > 0 && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-          <AlertCircle size={16} />
+        <div className="flex items-center gap-2 p-3 bg-error-container border border-danger/20 rounded text-danger text-sm mb-xl">
+          <MsIcon name="warning" size={16} />
           <span>{alerts.length} orçamento(s) ultrapassado(s): {alerts.map(a => a.category).join(', ')}</span>
         </div>
       )}
 
-      {/* Hero Balance — editorial headline number */}
-      <HeroBalance balance={totals.balance} income={totals.income} expense={totals.expense} />
+      {/* ═══ KPI Grid ═══ */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md mb-xl">
+        <KpiCard label="ENTRADAS" value={formatCurrency(totals.income)} icon="trending_up" variant="income"
+          delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
+        <KpiCard label="SAÍDAS" value={formatCurrency(totals.expense)} icon="trending_down" variant="expense"
+          delta={getDelta(totals.expense, prevTotals.expense)} deltaLabel="vs mês ant." />
+        <KpiCard label="BALANÇO" value={formatCurrency(totals.balance)} icon="balance" variant="balance"
+          delta={getDelta(totals.balance, prevTotals.balance)} deltaLabel="vs mês ant." />
+        <KpiCard label="INVESTIMENTOS" value={formatCurrency(totals.investment)} icon="account_balance_wallet" variant="investment" />
+      </section>
 
-      {/* Status Line — compact indicators */}
-      <StatusLine
-        budgets={budgets}
-        monthBudgets={monthBudgets}
-        goals={goals}
-        upcomingItems={upcomingItems}
-        monthTx={monthTx}
-      />
+      {/* ═══ Transactions + Health Score Grid ═══ */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl mb-xl">
+        {/* Transactions List (8 cols) */}
+        <section className="lg:col-span-8">
+          <div className="flex items-center justify-between mb-md pb-xs border-b border-surface-border">
+            <h2 className="font-headline text-headline">Transações Recentes</h2>
+            <Link to="/transactions" className="font-label-caps text-label-caps text-primary-light hover:underline uppercase">Ver Tudo</Link>
+          </div>
+          <div className="flex flex-col">
+            {/* Header */}
+            <div className="grid grid-cols-12 gap-md px-xs py-sm border-b border-surface-border opacity-50 font-label-caps text-[10px]">
+              <div className="col-span-6 uppercase">Descrição</div>
+              <div className="col-span-3 uppercase">Categoria</div>
+              <div className="col-span-3 text-right uppercase">Valor</div>
+            </div>
+            {/* Rows */}
+            {monthTx.length === 0 ? (
+              <p className="py-md text-muted-foreground text-sm">Sem transações neste mês</p>
+            ) : (
+              monthTx.slice(0, 8).map(t => (
+                <div key={t.id} className="transaction-row grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center">
+                  <div className="col-span-6 flex items-center gap-sm">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center",
+                      t.type === 'income' ? 'bg-kpi-income/10' : t.type === 'expense' ? 'bg-kpi-expense/10' : 'bg-info/10'
+                    )}>
+                      <MsIcon name={t.type === 'income' ? 'payments' : t.type === 'expense' ? 'shopping_cart' : 'account_balance'} size={16}
+                        className={t.type === 'income' ? 'text-kpi-income' : t.type === 'expense' ? 'text-kpi-expense' : 'text-info'} />
+                    </div>
+                    <span className="font-body-lg text-body-lg font-bold">{t.description}</span>
+                  </div>
+                  <div className="col-span-3">
+                    <span className="px-xs py-[2px] bg-surface-container-high rounded text-[10px] font-label-caps text-on-surface-variant">
+                      {(t.category || '—').toUpperCase()}
+                    </span>
+                  </div>
+                  <div className={cn(
+                    "col-span-3 text-right font-mono-number text-mono-number font-bold",
+                    t.type === 'income' ? 'text-kpi-income' : t.type === 'expense' ? 'text-danger' : 'text-info'
+                  )}>
+                    {t.type !== 'income' ? '- ' : '+ '}{formatCurrency(t.value)}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
 
-      {/* Dynamic sections */}
-      {orderedSections.map((s, i) => (
-        <div key={s.id}>
-          {renderSection(s.id)}
-        </div>
+        {/* Health Score (4 cols) */}
+        <section className="lg:col-span-4">
+          <div className="bg-surface border-2 border-surface-border p-lg">
+            <h2 className="font-headline text-headline mb-lg">Saúde Financeira</h2>
+            <div className="relative flex flex-col items-center justify-center mb-xl">
+              <div className="w-48 h-48 rounded-full border-[12px] border-surface-container-low flex items-center justify-center relative">
+                <div className="absolute inset-0 rounded-full border-[12px] border-primary-light border-r-transparent border-b-transparent rotate-45" />
+                <div className="flex flex-col items-center">
+                  <span className="font-display-sm text-[48px] font-bold text-on-surface">{healthScore}</span>
+                  <span className="font-label-caps text-label-caps text-on-surface-variant">PONTOS</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-md">
+              {/* Emergency Reserve */}
+              <div className="flex flex-col gap-xs">
+                <div className="flex justify-between font-label-caps text-label-caps">
+                  <span>RESERVA DE EMERGÊNCIA</span>
+                  <span className="text-success">EXCELENTE</span>
+                </div>
+                <div className="h-1 bg-surface-container-high w-full">
+                  <div className="h-full bg-success w-[90%]" />
+                </div>
+              </div>
+              {/* Savings Rate */}
+              <div className="flex flex-col gap-xs">
+                <div className="flex justify-between font-label-caps text-label-caps">
+                  <span>TAXA DE POUPANÇA</span>
+                  <span className="text-warning">ATENÇÃO</span>
+                </div>
+                <div className="h-1 bg-surface-container-high w-full">
+                  <div className="h-full bg-warning w-[45%]" />
+                </div>
+              </div>
+              {/* Diversification */}
+              <div className="flex flex-col gap-xs">
+                <div className="flex justify-between font-label-caps text-label-caps">
+                  <span>DIVERSIFICAÇÃO</span>
+                  <span className="text-success">BOM</span>
+                </div>
+                <div className="h-1 bg-surface-container-high w-full">
+                  <div className="h-full bg-primary-light w-[72%]" />
+                </div>
+              </div>
+            </div>
+            <button className="w-full mt-xl py-md bg-primary-container text-on-primary-container font-label-caps text-label-caps tracking-widest hover:brightness-110 transition-all uppercase">
+              Otimizar Carteira
+            </button>
+          </div>
+
+          {/* AI Analysis Card */}
+          <div className="mt-lg bg-on-primary-fixed p-lg text-on-primary flex flex-col gap-sm">
+            <MsIcon name="auto_awesome" className="text-primary-light" size={24} />
+            <h3 className="font-title text-title">Análise de IA</h3>
+            <p className="font-body-sm text-body-sm text-on-primary/70">Identificamos uma oportunidade de redução de 12% em taxas fixas migrando seu fundo de reserva.</p>
+          </div>
+        </section>
+      </div>
+
+      {/* ═══ Dynamic sections ═══ */}
+      {orderedSections.map(s => (
+        <div key={s.id}>{renderSection(s.id)}</div>
       ))}
 
-      {/* Recent transactions (always shown at bottom) */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
-        <div className="p-4 pb-3 border-b border-slate-200">
-          <h3 className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-1.5 h-4 rounded-full bg-emerald-500" /> Últimas Transações
-          </h3>
-        </div>
-        <div className="space-y-2 p-4 pt-4">
-          {monthTx.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Sem transações neste mês</p>
-          ) : (
-            monthTx.slice(0, 5).map(t => (
-              <div key={t.id} className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-slate-50 transition-colors">
-                <div className={cn(
-                  "w-9 h-9 rounded flex items-center justify-center text-xs font-bold shrink-0 shadow-sm",
-                  t.type === 'income' ? 'bg-emerald-100 text-emerald-700' :
-                  t.type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
-                )}>
-                  {(t.description || '?')[0].toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{t.description}</p>
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500">{t.category ? <>{t.category}</> : '—'}</p>
-                </div>
-                <span className={cn(
-                  "text-sm font-semibold shrink-0 font-mono-number tracking-tight",
-                  t.type === 'income' ? 'text-emerald-600' : t.type === 'expense' ? 'text-red-500' : 'text-amber-600'
-                )}>
-                  {t.type !== 'income' ? '-' : '+'}{formatCurrency(t.value)}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
+      {/* ═══ Month Navigation Pill ═══ */}
+      <div className="flex items-center justify-center gap-1 bg-surface border border-surface-border rounded-lg px-2 py-1 mt-xl w-fit mx-auto">
+        <button onClick={() => navigate(-1)} className="p-1 hover:bg-surface-container-low rounded" aria-label="Mês anterior">
+          <MsIcon name="chevron_left" size={14} className="text-on-surface-variant" />
+        </button>
+        <span className="text-sm font-medium px-2 min-w-[120px] text-center font-mono-number">
+          {MONTH_NAMES[currentMonth]} {currentYear}
+        </span>
+        <button onClick={() => navigate(1)} className="p-1 hover:bg-surface-container-low rounded" aria-label="Próximo mês">
+          <MsIcon name="chevron_right" size={14} className="text-on-surface-variant" />
+        </button>
       </div>
 
       <TransactionModal open={showModal} onClose={() => setShowModal(false)} onSave={handleSave} goals={goals} defaultType={defaultType} />
       <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} />
       <DashCustomizeModal open={showCustomize} onClose={() => setShowCustomize(false)} onUpdate={(s) => setDashSections(s)} />
-    </div>
+    </>
   );
 }

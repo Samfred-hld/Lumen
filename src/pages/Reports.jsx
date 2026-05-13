@@ -293,47 +293,37 @@ export default function Reports() {
       {/* KPIs — Mobile: horizontal scroll, Desktop: grid */}
       <div className="flex lg:hidden gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide animate-fade-in">
         {[
-          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100' },
-          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100' },
-          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100' },
-          { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
+          { label: 'Receitas', value: formatCurrency(totals.income), icon: 'trending_up', accent: 'bg-kpi-income', color: 'text-kpi-income', iconColor: 'text-kpi-income' },
+          { label: 'Despesas', value: formatCurrency(totals.expense), icon: 'trending_down', accent: 'bg-kpi-expense', color: 'text-danger', iconColor: 'text-kpi-expense' },
+          { label: 'Saldo', value: formatCurrency(totals.balance), icon: 'balance', accent: 'bg-secondary-container', color: totals.balance >= 0 ? 'text-success' : 'text-danger', iconColor: 'text-secondary' },
+          { label: 'Transações', value: periodTx.length, icon: 'receipt', accent: 'bg-primary', color: 'text-on-surface', iconColor: 'text-primary' },
         ].map(kpi => (
           <div key={kpi.label} className="shrink-0 w-44 snap-start">
-            <div className={cn("bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden", kpi.gradient)}>
-              <div className="p-4">
-                <div className="flex items-start justify-between flex-wrap gap-3">
-                  <div>
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                    <p className={cn("text-xl font-bold mt-0.5 font-mono-number tracking-tight", kpi.color)}>{kpi.value}</p>
-                  </div>
-                  <div className={cn("p-2 rounded", kpi.bg)}>
-                    <kpi.icon size={16} className={kpi.color} />
-                  </div>
-                </div>
+            <div className="bg-surface border border-surface-border p-card-padding relative overflow-hidden group hover:shadow-lg transition-shadow">
+              <div className={cn("absolute top-0 left-0 right-0 h-[3px]", kpi.accent)} />
+              <div className="flex justify-between items-start mb-sm">
+                <span className="font-label-caps text-label-caps text-on-surface-variant">{kpi.label}</span>
+                <span className={cn("material-symbols-outlined text-sm", kpi.iconColor)}>{kpi.icon}</span>
               </div>
+              <div className="font-headline text-headline text-on-surface">{kpi.value}</div>
             </div>
           </div>
         ))}
       </div>
       <div className="hidden lg:grid grid-cols-4 gap-3 animate-fade-in">
         {[
-          { label: 'Receitas', value: formatCurrency(totals.income), icon: TrendingUp, gradient: 'gradient-emerald', color: 'text-emerald-600', bg: 'bg-emerald-100' },
-          { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100' },
-          { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100' },
-          { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
+          { label: 'Receitas', value: formatCurrency(totals.income), icon: 'trending_up', accent: 'bg-kpi-income', color: 'text-kpi-income', iconColor: 'text-kpi-income' },
+          { label: 'Despesas', value: formatCurrency(totals.expense), icon: 'trending_down', accent: 'bg-kpi-expense', color: 'text-danger', iconColor: 'text-kpi-expense' },
+          { label: 'Saldo', value: formatCurrency(totals.balance), icon: 'balance', accent: 'bg-secondary-container', color: totals.balance >= 0 ? 'text-success' : 'text-danger', iconColor: 'text-secondary' },
+          { label: 'Transações', value: periodTx.length, icon: 'receipt', accent: 'bg-primary', color: 'text-on-surface', iconColor: 'text-primary' },
         ].map(kpi => (
-          <div key={kpi.label} className={cn("bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden", kpi.gradient)}>
-            <div className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                  <p className={cn("text-xl font-bold mt-0.5 font-mono-number tracking-tight", kpi.color)}>{kpi.value}</p>
-                </div>
-                <div className={cn("p-2 rounded", kpi.bg)}>
-                  <kpi.icon size={16} className={kpi.color} />
-                </div>
-              </div>
+          <div key={kpi.label} className="bg-surface border border-surface-border p-card-padding relative overflow-hidden group hover:shadow-lg transition-shadow">
+            <div className={cn("absolute top-0 left-0 right-0 h-[3px]", kpi.accent)} />
+            <div className="flex justify-between items-start mb-sm">
+              <span className="font-label-caps text-label-caps text-on-surface-variant">{kpi.label}</span>
+              <span className={cn("material-symbols-outlined text-sm", kpi.iconColor)}>{kpi.icon}</span>
             </div>
+            <div className="font-headline text-headline text-on-surface">{kpi.value}</div>
           </div>
         ))}
       </div>
