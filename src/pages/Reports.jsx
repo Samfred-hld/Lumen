@@ -321,6 +321,7 @@ export default function Reports() {
           { label: 'Despesas', value: formatCurrency(totals.expense), icon: TrendingDown, gradient: 'gradient-red', color: 'text-red-500', bg: 'bg-red-100' },
           { label: 'Saldo', value: formatCurrency(totals.balance), icon: Wallet, gradient: 'gradient-blue', color: totals.balance >= 0 ? 'text-emerald-600' : 'text-red-500', bg: totals.balance >= 0 ? 'bg-emerald-100' : 'bg-red-100' },
           { label: 'Transações', value: periodTx.length, icon: Receipt, gradient: '', color: 'text-primary', bg: 'bg-primary/10' },
+        ].map(kpi => (
           <div key={kpi.label} className={cn("bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden", kpi.gradient)}>
             <div className="p-4">
               <div className="flex items-start justify-between">

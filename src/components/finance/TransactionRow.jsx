@@ -2,7 +2,7 @@
 // LÚMEN — Transaction Row Component
 // ══════════════════════════════════════════
 import React from 'react';
-import { Pencil, Trash2, Copy, Repeat, ArrowDownRight, ArrowUpRight, CheckCircle2, Wallet, Briefcase, CreditCard, Box, Tag, ShoppingCart, Coffee, Car, Stethoscope } from 'lucide-react';
+import { Pencil, Trash2, Copy, Repeat, ArrowDownRight, ArrowUpRight, CheckCircle2, Wallet, Briefcase, CreditCard, Box, Tag, ShoppingCart, Coffee, Car, Stethoscope, TrendingUp, Layers } from 'lucide-react';
 import { formatCurrency, formatSmartDate, isToday } from '@/lib/financeUtils';
 import { getCategoryColor } from '@/lib/categories';
 import { cn } from '@/lib/utils';
