@@ -223,8 +223,7 @@ export default function Layout() {
     if (e.key === 'n' || e.key === 'N') { e.preventDefault(); useTransactionModal.open(); return; }
     if (e.key === '/') {
       e.preventDefault();
-      const searchInput = document.querySelector('[data-shortcut-search]');
-      if (searchInput) { searchInput.focus(); } else { navigate('/transactions'); }
+      setShowGlobalSearch(true);
       return;
     }
     if (e.key >= '1' && e.key <= '7') {
@@ -338,17 +337,17 @@ export default function Layout() {
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 -ml-2 hover:bg-surface-container-low rounded transition-colors md:hidden mr-md">
             <MsIcon name="menu" size={20} className="text-on-surface-variant" />
           </button>
-          <MsIcon name="search" size={20} className="text-on-surface-variant mr-md" />
-          <input
-            data-shortcut-search
-            className="bg-transparent border-none focus:ring-0 font-body-sm text-body-sm w-full max-w-md"
-            placeholder="Search data points..."
-            type="text"
-          />
+          <button
+            onClick={() => setShowGlobalSearch(true)}
+            className="flex items-center gap-2 flex-1 max-w-md py-2 px-3 rounded-lg border border-surface-border hover:border-primary/40 hover:bg-surface-container-low transition-all cursor-text group"
+          >
+            <MsIcon name="search" size={18} className="text-on-surface-variant group-hover:text-primary transition-colors" />
+            <span className="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface-variant/80 transition-colors">Buscar transações...</span>
+            <kbd className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-muted-foreground font-mono-kbd border border-surface-border">⌘K</kbd>
+          </button>
         </div>
         <div className="flex items-center gap-md">
           <NotificationCenter />
-          <button className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-xs rounded transition-all">calendar_today</button>
           <div className="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-surface-border">
             <div className="w-full h-full bg-primary-light flex items-center justify-center">
               <MsIcon name="person" size={16} className="text-on-primary" />

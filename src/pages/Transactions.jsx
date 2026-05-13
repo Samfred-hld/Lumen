@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Search, Filter, ChevronLeft, ChevronRight, Upload, SlidersHorizontal, X, FileSpreadsheet } from 'lucide-react';
+import { Plus, Search, ChevronLeft, ChevronRight, Upload, X, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -42,14 +42,12 @@ export default function Transactions() {
   const [showModal, setShowModal] = useState(false);
   const [defaultType, setDefaultType] = useState('expense');
   const [editing, setEditing] = useState(null);
-  const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterCat, setFilterCat] = useState('all');
   const [filterExpType, setFilterExpType] = useState('all'); // all | fixed | variable | installment
   const [filterPM, setFilterPM] = useState('all');
   const [filterValMin, setFilterValMin] = useState('');
   const [filterValMax, setFilterValMax] = useState('');
-  const [showAdvFilters, setShowAdvFilters] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -84,7 +82,6 @@ export default function Transactions() {
   ).length;
 
   const filtered = monthTx.filter(t => {
-    const matchSearch = !search || t.description?.toLowerCase().includes(search.toLowerCase()) || t.category?.toLowerCase().includes(search.toLowerCase());
     const matchType = filterType === 'all' || t.type === filterType;
     const matchCat = filterCat === 'all' || t.category === filterCat;
     // Sub-filtros de despesa (só aplicáveis a expenses)
@@ -114,7 +111,7 @@ export default function Transactions() {
     const absVal = Math.abs(t.value || 0);
     const matchValMin = !filterValMin || absVal >= parseFloat(filterValMin);
     const matchValMax = !filterValMax || absVal <= parseFloat(filterValMax);
-    return matchSearch && matchType && matchCat && matchExpType && matchPM && matchValMin && matchValMax;
+    return matchType && matchCat && matchExpType && matchPM && matchValMin && matchValMax;
   });
 
   // Pagination
@@ -122,7 +119,7 @@ export default function Transactions() {
   const paginatedTx = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // Reset page on filter change
-  useEffect(() => { setPage(1); }, [search, filterType, filterCat, filterExpType, filterPM, filterValMin, filterValMax, currentMonth, currentYear]);
+  useEffect(() => { setPage(1); }, [filterType, filterCat, filterExpType, filterPM, filterValMin, filterValMax, currentMonth, currentYear]);
 
   // Bug 2C fix: reset sub-filtro de despesa ao mudar para tipo incompatível
   useEffect(() => {
@@ -460,48 +457,69 @@ export default function Transactions() {
         <div className="lg:col-span-8 space-y-4">
           
           {/* Filters */}
-          <div className="bg-white border border-slate-200 p-3 flex flex-wrap items-center gap-3">
-            <div className="flex gap-1 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+          <div className="bg-white border border-slate-200 p-3 space-y-3">
+            {/* Row 1: Type pills */}
+            <div className="flex gap-1 overflow-x-auto no-scrollbar">
               <button 
-                onClick={() => setFilterExpType('all')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'all' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
-              >TODAS</button>
+                onClick={() => setFilterType('all')} 
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'all' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >TODOS</button>
               <button 
-                onClick={() => setFilterExpType('fixed')}
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'fixed' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
-              >FIXAS</button>
+                onClick={() => setFilterType('income')} 
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'income' ? "bg-emerald-600 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >RECEITAS</button>
               <button 
-                onClick={() => setFilterExpType('variable')}
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'variable' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
-              >VARIÁVEIS</button>
+                onClick={() => setFilterType('expense')} 
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'expense' ? "bg-red-600 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >DESPESAS</button>
               <button 
-                onClick={() => setFilterExpType('installment')}
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'installment' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
-              >PARCELADAS</button>
+                onClick={() => setFilterType('investment')} 
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'investment' ? "bg-violet-600 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+              >INVESTIMENTOS</button>
             </div>
-            
-            <div className="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
-            
-            <div className="flex-1 flex gap-2">
-              <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg flex-1 outline-none min-w-0">
+
+            {/* Row 2: Expense sub-type + Category + Payment */}
+            <div className="flex flex-wrap items-center gap-2">
+              {filterType === 'expense' && (
+                <>
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => setFilterExpType('all')} 
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'all' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                    >TODAS</button>
+                    <button 
+                      onClick={() => setFilterExpType('fixed')}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'fixed' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                    >FIXAS</button>
+                    <button 
+                      onClick={() => setFilterExpType('variable')}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'variable' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                    >VARIÁVEIS</button>
+                    <button 
+                      onClick={() => setFilterExpType('installment')}
+                      className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterExpType === 'installment' ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-500 hover:bg-slate-50")}
+                    >PARCELADAS</button>
+                  </div>
+                  <div className="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+                </>
+              )}
+              
+              <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg outline-none min-w-0">
                 <option value="all">Categoria</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <select value={filterPM} onChange={e => setFilterPM(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg flex-1 outline-none min-w-0">
+              <select value={filterPM} onChange={e => setFilterPM(e.target.value)} className="bg-white border border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-700 py-1.5 px-2 rounded-lg outline-none min-w-0">
                 <option value="all">Pagamento</option>
                 {paymentMethods.map(p => <option key={p} value={p}>{p}</option>)}
                 {cards.map(c => <option key={`card:${c.id}`} value={`card:${c.id}`}>💳 {c.name}</option>)}
               </select>
-              <div className="relative group min-w-[120px] flex-1">
-                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="BUSCAR..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-8 pr-2 py-1.5 bg-white border border-slate-200 text-[11px] font-bold text-slate-700 rounded-lg outline-none placeholder-slate-400 uppercase tracking-wider focus:border-slate-400"
-                />
-              </div>
+
+              {/* Active filter count + clear */}
+              {advFilterCount > 0 && (
+                <button onClick={clearAdvFilters} className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                  <X size={12} /> LIMPAR ({advFilterCount})
+                </button>
+              )}
             </div>
           </div>
 
