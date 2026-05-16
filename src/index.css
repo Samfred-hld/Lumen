@@ -172,8 +172,8 @@ body {
 
   /* ═══════════════════════════════════════════
      DARK THEME — Lúmen "Financial Newspaper"
-     Per DESIGN.md: Deep Slate, Newsreader/Work Sans,
-     Zero shadows, Sharp 2px radius, Editorial rules
+     Per design_lumen.md: Deep Slate, Inter,
+     Tonal layering (zero shadows), Editorial rules
      ═══════════════════════════════════════════ */
   [data-theme="dark"] {
     /* ── Brand ── */

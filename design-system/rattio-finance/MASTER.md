@@ -28,14 +28,15 @@
 
 ### Typography
 
-- **Heading Font:** Fira Code
-- **Body Font:** Fira Sans
-- **Mood:** dashboard, data, analytics, code, technical, precise
-- **Google Fonts:** [Fira Code + Fira Sans](https://fonts.google.com/share?selection.family=Fira+Code:wght@400;500;600;700|Fira+Sans:wght@300;400;500;600;700)
+- **UI Font:** Inter (all headings, body, labels)
+- **Data Font:** JetBrains Mono (currency values, account numbers, transaction amounts)
+- **KBD Font:** Fira Code (keyboard shortcuts)
+- **Mood:** swiss, editorial, clean, high-contrast, precise, financial newspaper
+- **Google Fonts:** [Inter + JetBrains Mono + Fira Code](https://fonts.google.com/share?selection.family=Inter:wght@400;600;700|JetBrains+Mono:wght@400;500|Fira+Code:wght@600)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Fira+Code:wght@600&display=swap');
 ```
 
 ### Spacing Variables
