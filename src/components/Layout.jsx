@@ -289,16 +289,24 @@ export default function Layout() {
                   to={path}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center w-full px-lg py-sm font-body-lg transition-all",
+                    "flex items-center w-full px-lg py-sm font-body-lg transition-all group",
                     active
-                      ? "text-sidebar-body-text border-l-4 border-primary-light bg-sidebar-body-active scale-100"
-                      : "text-sidebar-body-text/50 hover:bg-sidebar-body-hover hover:text-sidebar-body-text",
+                      ? "text-sidebar-body-text border-l-4 border-primary-light bg-white/10 scale-100 shadow-sm"
+                      : "text-sidebar-body-text/70 hover:bg-sidebar-body-hover hover:text-sidebar-body-text",
                     collapsed && "justify-center px-0"
                   )}
                   title={collapsed ? `${label} (${shortcut})` : undefined}
                   aria-current={active ? 'page' : undefined}
                 >
-                  <MsIcon name={icon} size={20} className={cn("mr-md", collapsed && "mr-0")} />
+                  <MsIcon 
+                    name={icon} 
+                    size={20} 
+                    className={cn(
+                      "mr-md transition-colors", 
+                      active ? "text-primary-light" : "text-inherit",
+                      collapsed && "mr-0"
+                    )} 
+                  />
                   {!collapsed && (
                     <>
                       <span className="font-body-lg text-body-lg">{label}</span>

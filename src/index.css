@@ -114,12 +114,12 @@ body {
 
     /* ── Sidebar sections (light theme — navy with bright text) ── */
     --sidebar-header-bg: #0A1628;
-    --sidebar-header-border: #1E293B;
+    --sidebar-header-border: rgba(255, 255, 255, 0.08);
     --sidebar-header-text: #FFFFFF;
     --sidebar-body-bg: #0A1628;
     --sidebar-body-text: #FFFFFF;
-    --sidebar-body-active: rgba(255,255,255,0.12);
-    --sidebar-body-hover: rgba(255,255,255,0.06);
+    --sidebar-body-active: rgba(255, 255, 255, 0.12);
+    --sidebar-body-hover: rgba(255, 255, 255, 0.06);
 
     --skeleton-base: #E2E8F0;
     --skeleton-shine: #F1F5F9;
@@ -257,12 +257,12 @@ body {
 
     /* ── Sidebar sections (dark — navy with dimmed text) ── */
     --sidebar-header-bg: #0A1628;
-    --sidebar-header-border: #3e4947;
+    --sidebar-header-border: rgba(255, 255, 255, 0.05);
     --sidebar-header-text: #94A3B8;
     --sidebar-body-bg: #0A1628;
     --sidebar-body-text: #94A3B8;
-    --sidebar-body-active: rgba(148,163,184,0.12);
-    --sidebar-body-hover: rgba(148,163,184,0.06);
+    --sidebar-body-active: rgba(148, 163, 184, 0.12);
+    --sidebar-body-hover: rgba(148, 163, 184, 0.06);
 
     --skeleton-base: #171f33;
     --skeleton-shine: #222a3d;
