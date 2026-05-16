@@ -291,8 +291,8 @@ export default function Layout() {
                   className={cn(
                     "flex items-center w-full px-lg py-sm font-body-lg transition-all group",
                     active
-                      ? "text-sidebar-body-text border-l-4 border-primary-light bg-white/10 scale-100 shadow-sm"
-                      : "text-sidebar-body-text/70 hover:bg-sidebar-body-hover hover:text-sidebar-body-text",
+                      ? "text-white border-l-4 border-primary-light bg-white/10 scale-100 shadow-sm"
+                      : "text-white/60 hover:bg-white/5 hover:text-white",
                     collapsed && "justify-center px-0"
                   )}
                   title={collapsed ? `${label} (${shortcut})` : undefined}
@@ -319,20 +319,46 @@ export default function Layout() {
           </nav>
 
           {/* Bottom links */}
-          <div className="px-lg mt-auto pt-lg border-t border-sidebar-body-text/10">
+          <div className="mt-auto border-t border-white/5">
             <button
               onClick={() => setShowShortcuts(true)}
-              className={cn("flex items-center w-full py-sm text-sidebar-body-text/50 font-body-lg hover:text-sidebar-body-text transition-colors", collapsed && "justify-center")}
+              className={cn(
+                "flex items-center w-full px-lg py-md text-white/60 hover:text-white hover:bg-white/5 transition-all group",
+                collapsed && "justify-center"
+              )}
             >
-              <MsIcon name="help_outline" size={20} className={cn("mr-md", collapsed && "mr-0")} />
-              {!collapsed && <span>Support</span>}
+              <MsIcon name="keyboard" size={20} className="mr-md group-hover:scale-110 transition-transform" />
+              {!collapsed && <span className="font-body-md">Atalhos</span>}
             </button>
+
+            <Link
+              to="/support"
+              className={cn(
+                "flex items-center px-lg py-md text-white/60 hover:text-white hover:bg-white/5 transition-all group border-t border-white/5",
+                collapsed && "justify-center"
+              )}
+            >
+              <MsIcon name="help_outline" size={20} className="mr-md group-hover:scale-110 transition-transform" />
+              {!collapsed && <span className="font-body-md">Suporte</span>}
+            </Link>
+
             <button
               onClick={toggleTheme}
-              className={cn("flex items-center w-full py-sm text-sidebar-body-text/50 font-body-lg hover:text-sidebar-body-text transition-colors", collapsed && "justify-center")}
+              className={cn(
+                "flex items-center w-full px-lg py-md text-white/60 hover:text-white hover:bg-white/5 transition-all group border-t border-white/5",
+                collapsed && "justify-center"
+              )}
             >
-              <MsIcon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} size={20} className={cn("mr-md", collapsed && "mr-0")} />
-              {!collapsed && <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>}
+              <MsIcon 
+                name={theme === 'dark' ? 'light_mode' : 'dark_mode'} 
+                size={20} 
+                className="mr-md group-hover:rotate-12 transition-transform" 
+              />
+              {!collapsed && (
+                <span className="font-body-md">
+                  {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+                </span>
+              )}
             </button>
           </div>
         </div>
