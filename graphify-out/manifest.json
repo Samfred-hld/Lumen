@@ -1,0 +1,630 @@
+{
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\do_git.ps1": {
+    "mtime": 1778554582.999708,
+    "hash": "309843abc166179a606fdc93446129f5"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\eslint.config.js": {
+    "mtime": 1778554583.006205,
+    "hash": "0c967a3df513e2cdcbf51c60cb3e4ce6"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\postcss.config.js": {
+    "mtime": 1778554583.009319,
+    "hash": "5b84f4567208c7c747079c0477373231"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\tailwind.config.js": {
+    "mtime": 1778934179.0998938,
+    "hash": "251eb94812bf58f4a05aa2991f3fa79a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\vite.config.js": {
+    "mtime": 1778554583.0785117,
+    "hash": "7ff90c1b453461dce2cb203fa8aa5f57"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\base44\\functions\\generateRecurring\\entry.ts": {
+    "mtime": 1778554582.9952073,
+    "hash": "022fc9311d95a079c91715f427461f4c"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\base44\\functions\\generateRecurringBudgets\\entry.ts": {
+    "mtime": 1778554582.996252,
+    "hash": "ae4e73f7c7a81d2e37b4c6bcc1c7148b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\base44\\functions\\generateSalary\\entry.ts": {
+    "mtime": 1778554582.9972937,
+    "hash": "b8badff304d3c7861c3dd3d8402e4f56"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\base44\\functions\\sendBudgetAlert\\entry.ts": {
+    "mtime": 1778554582.9972937,
+    "hash": "9d301acb2de9d81c03626414d266461c"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\base44\\functions\\sendInvoiceReminder\\entry.ts": {
+    "mtime": 1778554582.9986668,
+    "hash": "9f370eedd8db165dfc388c76f0a4e28b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\App.jsx": {
+    "mtime": 1778721517.210526,
+    "hash": "2fbe6b94c2e90e482c5585b1a8e3676f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\main.jsx": {
+    "mtime": 1778554583.071738,
+    "hash": "cec12ca8c87a1e5767a0026ad33636cc"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\api\\base44Client.js": {
+    "mtime": 1778554583.0149364,
+    "hash": "fa7599e0c68c2ec22627c829b9e64dd8"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ErrorBoundary.jsx": {
+    "mtime": 1778935950.3563623,
+    "hash": "092aca4623a50f4d31f7c6cb94921324"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\GlobalSearch.jsx": {
+    "mtime": 1778554583.0161364,
+    "hash": "6ed76f190ef45bce840a6ece010a4da8"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\Layout.jsx": {
+    "mtime": 1778944788.0814116,
+    "hash": "ff1cc693e9d225fa1c397dd03488cf67"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ProtectedRoute.jsx": {
+    "mtime": 1778721517.2126384,
+    "hash": "a3cf899a84107ec2e06d92244440a4ef"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\UserNotRegisteredError.jsx": {
+    "mtime": 1778721517.2126384,
+    "hash": "e4df7caafef017369df8d220cc7fff62"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\CategoryBreakdown.jsx": {
+    "mtime": 1778935596.2029133,
+    "hash": "66a90cc366d716f6006eb51a5c629cc7"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\ChartsSection.jsx": {
+    "mtime": 1778721517.2148764,
+    "hash": "5e0e800e5d6a46a090f1b8c1e9a8d0be"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\DashSection.jsx": {
+    "mtime": 1778640129.4339237,
+    "hash": "6116a0eee646c47c5e221e6ba12cf130"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\GoalsSection.jsx": {
+    "mtime": 1778721517.2159495,
+    "hash": "9b04422af7a2331c85fe198001064f07"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\HeroBalance.jsx": {
+    "mtime": 1778640129.435172,
+    "hash": "3f4b08642c5c547fdbb52ac43b83e661"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\KpiCard.jsx": {
+    "mtime": 1778942934.06181,
+    "hash": "978b64c8c9294a5bfe80bff5c74f2c03"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\OnboardingModal.jsx": {
+    "mtime": 1778936006.959941,
+    "hash": "008dd424181aaf861f9af662941b9b5f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\dashboard\\StatusLine.jsx": {
+    "mtime": 1778935571.3726099,
+    "hash": "e8eefe07cdfa1501833123824cd58285"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\CashFlowForecast.jsx": {
+    "mtime": 1778721517.218193,
+    "hash": "98cfdd4cbd6a8ccd753018ef0b741fc5"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\ColumnMapper.jsx": {
+    "mtime": 1778640129.4390118,
+    "hash": "d6f92738bd1aea10626fab6d5d7a1b67"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\CSVImport.jsx": {
+    "mtime": 1778936072.166145,
+    "hash": "13ea2099d2475b29ae18e3547c704c0b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\DashCustomizeModal.jsx": {
+    "mtime": 1778935940.6193783,
+    "hash": "fd1e62f9b1c5e9bac6c79f1f4ee724ff"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\FinancialHealthScore.jsx": {
+    "mtime": 1778721517.221199,
+    "hash": "d99b7a9103b6d13f65f867060d565c66"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\InstallmentConfirm.jsx": {
+    "mtime": 1778554583.0225086,
+    "hash": "389d8c8c37ee2121510929ea30917726"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\QuickEntry.jsx": {
+    "mtime": 1778640129.442104,
+    "hash": "6e3d119d3d3cbb3689d5d6a6b389e61f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\SuggestionBanner.jsx": {
+    "mtime": 1778640129.4431016,
+    "hash": "019db83894b14de3c24a08882cf4aa02"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\TransactionInlineForm.jsx": {
+    "mtime": 1778721517.2221997,
+    "hash": "602da3de53f230d90e7403f5e40b0458"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\TransactionModal.jsx": {
+    "mtime": 1778644611.7971115,
+    "hash": "0c679c9ebd906d9d3856a469e51cc0b6"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\finance\\TransactionRow.jsx": {
+    "mtime": 1778944980.3397882,
+    "hash": "27d00967e507efb145cc9fad964bdee5"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\settings\\TabAutomacao.jsx": {
+    "mtime": 1778640129.4442413,
+    "hash": "5a3b0e806b625e65d1dfc6c77698aa4b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\settings\\TabDados.jsx": {
+    "mtime": 1778936141.2519443,
+    "hash": "285e17b9ca7665ae2c6e41664e602f8d"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\settings\\TabPersonalizacao.jsx": {
+    "mtime": 1778640129.4462821,
+    "hash": "4978977654193575d78fd8cb62b89525"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\accordion.jsx": {
+    "mtime": 1778554583.028357,
+    "hash": "415118b06768feb81fcfe52b4e5b7b7d"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\adaptive-modal.jsx": {
+    "mtime": 1778554583.028357,
+    "hash": "d0b698968c903fe8a3a7284e9579a5b1"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\alert-dialog.jsx": {
+    "mtime": 1778554583.0293677,
+    "hash": "0389b4798691277ab5152cad5f02c836"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\alert.jsx": {
+    "mtime": 1778640129.4472857,
+    "hash": "aefc9617b6bfee05924351d22fee5934"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\aspect-ratio.jsx": {
+    "mtime": 1778554583.0303717,
+    "hash": "114d53f29a18d0e8b5e48f5ff3811e15"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\avatar.jsx": {
+    "mtime": 1778554583.0303717,
+    "hash": "9d8326a1af018848b6d83e6e60cda080"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\badge.jsx": {
+    "mtime": 1778554583.0314276,
+    "hash": "6d218c99805c24961981e4dba98fdf13"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\breadcrumb.jsx": {
+    "mtime": 1778554583.0314276,
+    "hash": "2e8f5e6af55fae087a46b31fb77d75c0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\button.jsx": {
+    "mtime": 1778554583.032487,
+    "hash": "450beace402baf596cd626e7ca4c52c4"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\calendar.jsx": {
+    "mtime": 1778554583.032487,
+    "hash": "c8cb1d68753b689488a6f157d3d37fb0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\card.jsx": {
+    "mtime": 1778554583.032487,
+    "hash": "7c8d966e42f69632ddfdb8772d9b4ae4"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\carousel.jsx": {
+    "mtime": 1778554583.0334935,
+    "hash": "153fe6075e848a12d0e42f712b1695be"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\chart.jsx": {
+    "mtime": 1778640129.4487896,
+    "hash": "e912163c383592aa10d37843a1156415"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\checkbox.jsx": {
+    "mtime": 1778554583.0345385,
+    "hash": "36f395a09cf7e827df6c148739416a80"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\collapsible.jsx": {
+    "mtime": 1778554583.0345385,
+    "hash": "cb66adfc183b69da16a00c9e5ddf1fb2"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\command.jsx": {
+    "mtime": 1778554583.0355597,
+    "hash": "f1dfb05773afa55d2785b91b346d7528"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\context-menu.jsx": {
+    "mtime": 1778554583.0355597,
+    "hash": "014cb3ebb957f5499ae12b2484544d4b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\dialog.jsx": {
+    "mtime": 1778554583.0365686,
+    "hash": "5bf6523e5c6092b0b1d97a93cbc3f9f8"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\drawer.jsx": {
+    "mtime": 1778554583.0365686,
+    "hash": "55e869c32611f9a7977d03a31be02a70"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\dropdown-menu.jsx": {
+    "mtime": 1778554583.0365686,
+    "hash": "1c0d0b34a081c3152251822d4ff7d7e2"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\fab.jsx": {
+    "mtime": 1778942934.0639353,
+    "hash": "2ebb4aa74d77c6adeef7da014bb4d762"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\form.jsx": {
+    "mtime": 1778554583.037857,
+    "hash": "4d8eafb2489a0650780a74aa9edb57ce"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\hover-card.jsx": {
+    "mtime": 1778554583.0388596,
+    "hash": "79a654eccb12f89d92303cf54b552ae5"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\input-otp.jsx": {
+    "mtime": 1778554583.0388596,
+    "hash": "48841075b2b67182f2cccfcc20c949a2"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\input.jsx": {
+    "mtime": 1778554583.0388596,
+    "hash": "35b99fc05af87a9a54c63343c1f9b6a9"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\label.jsx": {
+    "mtime": 1778554583.0401943,
+    "hash": "cb2728638eb562697631e4ea71e33450"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\menubar.jsx": {
+    "mtime": 1778554583.0401943,
+    "hash": "2a82ccb4506e13bdcc04c134ac0c680c"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\ms-icon.jsx": {
+    "mtime": 1778935523.0213127,
+    "hash": "3b532b5a02575fdfd3014f6a58778a6b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\navigation-menu.jsx": {
+    "mtime": 1778554583.0401943,
+    "hash": "2f60bd3705afc0eeac8ef39c88a59ce2"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\pagination.jsx": {
+    "mtime": 1778554583.0415597,
+    "hash": "be4419b800578bafdcf861ec2343cefd"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\popover.jsx": {
+    "mtime": 1778554583.0415597,
+    "hash": "aba6056fee432694ef142ea999b944ef"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\progress.jsx": {
+    "mtime": 1778554583.0425625,
+    "hash": "22d643a654bb67d98f99a92ace2e34e0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\radio-group.jsx": {
+    "mtime": 1778554583.0425625,
+    "hash": "1fb39fa13eff606e2a03004bcb4f1b5e"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\resizable.jsx": {
+    "mtime": 1778554583.0425625,
+    "hash": "da139d29b0894a0ceeb63e13805dcf7d"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\scroll-area.jsx": {
+    "mtime": 1778554583.0437677,
+    "hash": "3a1fc9eb76c5ec28b1f4c2fb0f3ac5ac"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\select.jsx": {
+    "mtime": 1778554583.0437677,
+    "hash": "e88635312f738d468563c6182c56ebf1"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\separator.jsx": {
+    "mtime": 1778554583.0437677,
+    "hash": "53ad02ebb72b239bfb1ded455ddec492"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\sheet.jsx": {
+    "mtime": 1778554583.045047,
+    "hash": "26dcf15d87abbb3a496eba22f2bfffc7"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\sidebar.jsx": {
+    "mtime": 1778554583.045047,
+    "hash": "494771fe20acbaeb1632a558bde7ec05"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\skeleton.jsx": {
+    "mtime": 1778554583.046052,
+    "hash": "a643014bf4d04902f452b9c1949e791e"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\slider.jsx": {
+    "mtime": 1778554583.046052,
+    "hash": "080b174fd379884828befa7ba89701fd"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\sonner.jsx": {
+    "mtime": 1778554583.0475235,
+    "hash": "033d5b58ae6d9cd4c9cbcdc4a5dc7170"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\swipe-to-delete.jsx": {
+    "mtime": 1778554583.0475235,
+    "hash": "839dc50b97d0659f50ef5537390e6691"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\switch.jsx": {
+    "mtime": 1778554583.0486164,
+    "hash": "d3280805fe8f47cccbe5b623ca95956b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\table.jsx": {
+    "mtime": 1778554583.0486164,
+    "hash": "c62cc8e3aee43f709186522a3097db88"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\tabs.jsx": {
+    "mtime": 1778554583.0499456,
+    "hash": "23a400436cfdc7f205cd216e9092216a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\textarea.jsx": {
+    "mtime": 1778554583.0499456,
+    "hash": "852877fef0530fc6378b2cb5b4bd8030"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\toast.jsx": {
+    "mtime": 1778554583.050949,
+    "hash": "3ff47e7cf58459b289278b47831cbb1f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\toaster.jsx": {
+    "mtime": 1778554583.050949,
+    "hash": "22cdac998df8ceb8ac916e1a6b5a7cf4"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\toggle-group.jsx": {
+    "mtime": 1778554583.0519526,
+    "hash": "9aabad436f249f3a599513158631cb6f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\toggle.jsx": {
+    "mtime": 1778554583.0519526,
+    "hash": "406eca195f8a55707e72934733aa4b52"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\tooltip.jsx": {
+    "mtime": 1778554583.0519526,
+    "hash": "7b41bcf0b5297401b960a6cdc25f71c0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\components\\ui\\use-toast.jsx": {
+    "mtime": 1778554583.0529673,
+    "hash": "f27b3d349f3acd269b4416364451b2f8"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\hooks\\use-mobile.jsx": {
+    "mtime": 1778554583.0540164,
+    "hash": "21cadcc97434bd72c2e17fe9cdadb88a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\hooks\\useData.js": {
+    "mtime": 1778554583.0540164,
+    "hash": "9b57f5b8eb9c85811cc00ff02a96c85b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\hooks\\useMonthNavigation.js": {
+    "mtime": 1778554583.0553079,
+    "hash": "4e55330c9f9f2ae8ff0fe881a77f50b9"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\amountParser.js": {
+    "mtime": 1778554583.0573428,
+    "hash": "5b9c576e1d168e14d0b54d5167c0a446"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\app-params.js": {
+    "mtime": 1778554583.058346,
+    "hash": "b4924eb334432e689c5fa10b3145e9d2"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\AuthContext.jsx": {
+    "mtime": 1778554583.0563323,
+    "hash": "62e0508706b67e8b9cf4f4fbc1b94524"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\autoCorrelations.js": {
+    "mtime": 1778554583.058346,
+    "hash": "148c73b282a877a4a6eee50ae2898449"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\categories.js": {
+    "mtime": 1778935458.4337442,
+    "hash": "02483143fe12158361d5a28d30081566"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\chartTheme.js": {
+    "mtime": 1778640129.450829,
+    "hash": "cdf8f56384df0e6909216abf019b0ddc"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\csvDedup.js": {
+    "mtime": 1778554583.0594454,
+    "hash": "69b8e8c235aa624b73a438934a75a0f3"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\csvParser.js": {
+    "mtime": 1778554583.060696,
+    "hash": "c98efc5c99ab01614eb155026193781a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\csvProfile.js": {
+    "mtime": 1778554583.060696,
+    "hash": "81f7aea9e0abc3521b59af7fedff45bf"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\entitySetup.js": {
+    "mtime": 1778554583.0618558,
+    "hash": "43080d379f30a31fe48113030d0b52cf"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\financeUtils.js": {
+    "mtime": 1778644546.3294506,
+    "hash": "fbb153f46a0d4fabb4191cb52912e888"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\fixNullInvoiceMonth.js": {
+    "mtime": 1778554583.0629356,
+    "hash": "2ecc192f444d4e66cb20a2d270704ad4"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\notifications.js": {
+    "mtime": 1778936095.5594912,
+    "hash": "c25fbb17019fac5d1f0244d8b5e7fd4d"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\notificationStore.js": {
+    "mtime": 1778554583.0641563,
+    "hash": "04063d925b3b8586af11ca244a438d1a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\PageNotFound.jsx": {
+    "mtime": 1778721517.2262032,
+    "hash": "140c2adc92cecdbb981c609964235724"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\query-client.js": {
+    "mtime": 1778554583.0652916,
+    "hash": "26a490e6571948e56b1b48e69fa1ef56"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store.js": {
+    "mtime": 1778554583.0652916,
+    "hash": "fec9262083558e48aecaede4e62a5eb0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\stringUtils.js": {
+    "mtime": 1778554583.0695455,
+    "hash": "cecd936f92c36f0ffc596c6551ae6912"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\transactionDetectors.js": {
+    "mtime": 1778554583.0707092,
+    "hash": "c89edcaaaacb2fbe630b63e78779b497"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\transactionModalStore.js": {
+    "mtime": 1778554583.0707092,
+    "hash": "901696b9ad476d06bc5574216f20c04d"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\utils.js": {
+    "mtime": 1778554583.071738,
+    "hash": "ba1dc94da59bf5ff3be3dee0954e944f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\migrations\\fixNullInvoiceMonth.js": {
+    "mtime": 1778554583.0641563,
+    "hash": "d7f5d45706458bd5df30a6135c4b5d9a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\cards.js": {
+    "mtime": 1778554583.0663528,
+    "hash": "196c84523a093e879f73bd5e8b0c8ee6"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\clearAllData.js": {
+    "mtime": 1778554583.0663528,
+    "hash": "88e2b89c799af1d539fca4479fba9eb7"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\dedup.js": {
+    "mtime": 1778554583.0673697,
+    "hash": "f06fdd888b8345aa906feef7b7ec0fbe"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\helpers.js": {
+    "mtime": 1778554583.0673697,
+    "hash": "860e8bc2cd18657ad13e5f88146c790b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\rules.js": {
+    "mtime": 1778554583.068371,
+    "hash": "a4e325408f673d621a8684132850228d"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\settings.js": {
+    "mtime": 1778935382.7154987,
+    "hash": "15ed3f4f30026e837727726c5b8532f0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\lib\\store\\templates.js": {
+    "mtime": 1778554583.0695455,
+    "hash": "9232447f4b622fd3c0ae51ba32977783"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Budgets.jsx": {
+    "mtime": 1778640129.4519582,
+    "hash": "e293b45afcf465709724353aebda277a"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\CalendarPage.jsx": {
+    "mtime": 1778935827.125881,
+    "hash": "5b5f94238ef0aed93048e3e4f301f744"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Dashboard.jsx": {
+    "mtime": 1778942934.0650415,
+    "hash": "f6e4c0d08b056755133f1f1806317c75"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Goals.jsx": {
+    "mtime": 1778935981.6777835,
+    "hash": "434bb088855b7606febe8c0e654bb8b0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Planejamento.jsx": {
+    "mtime": 1778721517.2292063,
+    "hash": "64f02fa872aa35db34e4c5e9d91324d0"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Reports.jsx": {
+    "mtime": 1778942933.9690678,
+    "hash": "85faa91a8a2425a5e05ba3203cd421d3"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Settings.jsx": {
+    "mtime": 1778942933.9710891,
+    "hash": "48524d2d64f561df40f337dd56bc53c4"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\pages\\Transactions.jsx": {
+    "mtime": 1778945031.9989817,
+    "hash": "6b54e0823af917485592c6afc72ddbaa"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\src\\utils\\index.ts": {
+    "mtime": 1778554583.0785117,
+    "hash": "48d559551bffdbdd87d855fb6bbef609"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\AGENTS.md": {
+    "mtime": 1778723003.5308828,
+    "hash": "22e263ebb43e933f6bc6423bf78e892f"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\DESIGN.md": {
+    "mtime": 1778934770.0356863,
+    "hash": "36d558286216d40f4a94531bab36bd4e"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\design_lumen.md": {
+    "mtime": 1778934602.1843266,
+    "hash": "8b45e0263b30cb599a1e7661787f1789"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\DEV_GUIDE.md": {
+    "mtime": 1778721517.2028027,
+    "hash": "8526e9c8e4ddbd9e606449868197d6a9"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\index.html": {
+    "mtime": 1778934004.252946,
+    "hash": "6a3e84d6e0a88b7f7259dd76b0341e38"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\RATTIO_DEV_GUIDE.md": {
+    "mtime": 1778554582.9869442,
+    "hash": "cebf7188817bce3d48d17f96ae46104b"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\rattio_revisao.md": {
+    "mtime": 1778554626.4037528,
+    "hash": "76ac7c9a2c636537a45896184db4f015"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\README.md": {
+    "mtime": 1778554582.9881876,
+    "hash": "6ef9e6adf94fc26a47c0a42cb051b748"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\transacoes.html": {
+    "mtime": 1778643989.3402355,
+    "hash": "6f3504581507b3c0d1ba871f34aaad76"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\design-system\\rattio-finance\\MASTER.md": {
+    "mtime": 1778934754.957973,
+    "hash": "d9157df2863f47d9937c596002120342"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\API_CONTRATO.md": {
+    "mtime": 1778554583.0007343,
+    "hash": "2bbe28e840f914b9515f86090684dca5"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\ARQUITETURA_FRONTEND.md": {
+    "mtime": 1778554583.0017354,
+    "hash": "5955c54e7e5e074e61ee2f5cb91de04e"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\BANCO_DE_DADOS.md": {
+    "mtime": 1778554583.0017354,
+    "hash": "a638453c7150df82d32a836c0ae87508"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\INDICE.md": {
+    "mtime": 1778554583.0030172,
+    "hash": "200b418928776a62cd25f5e1eddd5232"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\REQUISITOS.md": {
+    "mtime": 1778554583.0030172,
+    "hash": "6979447f1fe7849e886683ca78c177fc"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\features\\CARTOES.md": {
+    "mtime": 1778554583.0040421,
+    "hash": "926ff172bbd214af41975089af6121a6"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\features\\METAS.md": {
+    "mtime": 1778554583.0040421,
+    "hash": "a7e897448f2fd7940b1929eabd730977"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\features\\ORCAMENTOS.md": {
+    "mtime": 1778554583.0050962,
+    "hash": "8f4b8bfd8a6b00895198d5a2641e21c2"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\features\\RELATORIOS.md": {
+    "mtime": 1778554583.0050962,
+    "hash": "72eea2dc07957b6e60cfa6e7b7db9a43"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\docs\\features\\TRANSACOES.md": {
+    "mtime": 1778554583.006205,
+    "hash": "e65278300d2e6ed9b9c2544acd67fbad"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\public\\DarkTheme_logo.png": {
+    "mtime": 1778642890.677744,
+    "hash": "90d05f6579b02143aa4709ecf4fecccc"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\public\\LightTheme_logo.png": {
+    "mtime": 1778642879.8887916,
+    "hash": "897d040c9032a1ab2bc5e717e9940c37"
+  },
+  "C:\\Users\\samue\\OneDrive\\Desktop\\Rattio\\public\\logo.png": {
+    "mtime": 1778554583.012764,
+    "hash": "8f0d76b10d813fd9232b2cc1b3ad9213"
+  }
+}

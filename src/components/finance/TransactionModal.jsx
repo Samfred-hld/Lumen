@@ -6,10 +6,9 @@ import { AdaptiveModal } from '@/components/ui/adaptive-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, Calendar, Layers } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
+import { CreditCard, Calendar, Layers, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, clampDateInput } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
@@ -256,276 +255,259 @@ export default function TransactionModal({ open, onClose, onSave, transaction, g
       title={transaction ? 'Editar Transação' : 'Nova Transação'}
     >
 
-        <Controller
-          name="type"
-          control={control}
-          render={({ field }) => (
-            <Tabs value={field.value} onValueChange={field.onChange}>
-              <TabsList className="w-full">
-                {TYPE_TABS.map(t => (
-                  <TabsTrigger key={t.value} value={t.value} className="flex-1 text-xs">
-                    {t.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          )}
-        />
+    >
+      <div className="space-y-md">
+        <h3 className="font-title text-title flex items-center gap-2 mb-2">
+          <MsIcon name="edit_note" size={20} />
+          {transaction ? 'Editar Lançamento' : 'Novo Lançamento'}
+        </h3>
 
-        <form className="space-y-3 mt-2" onSubmit={handleSubmit(onSubmit)}>
-          <div className="relative">
-            <Label>Descrição *</Label>
-            <Input
-              {...register('description')}
-              ref={(e) => {
-                register('description').ref(e);
-                descRef.current = e;
-              }}
-              placeholder="Ex: Supermercado"
-              onFocus={() => setShowAuto(suggestions.length > 0)}
-              onBlur={() => setTimeout(() => setShowAuto(false), 150)}
-              onKeyDown={e => {
-                if (!showAuto) return;
-                if (e.key === 'ArrowDown') { e.preventDefault(); setAutoIdx(i => Math.min(i + 1, suggestions.length - 1)); }
-                else if (e.key === 'ArrowUp') { e.preventDefault(); setAutoIdx(i => Math.max(i - 1, 0)); }
-                else if (e.key === 'Enter' && suggestions[autoIdx]) { e.preventDefault(); applySuggestion(suggestions[autoIdx]); }
-                else if (e.key === 'Escape') { setShowAuto(false); }
-              }}
-              className={cn("mt-1", errors.description && "border-red-500 focus-visible:ring-red-500")}
-            />
-            {errors.description && <p className="text-sm text-destructive mt-1">{errors.description.message}</p>}
-            {showAuto && suggestions.length > 0 && (
-              <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border rounded shadow-lg py-1 max-h-[160px] overflow-y-auto">
-                {suggestions.map((tx, i) => (
-                  <button
-                    key={tx.id}
-                    type="button"
-                    onMouseDown={e => { e.preventDefault(); applySuggestion(tx); }}
-                    className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 text-left text-sm transition-colors",
-                      i === autoIdx ? "bg-primary/10" : "hover:bg-muted/50"
-                    )}
-                  >
-                    <span className="truncate">{tx.description}</span>
-                    <span className="text-xs text-muted-foreground ml-2 shrink-0">{tx.category || '—'}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="editorial-rule-top pt-md space-y-md">
+          {/* Toggle Despesa/Receita */}
+          <div className="grid grid-cols-2 p-1 bg-surface-container rounded-lg">
+            <button 
+              type="button"
+              onClick={() => setValue('type', 'expense')}
+              className={cn(
+                "py-2 font-bold rounded-lg text-sm flex items-center justify-center gap-2 transition-all",
+                watchedType === 'expense' ? "bg-danger text-white shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high"
+              )}
+            >
+              <MsIcon name="south_east" size={16} /> Despesa
+            </button>
+            <button 
+              type="button"
+              onClick={() => setValue('type', 'income')}
+              className={cn(
+                "py-2 font-bold rounded-lg text-sm flex items-center justify-center gap-2 transition-all",
+                watchedType === 'income' ? "bg-success text-white shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high"
+              )}
+            >
+              <MsIcon name="north_east" size={16} /> Receita
+            </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>{watchedIsInstallment ? 'Valor da Parcela (R$) *' : 'Valor (R$) *'}</Label>
-              <Input
-                {...register('value', { valueAsNumber: true })}
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0,00"
-                className={cn("mt-1", errors.value && "border-red-500 focus-visible:ring-red-500")}
-              />
-              {errors.value && <p className="text-sm text-destructive mt-1">{errors.value.message}</p>}
-            </div>
-            <div>
-              <Label>Data *</Label>
-              <Input
-                {...register('date')}
-                type="date"
-                max="2099-12-31"
-                min="1900-01-01"
-                onChange={(e) => register('date').onChange({ target: { value: clampDateInput(e.target.value), name: 'date' } })}
-                onBlur={(e) => {
-                  const clamped = clampDateInput(e.target.value);
-                  if (clamped !== e.target.value) register('date').onChange({ target: { value: clamped, name: 'date' } });
-                }}
-                className={cn("mt-1", errors.date && "border-red-500 focus-visible:ring-red-500")}
-              />
-              {errors.date && <p className="text-sm text-destructive mt-1">{errors.date.message}</p>}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>Categoria</Label>
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecionar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(c => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-            <div>
-              <Label>Pagamento</Label>
-              <Select value={watchedPaymentMethod} onValueChange={v => {
-                setValue('paymentMethod', v);
-                if (v !== 'Crédito') setValue('cardId', '');
-              }}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Selecionar" />
-                </SelectTrigger>
-                <SelectContent>
-                  {paymentMethods.map(p => (
-                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Credit Card Selection — only when payment method is Crédito */}
-          {cards.length > 0 && (watchedPaymentMethod === 'Crédito' || !!watchedCardId) && (
-            <div>
-              <Label className="flex items-center gap-1.5">
-                <CreditCard size={12} /> Cartão de Crédito
-              </Label>
-              <Controller
-                name="cardId"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={v => field.onChange(v === 'none' ? '' : v)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecionar cartão" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cards.map(c => (
-                        <SelectItem key={c.id} value={c.id}>
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-2 rounded-sm" style={{ background: c.color }} />
-                            {c.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-          )}
-
-          {/* Installment Toggle */}
-          {watchedType === 'expense' && (
-            <div className="border rounded p-3 space-y-3">
-              <div className="flex items-center gap-2">
-                <Controller
-                  name="isInstallment"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      id="isInstallment"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            {/* Value Input - Hero Style */}
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Valor (R$)</label>
+              <div className="relative group">
+                <input 
+                  {...register('value', { valueAsNumber: true })}
+                  type="number"
+                  step="0.01"
+                  placeholder="0,00"
+                  className={cn(
+                    "w-full font-mono-number text-[32px] font-bold text-on-surface bg-surface-container-low border-b-2 border-surface-border p-md focus:border-primary-light focus:ring-0 transition-all text-right outline-none rounded-t-lg",
+                    errors.value && "border-danger text-danger bg-danger/5"
                   )}
                 />
-                <Label htmlFor="isInstallment" className="cursor-pointer font-normal text-sm flex items-center gap-1.5">
-                  <Layers size={12} /> Compra parcelada
-                </Label>
+              </div>
+              {errors.value && <p className="text-[10px] text-danger font-bold uppercase tracking-wider text-right">{errors.value.message}</p>}
+            </div>
+
+            <div className="space-y-3">
+              <div className="relative">
+                <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block mb-1">Descrição</label>
+                <Input
+                  {...register('description')}
+                  ref={(e) => {
+                    register('description').ref(e);
+                    descRef.current = e;
+                  }}
+                  placeholder="Ex: Supermercado"
+                  className={cn("bg-surface border border-surface-border p-2 rounded-lg font-body-sm focus:ring-2 focus:ring-primary-light/10 outline-none", errors.description && "border-danger")}
+                />
+                {showAuto && suggestions.length > 0 && (
+                  <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-surface border border-surface-border rounded-lg shadow-xl py-1 max-h-[160px] overflow-y-auto">
+                    {suggestions.map((tx, i) => (
+                      <button
+                        key={tx.id}
+                        type="button"
+                        onMouseDown={e => { e.preventDefault(); applySuggestion(tx); }}
+                        className={cn(
+                          "w-full flex items-center justify-between px-3 py-2 text-left text-sm transition-colors",
+                          i === autoIdx ? "bg-primary/10 text-primary font-bold" : "hover:bg-surface-container-low"
+                        )}
+                      >
+                        <span className="truncate">{tx.description}</span>
+                        <span className="text-[10px] font-bold text-muted-foreground ml-2 shrink-0">{tx.category?.toUpperCase() || '—'}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block mb-1">Data</label>
+                  <input 
+                    {...register('date')}
+                    type="date"
+                    className="w-full bg-surface border border-surface-border p-2 rounded-lg font-body-sm outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block mb-1">Categoria</label>
+                  <Controller
+                    name="category"
+                    control={control}
+                    render={({ field }) => (
+                      <select 
+                        value={field.value} 
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="w-full bg-surface border border-surface-border p-2 rounded-lg font-body-sm outline-none"
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        {categories.map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block mb-1">Pagamento</label>
+                <div className="grid grid-cols-3 gap-1">
+                  <button 
+                    type="button"
+                    onClick={() => { setValue('paymentMethod', 'Pix'); setValue('cardId', ''); }}
+                    className={cn(
+                      "p-2 border text-[10px] font-bold rounded-lg flex flex-col items-center gap-1 transition-all",
+                      watchedPaymentMethod === 'Pix' ? "border-primary-light bg-primary-light/5 text-primary" : "border-surface-border text-on-surface-variant hover:bg-surface-container-low"
+                    )}
+                  >
+                    <MsIcon name="qr_code_2" size={16} /> PIX
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => { setValue('paymentMethod', 'Dinheiro'); setValue('cardId', ''); }}
+                    className={cn(
+                      "p-2 border text-[10px] font-bold rounded-lg flex flex-col items-center gap-1 transition-all",
+                      watchedPaymentMethod === 'Dinheiro' ? "border-primary-light bg-primary-light/5 text-primary" : "border-surface-border text-on-surface-variant hover:bg-surface-container-low"
+                    )}
+                  >
+                    <MsIcon name="payments" size={16} /> Dinheiro
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setValue('paymentMethod', 'Crédito')}
+                    className={cn(
+                      "p-2 border text-[10px] font-bold rounded-lg flex flex-col items-center gap-1 transition-all",
+                      watchedPaymentMethod === 'Crédito' ? "border-primary-light bg-primary-light/5 text-primary" : "border-surface-border text-on-surface-variant hover:bg-surface-container-low"
+                    )}
+                  >
+                    <MsIcon name="credit_card" size={16} /> Cartão
+                  </button>
+                </div>
+              </div>
+
+              {/* Credit Card Selection */}
+              {watchedPaymentMethod === 'Crédito' && cards.length > 0 && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block mb-1">Escolha o Cartão</label>
+                  <Controller
+                    name="cardId"
+                    control={control}
+                    render={({ field }) => (
+                      <select 
+                        value={field.value} 
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="w-full bg-surface border border-surface-border p-2 rounded-lg font-body-sm outline-none"
+                      >
+                        <option value="">Selecionar cartão</option>
+                        {cards.map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                </div>
+              )}
+              
+              {/* Extra options */}
+              <div className="flex flex-col gap-2 pt-2 border-t border-surface-border mt-4">
+                <div className="flex items-center gap-2">
+                  <Controller
+                    name="isFixed"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="isFixed"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="border-surface-border data-[state=checked]:bg-primary"
+                      />
+                    )}
+                  />
+                  <label htmlFor="isFixed" className="cursor-pointer text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                    Lançamento fixo mensal
+                  </label>
+                </div>
+
+                {watchedType === 'expense' && (
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      name="isInstallment"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          id="isInstallment"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="border-surface-border data-[state=checked]:bg-primary"
+                        />
+                      )}
+                    />
+                    <label htmlFor="isInstallment" className="cursor-pointer text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                      Compra parcelada
+                    </label>
+                  </div>
+                )}
               </div>
 
               {watchedIsInstallment && (
-                <div className="space-y-2">
-                  <div>
-                    <Label className="text-xs">Número de Parcelas</Label>
-                    <Input
-                      {...register('installmentCount', { valueAsNumber: true })}
-                      type="number"
-                      min="2"
-                      max="60"
-                      placeholder="Ex: 12"
-                      className={cn("mt-1 h-8 text-sm", errors.installmentCount && "border-red-500 focus-visible:ring-red-500")}
-                    />
-                    {errors.installmentCount && <p className="text-sm text-destructive mt-1">{errors.installmentCount.message}</p>}
-                  </div>
+                <div className="animate-in zoom-in-95 duration-300 bg-surface-container-low border border-surface-border p-3 rounded-lg space-y-2">
+                  <label className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block">Número de Parcelas</label>
+                  <Input
+                    {...register('installmentCount', { valueAsNumber: true })}
+                    type="number"
+                    min="2"
+                    max="60"
+                    placeholder="Ex: 12"
+                    className="h-8 text-sm"
+                  />
                   {installmentCount > 0 && installmentValue > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded p-2.5 text-xs text-blue-800">
-                      <div className="flex items-center gap-1.5 font-semibold">
-                        <Calendar size={12} /> Resumo do Parcelamento
-                      </div>
-                      <p className="mt-1">
-                        <strong>{installmentCount}x</strong> de <strong>{formatCurrency(installmentValue)}</strong>
-                        {' '}= Total: <strong>{formatCurrency(installmentValue * installmentCount)}</strong>
-                      </p>
-                      <p className="text-blue-600/70 mt-0.5">
-                        Última parcela: {(() => {
-                          const d = new Date(watchedDate + 'T00:00:00');
-                          d.setMonth(d.getMonth() + installmentCount - 1);
-                          return d.toLocaleDateString('pt-BR');
-                        })()}
-                      </p>
+                    <div className="text-[10px] text-muted-foreground">
+                      <p>Resumo: {installmentCount}x de {formatCurrency(installmentValue)} = Total: {formatCurrency(installmentValue * installmentCount)}</p>
                     </div>
                   )}
                 </div>
               )}
-            </div>
-          )}
 
-          {watchedType === 'investment' && goals.length > 0 && (
-            <div>
-              <Label>Vincular à Meta</Label>
-              <Controller
-                name="goalId"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Nenhuma meta" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Nenhuma meta</SelectItem>
-                      {goals.map(g => (
-                        <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <button 
+                type="submit"
+                className={cn(
+                  "w-full py-4 text-white font-bold rounded-lg shadow-sm transition-all mt-6 uppercase tracking-[0.1em] text-xs",
+                  watchedType === 'expense' ? "bg-danger hover:bg-danger/90" : "bg-success hover:bg-success/90"
                 )}
-              />
+              >
+                {transaction ? 'Salvar Alterações' : watchedType === 'expense' ? 'LANÇAR DESPESA' : 'LANÇAR RECEITA'}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={onClose}
+                className="w-full py-2 text-on-surface-variant font-bold text-[10px] hover:underline uppercase tracking-widest"
+              >
+                Cancelar
+              </button>
             </div>
-          )}
-
-          <div>
-            <Label>Observações</Label>
-            <Input
-              {...register('notes')}
-              placeholder="Opcional..."
-              className="mt-1"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Controller
-              name="isFixed"
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  id="isFixed"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
-            <Label htmlFor="isFixed" className="cursor-pointer font-normal text-sm">
-              Lançamento fixo mensal
-            </Label>
-          </div>
-        </form>
-
-        <div className="flex gap-2 pt-2">
-          <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
-          <Button className="flex-1" onClick={handleSubmit(onSubmit)}>
-            {transaction ? 'Salvar' : watchedIsInstallment ? `Criar ${installmentCount || '?'} Parcelas` : 'Adicionar'}
-          </Button>
+          </form>
         </div>
+      </div>
     </AdaptiveModal>
   );
 }
