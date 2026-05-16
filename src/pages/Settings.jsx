@@ -136,6 +136,16 @@ function CardStatementModal({ open, onClose, card, transactions }) {
 // ═══ Main Settings Page ═══
 export default function SettingsPage() {
   const [darkMode, setDarkMode] = useState(() => getTheme() === 'dark');
+  const [activeTab, setActiveTab] = useState('personalizacao');
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [editingCard, setEditingCard] = useState(null);
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [showCardStatement, setShowCardStatement] = useState(null);
+  const [rules, setRules] = useState(() => getRules());
+  const [salaryConfig, setSalaryConfig] = useState(() => getSalaryConfig() || {});
+  const [importMsg, setImportMsg] = useState('');
+
+  const { data: cards = [] } = useCards();
 
   const TABS = [
     { id: 'personalizacao', label: 'Personalização', icon: 'palette' },
