@@ -3,6 +3,7 @@
 // ══════════════════════════════════════════
 
 import React from 'react';
+import MsIcon from '@/components/ui/ms-icon';
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -23,7 +24,7 @@ export class ErrorBoundary extends React.Component {
       return (
         <div className="fixed inset-0 flex items-center justify-center bg-background p-4">
           <div className="text-center max-w-md">
-            <div className="text-5xl mb-4">💥</div>
+            <MsIcon name="error" size={48} className="text-muted-foreground mb-4" />
             <h1 className="text-xl font-semibold mb-2">Algo deu errado</h1>
             <p className="text-muted-foreground text-sm mb-4">
               Ocorreu um erro inesperado. Tente recarregar a página.

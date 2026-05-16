@@ -46,7 +46,7 @@ export function checkDueDateNotifications() {
     const daysUntil = dueDay - currentDay;
 
     if ((daysUntil === 3 || daysUntil === 1) && !alreadyNotifiedToday(`card_${card.id}_${daysUntil}`)) {
-      new Notification(`🔔 Fatura ${card.name}`, {
+      new Notification(`Fatura ${card.name}`, {
         body: `Vence em ${daysUntil} dia(s) (dia ${dueDay})`,
         icon: '/favicon.ico',
         tag: `card-${card.id}`,
@@ -60,7 +60,7 @@ export function checkDueDateNotifications() {
     const daysUntil = salaryDay - currentDay;
 
     if ((daysUntil === 1 || daysUntil === 0) && !alreadyNotifiedToday(`salary_${daysUntil}`)) {
-      new Notification(`💰 Salário`, {
+      new Notification(`Salário`, {
         body: daysUntil === 0 ? 'Cai hoje!' : `Cai amanhã (dia ${salaryDay})`,
         icon: '/favicon.ico',
         tag: 'salary',

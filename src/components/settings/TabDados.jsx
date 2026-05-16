@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
+import MsIcon from '@/components/ui/ms-icon';
 import { getChangelog, addChangelogEntry, clearAllData, getExtraCats, getRules, getSalaryConfig, addCard, saveExtraCats, saveRules, saveSalaryConfig, lsSet } from '@/lib/store';
 import { base44 } from '@/api/base44Client';
 
@@ -183,7 +184,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
                 <li>• Todos os cartões</li><li>• Todas as regras</li><li>• Todas as configurações locais</li>
               </ul>
               <div className="bg-red-50 border border-red-200 rounded p-3 text-xs text-red-700">
-                <strong>⚠️ Esta ação é irreversível.</strong> Recomendamos fazer um backup JSON antes.
+                <strong><MsIcon name="warning" size={14} className="align-middle mr-1 text-amber-500" />Esta ação é irreversível.</strong> Recomendamos fazer um backup JSON antes.
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Digite <strong>EXCLUIR TUDO</strong> para continuar:</Label>

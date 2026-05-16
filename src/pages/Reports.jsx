@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TrendingDown, Wallet, Receipt, FileText, CalendarClock, ChevronDown, ChevronRight, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import MsIcon from '@/components/ui/ms-icon';
 import { formatCurrency, groupByCategory, calcTotals, getLast6Months, getCurrentMonthKey, filterByMonth, getMonthKey, toMonthKey } from '@/lib/financeUtils';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import {
@@ -364,7 +364,7 @@ export default function Reports() {
 
       {/* Charts row 1 */}
       <div className="sm:hidden flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded px-3 py-2 mb-3">
-        <span>📊</span>
+        <MsIcon name="bar_chart" size={14} />
         <span>Gire o dispositivo para visualizar os gráficos melhor</span>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

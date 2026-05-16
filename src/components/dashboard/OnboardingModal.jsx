@@ -5,9 +5,10 @@ import { Sparkles, Plus, CreditCard, Target, Upload, ArrowRight } from 'lucide-r
 import { cn } from '@/lib/utils';
 import { setOnboarded } from '@/lib/store';
 import { Link } from 'react-router-dom';
+import MsIcon from '@/components/ui/ms-icon';
 
 const STEPS = [
-  { icon: Sparkles, title: 'Bem-vindo ao Lúmen! 🎉', desc: 'Seu assistente de controle financeiro pessoal. Vamos configurar tudo em segundos.', color: 'text-primary' },
+  { icon: Sparkles, title: 'Bem-vindo ao Lúmen!', desc: 'Seu assistente de controle financeiro pessoal. Vamos configurar tudo em segundos.', color: 'text-primary' },
   { icon: Plus, title: 'Registre suas transações', desc: 'Adicione receitas e despesas. Use o botão "Novo" ou pressione N a qualquer momento.', color: 'text-emerald-600', tip: 'Dica: ative "Lançamento fixo" para gastos mensais recorrentes.' },
   { icon: CreditCard, title: 'Cartões de crédito', desc: 'Cadastre seus cartões em Configurações para controlar faturas e limites.', color: 'text-blue-500', link: '/settings', linkLabel: 'Ir para Configurações' },
   { icon: Target, title: 'Metas e orçamentos', desc: 'Defina metas de economia e orçamentos por categoria para manter o controle.', color: 'text-amber-600' },
@@ -32,7 +33,7 @@ export default function OnboardingModal({ open, onClose }) {
         <div className="text-center space-y-3">
           <p className="text-sm text-muted-foreground">{current.desc}</p>
           {current.tip && (
-            <div className="bg-primary/5 border border-primary/20 rounded p-3 text-xs text-primary">💡 {current.tip}</div>
+            <div className="bg-primary/5 border border-primary/20 rounded p-3 text-xs text-primary"><MsIcon name="lightbulb" size={14} className="align-middle mr-1" />{current.tip}</div>
           )}
           {current.link && (
             <Link to={current.link} onClick={onClose}>

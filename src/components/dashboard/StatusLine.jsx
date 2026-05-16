@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '@/lib/financeUtils';
 import { cn } from '@/lib/utils';
+import MsIcon from '@/components/ui/ms-icon';
 
 /**
  * StatusLine — compact contextual indicators under the Hero Number
@@ -55,7 +56,7 @@ export default function StatusLine({ budgets, monthBudgets, goals, upcomingItems
   if (budgetItem) {
     items.push({
       key: 'budget',
-      emoji: budgetItem.over ? '🔴' : '💰',
+      icon: budgetItem.over ? 'error' : 'savings',
       text: `Orçamento: ${budgetItem.pct}%`,
       color: budgetItem.over ? 'text-[#991B1B]' : 'text-muted-foreground',
       onClick: () => navigate('/budgets'),
@@ -64,7 +65,7 @@ export default function StatusLine({ budgets, monthBudgets, goals, upcomingItems
   if (goalItem) {
     items.push({
       key: 'goal',
-      emoji: '🎯',
+      icon: 'flag',
       text: `Meta: ${formatCurrency(goalItem.remaining)}`,
       color: 'text-muted-foreground',
       onClick: () => navigate('/goals'),
@@ -73,7 +74,7 @@ export default function StatusLine({ budgets, monthBudgets, goals, upcomingItems
   if (dueItem) {
     items.push({
       key: 'due',
-      emoji: '⚠️',
+      icon: 'warning',
       text: dueItem.label,
       color: 'text-muted-foreground',
       onClick: () => navigate('/cards'),
@@ -94,7 +95,7 @@ export default function StatusLine({ budgets, monthBudgets, goals, upcomingItems
               item.color
             )}
           >
-            <span className="text-xs">{item.emoji}</span>
+            <MsIcon name={item.icon} size={14} />
             {item.text}
           </button>
         </React.Fragment>

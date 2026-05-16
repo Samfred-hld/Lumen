@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
+import MsIcon from '@/components/ui/ms-icon';
 import { getCategories } from '@/lib/categories';
 import { useCards } from '@/hooks/useData';
 import { lsGet, lsSet } from '@/lib/store';
@@ -440,12 +441,12 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             )}
 
             <div className="bg-muted/50 rounded p-3 text-xs text-muted-foreground">
-              <p className="font-semibold mb-1">💡 Formato esperado:</p>
+              <p className="font-semibold mb-1"><MsIcon name="lightbulb" size={14} className="align-middle mr-1" />Formato esperado:</p>
               <p>Colunas: <strong>Data</strong>, <strong>Descrição/Title</strong>, <strong>Valor/Amount</strong></p>
               <p>Formatos aceitos: DD/MM/AAAA, AAAA-MM-DD, MM/DD/AAAA</p>
               <p>Separadores: vírgula (,), ponto e vírgula (;) ou TAB</p>
               <p>Bancos detectados: Nubank, Inter, Bradesco, Itaú, C6 Bank, XP</p>
-              <p className="mt-1 text-red-600 font-semibold">⚠️ Selecione um cartão de crédito antes do upload — obrigatório para calcular o mês da fatura.</p>
+              <p className="mt-1 text-red-600 font-semibold"><MsIcon name="warning" size={14} className="align-middle mr-1" />Selecione um cartão de crédito antes do upload — obrigatório para calcular o mês da fatura.</p>
             </div>
           </div>
         )}
@@ -474,7 +475,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             {/* Parse stats */}
             {parseStats && (
               <div className="flex items-center gap-2 flex-wrap text-[10px] text-muted-foreground">
-                <span>📊 {parseStats.parsed}/{parseStats.totalRawRows} linhas</span>
+                <span><MsIcon name="bar_chart" size={14} className="align-middle mr-1" />{parseStats.parsed}/{parseStats.totalRawRows} linhas</span>
                 <span>• Sep: {parseStats.separator}</span>
                 <span>• Data: {parseStats.dateDetected}</span>
                 {parseStats.skippedDupe > 0 && <span>• {parseStats.skippedDupe} dup internas</span>}
@@ -484,7 +485,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             {/* Warnings */}
             {parseWarnings.length > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded px-3 py-1.5 text-[11px] text-amber-700">
-                {parseWarnings.map((w, i) => <p key={i}>⚠️ {w}</p>)}
+                {parseWarnings.map((w, i) => <p key={i}><MsIcon name="warning" size={14} className="align-middle mr-1" />{w}</p>)}
               </div>
             )}
 
@@ -532,7 +533,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               <table className="w-full text-xs">
                 <thead className="sticky top-0 bg-muted/80 backdrop-blur z-10">
                   <tr>
-                    <th className="p-2 text-left w-8">✓</th>
+                    <th className="p-2 text-left w-8"><MsIcon name="check" size={14} /></th>
                     <th className="p-2 text-left">Data</th>
                     <th className="p-2 text-left">Fatura</th>
                     <th className="p-2 text-left">Descrição</th>
@@ -577,7 +578,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                             if (label === 'retroativa') {
                               labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-700 border border-amber-200">retroativa</span>;
                             } else if (label === 'esta_fatura') {
-                              labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-100 text-blue-700 border border-blue-200">★ esta fatura</span>;
+                              labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-100 text-blue-700 border border-blue-200"><MsIcon name="star" size={10} className="mr-0.5" />esta fatura</span>;
                             } else if (label === 'futura') {
                               labelBadge = <span className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold bg-gray-100 text-gray-600 border border-gray-200">futura</span>;
                             }
@@ -676,7 +677,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                           />
                         </td>
                         <td className="p-2 whitespace-nowrap text-xs">
-                          {r._dateWarning && <span title={r._dateWarningReason || 'Data fora do intervalo esperado'}>⚠️ </span>}
+                          {r._dateWarning && <span title={r._dateWarningReason || 'Data fora do intervalo esperado'}><MsIcon name="warning" size={14} className="text-amber-500 align-middle" /></span>}
                           {r.date?.split('-').reverse().join('/')}
                         </td>
                         <td className="p-2 whitespace-nowrap text-xs text-muted-foreground">

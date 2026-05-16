@@ -30,39 +30,39 @@ export const DEFAULT_CATEGORIES = [
 ];
 
 export const CATEGORY_ICONS = {
-  'Salário': '💰',
-  'Alimentação': '🍔',
-  'Compras online': '🛒',
-  'Transporte': '🚗',
-  'Combustível': '⛽',
-  'Moradia': '🏠',
-  'Saúde': '💊',
-  'Academia': '🏋️',
-  'Beleza': '💅',
-  'Bem-estar': '🧘',
-  'Educação': '📚',
-  'Educação Online': '🎓',
-  'Papelaria': '✏️',
-  'Lazer': '🎮',
-  'Streaming': '📺',
-  'Entretenimento': '🎬',
-  'Telecomunicações': '📱',
-  'Serviços': '🔧',
-  'Tarifas bancárias': '🏦',
-  'Impostos': '📄',
-  'Encargos': '💳',
-  'Seguro': '🛡️',
-  'Pet': '🐾',
-  'Vestuário': '👗',
-  'Casa': '🔨',
-  'Aluguel de Veículos': '🚙',
-  'Investimentos': '📈',
-  'Financeiro': '💸',
-  'Viagens': '✈️',
-  'Presentes': '🎁',
-  'Doações': '❤️',
-  'Contas': '📋',
-  'Outros': '📌',
+  'Salário': 'payments',
+  'Alimentação': 'restaurant',
+  'Compras online': 'shopping_cart',
+  'Transporte': 'directions_car',
+  'Combustível': 'local_gas_station',
+  'Moradia': 'home',
+  'Saúde': 'local_hospital',
+  'Academia': 'fitness_center',
+  'Beleza': 'spa',
+  'Bem-estar': 'self_improvement',
+  'Educação': 'school',
+  'Educação Online': 'laptop',
+  'Papelaria': 'edit',
+  'Lazer': 'sports_esports',
+  'Streaming': 'live_tv',
+  'Entretenimento': 'movie',
+  'Telecomunicações': 'smartphone',
+  'Serviços': 'build',
+  'Tarifas bancárias': 'account_balance',
+  'Impostos': 'description',
+  'Encargos': 'credit_card',
+  'Seguro': 'shield',
+  'Pet': 'pets',
+  'Vestuário': 'checkroom',
+  'Casa': 'construction',
+  'Aluguel de Veículos': 'car_rental',
+  'Investimentos': 'trending_up',
+  'Financeiro': 'attach_money',
+  'Viagens': 'flight',
+  'Presentes': 'card_giftcard',
+  'Doações': 'volunteer_activism',
+  'Contas': 'receipt_long',
+  'Outros': 'more_horiz',
 };
 
 export const CAT_COLORS = {
@@ -123,9 +123,14 @@ export function getCategories() {
   }
 }
 
-// Get icon for a category
+// Get Material Symbol icon name for a category
 export function getCategoryIcon(cat) {
-  return CATEGORY_ICONS[cat] || '📌';
+  return CATEGORY_ICONS[cat] || 'more_horiz';
+}
+
+// Get Material Symbol name for category (alias — same mapping)
+export function getCategoryMsIcon(cat) {
+  return CATEGORY_ICONS[cat] || 'more_horiz';
 }
 
 // Get color for a category

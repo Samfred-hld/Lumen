@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/financeUtils';
-import { CAT_COLORS } from '@/lib/categories';
-import { getCategoryIcon } from '@/lib/categories';
+import { CAT_COLORS, getCategoryIcon } from '@/lib/categories';
+import MsIcon from '@/components/ui/ms-icon';
 
 export default function CategoryBreakdown({ expensesByCategory, totals }) {
   return (
@@ -20,7 +20,7 @@ export default function CategoryBreakdown({ expensesByCategory, totals }) {
             const pct = totals.expense > 0 ? (val / totals.expense) * 100 : 0;
             return (
               <div key={cat} className="flex items-center gap-3">
-                <span className="text-sm shrink-0" aria-hidden="true">{getCategoryIcon(cat)}</span>
+                <MsIcon name={getCategoryIcon(cat)} size={16} className="shrink-0" />
                 <span className="text-sm font-medium w-28 truncate shrink-0">{cat}</span>
                 <div className="flex-1 h-2 bg-surface-container rounded-full overflow-hidden" role="progressbar" aria-valuenow={pct.toFixed(0)} aria-valuemin="0" aria-valuemax="100" aria-label={`${cat}: ${pct.toFixed(0)}% das despesas`}>
                   <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: CAT_COLORS[cat] || '#94a3b8' }} />

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import MsIcon from '@/components/ui/ms-icon';
 import { Card, CardContent } from '@/components/ui/card';
 import TransactionModal from '@/components/finance/TransactionModal';
 import CSVImport from '@/components/finance/CSVImport';
@@ -418,7 +419,7 @@ export default function Transactions() {
       {/* Aviso de transações em outros meses */}
       {otherMonthsCount > 0 && monthTx.length === 0 && (
         <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700">
-          <span className="font-semibold">📅</span>
+          <MsIcon name="calendar_today" size={14} className="font-semibold" />
           <span>
             Nenhuma transação em {MONTH_NAMES[currentMonth]}, mas há <strong>{otherMonthsCount}</strong> transação(ões) em outros meses.
             Use as setas ← → para navegar.
@@ -511,7 +512,7 @@ export default function Transactions() {
               <select value={filterPM} onChange={e => setFilterPM(e.target.value)} className="bg-surface border border-surface-border text-[11px] font-bold uppercase tracking-wider text-on-surface py-1.5 px-2 rounded-lg outline-none min-w-0">
                 <option value="all">Pagamento</option>
                 {paymentMethods.map(p => <option key={p} value={p}>{p}</option>)}
-                {cards.map(c => <option key={`card:${c.id}`} value={`card:${c.id}`}>💳 {c.name}</option>)}
+                {cards.map(c => <option key={`card:${c.id}`} value={`card:${c.id}`}>{c.name}</option>)}
               </select>
 
               {/* Active filter count + clear */}

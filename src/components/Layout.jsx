@@ -143,7 +143,7 @@ function NotificationCenter() {
       </div>
       {notifs.length === 0 ? (
         <div className="px-3 py-6 text-center">
-          <p className="text-sm text-muted-foreground">✅ Nenhuma notificação</p>
+          <p className="text-sm text-muted-foreground"><MsIcon name="check_circle" size={16} className="align-middle mr-1" />Nenhuma notificação</p>
         </div>
       ) : (
         <div className="max-h-80 overflow-y-auto divide-y divide-surface-border/60">
@@ -151,7 +151,7 @@ function NotificationCenter() {
             <div key={n.id}
               className={cn("px-3 py-2.5 flex items-start gap-2.5 transition-colors", !n.isRead && "bg-primary/5", n.link && "cursor-pointer hover:bg-surface-container-low")}
               onClick={() => { if (n.link) { setOpen(false); navigate(n.link); } }}>
-              <span className="text-base mt-0.5 shrink-0">{n.type === 'budget_alert' ? '💰' : n.type === 'goal_reminder' ? '🎯' : '🔔'}</span>
+              <MsIcon name={n.type === 'budget_alert' ? 'savings' : n.type === 'goal_reminder' ? 'flag' : 'notifications'} size={18} className="mt-0.5 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className={cn("text-sm truncate", !n.isRead && "font-semibold")}>{n.title}</p>
@@ -163,7 +163,7 @@ function NotificationCenter() {
               {!n.isRead && (
                 <button onClick={(e) => { e.stopPropagation(); markAsRead(n.id); setNotifs(getNotifications(30)); setUnreadCount(getUnreadCount()); }}
                   className="p-1 rounded hover:bg-surface-container text-muted-foreground hover:text-on-surface shrink-0" aria-label="Marcar como lida">
-                  <span className="text-xs">✓</span>
+                  <MsIcon name="check" size={14} />
                 </button>
               )}
             </div>

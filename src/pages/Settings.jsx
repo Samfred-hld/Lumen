@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/financeUtils';
 import { MONTH_NAMES } from '@/lib/categories';
-import { lsSet, addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig } from '@/lib/store';
+import { lsSet, addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig, getTheme, setTheme } from '@/lib/store';
 import { getCategories } from '@/lib/categories';
 import { useCards, useTransactions, useBudgets, useGoals } from '@/hooks/useData';
 import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react';
@@ -20,6 +20,7 @@ import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react';
 import TabPersonalizacao from '@/components/settings/TabPersonalizacao';
 import TabAutomacao from '@/components/settings/TabAutomacao';
 import TabDados from '@/components/settings/TabDados';
+import MsIcon from '@/components/ui/ms-icon';
 
 // ═══ Card Modal ═══
 function CardModal({ open, onClose, onSave, card }) {
@@ -134,21 +135,12 @@ function CardStatementModal({ open, onClose, card, transactions }) {
 
 // ═══ Main Settings Page ═══
 export default function SettingsPage() {
-  const [darkMode, setDarkMode] = useState(() => document.documentElement.getAttribute('data-theme') === 'dark');
-  const [showCardModal, setShowCardModal] = useState(false);
-  const [editingCard, setEditingCard] = useState(null);
-  const [showRuleModal, setShowRuleModal] = useState(false);
-  const { data: cards = [] } = useCards();
-  const [rules, setRules] = useState(getRules());
-  const [salaryConfig, setSalaryConfig] = useState(getSalaryConfig());
-  const [importMsg, setImportMsg] = useState('');
-  const [showCardStatement, setShowCardStatement] = useState(null);
-  const [activeTab, setActiveTab] = useState('personalizacao');
+  const [darkMode, setDarkMode] = useState(() => getTheme() === 'dark');
 
   const TABS = [
-    { id: 'personalizacao', label: 'Personalização', icon: '🎨' },
-    { id: 'automacao', label: 'Automação', icon: '⚡' },
-    { id: 'backup', label: 'Backup & Dados', icon: '💾' },
+    { id: 'personalizacao', label: 'Personalização', icon: 'palette' },
+    { id: 'automacao', label: 'Automação', icon: 'bolt' },
+    { id: 'backup', label: 'Backup & Dados', icon: 'save' },
   ];
 
   const { data: transactions = [] } = useTransactions(500);
@@ -158,8 +150,7 @@ export default function SettingsPage() {
   const toggleTheme = () => {
     const next = !darkMode;
     setDarkMode(next);
-    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light');
-    lsSet('theme', next ? 'dark' : 'light');
+    setTheme(next ? 'dark' : 'light');
   };
 
   const handleSaveCard = (data) => {
@@ -203,7 +194,7 @@ export default function SettingsPage() {
               activeTab === tab.id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
-            <span>{tab.icon}</span>
+            <MsIcon name={tab.icon} size={18} />
             <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}

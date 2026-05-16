@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDashSections, saveDashSections } from '@/lib/store';
+import MsIcon from '@/components/ui/ms-icon';
 
 const DEFAULT_SECTIONS = [
   { id: 'resumo', label: 'Resumo (KPIs)', visible: true },
@@ -69,7 +70,7 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="text-primary">⚙️</span> Personalizar Dashboard
+            <MsIcon name="settings" size={20} className="text-primary" /> Personalizar Dashboard
           </DialogTitle>
         </DialogHeader>
         <p className="text-xs text-muted-foreground -mt-2">

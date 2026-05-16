@@ -11,6 +11,7 @@ import { AdaptiveModal } from '@/components/ui/adaptive-modal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatDate, getGoalProgress, clampDateInput } from '@/lib/financeUtils';
+import MsIcon from '@/components/ui/ms-icon';
 import { cn } from '@/lib/utils';
 import { useTransactions, useGoals } from '@/hooks/useData';
 
@@ -268,7 +269,7 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
             if (!months) return null;
             return (
               <p className="text-[10px] text-muted-foreground text-center mt-1">
-                📈 Projecao: ~{months} mes(es) para concluir
+                <MsIcon name="trending_up" size={14} className="align-middle mr-1" />Projecao: ~{months} mes(es) para concluir
               </p>
             );
           })()}

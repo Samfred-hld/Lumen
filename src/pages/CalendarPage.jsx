@@ -12,6 +12,7 @@ import TransactionModal from '@/components/finance/TransactionModal';
 import { cn } from '@/lib/utils';
 // store imports removed — using useCards() hook instead
 import { getCategoryIcon } from '@/lib/categories';
+import MsIcon from '@/components/ui/ms-icon';
 import { useTransactions, useGoals, useCards } from '@/hooks/useData';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -392,14 +393,14 @@ export default function CalendarPage() {
                               <p className="text-xs font-medium truncate">{t.description}</p>
                               <div className="flex items-center gap-1 flex-wrap">
                                 <span className="text-[10px] text-muted-foreground">
-                                  {t.category ? <>{getCategoryIcon(t.category)} {t.category}</> : '—'}
+                                  {t.category ? <><MsIcon name={getCategoryIcon(t.category)} size={12} className="align-middle" /> {t.category}</> : '—'}
                                 </span>
                                 {t.paymentMethod && (
                                   <span className="text-[10px] text-muted-foreground">• {t.paymentMethod}</span>
                                 )}
                                 {invoiceLabel && (
                                   <span className="text-[10px] bg-amber-100 text-amber-800 rounded px-1.5 py-0.5 font-semibold">
-                                    📅 {invoiceLabel}
+                                    <MsIcon name="calendar_today" size={12} className="align-middle" /> {invoiceLabel}
                                   </span>
                                 )}
                               </div>
@@ -582,11 +583,11 @@ export default function CalendarPage() {
                             <p className="text-xs font-medium truncate">{t.description}</p>
                             <div className="flex items-center gap-1 flex-wrap">
                               <span className="text-[10px] text-muted-foreground">
-                                {t.category ? <>{getCategoryIcon(t.category)} {t.category}</> : '—'}
+                                {t.category ? <><MsIcon name={getCategoryIcon(t.category)} size={12} className="align-middle" /> {t.category}</> : '—'}
                               </span>
                               {invoiceLabel && (
                                 <span className="text-[10px] bg-amber-100 text-amber-800 rounded px-1.5 py-0.5 font-semibold">
-                                  📅 {invoiceLabel}
+                                  <MsIcon name="calendar_today" size={12} className="align-middle" /> {invoiceLabel}
                                 </span>
                               )}
                             </div>

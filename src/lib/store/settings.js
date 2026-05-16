@@ -57,6 +57,7 @@ export async function fetchTheme() {
 export async function setTheme(t) {
   setLocal('theme', t);
   document.documentElement.setAttribute('data-theme', t);
+  document.documentElement.classList.toggle('dark', t === 'dark');
   await setSettingToCloud('theme', t);
 }
 
