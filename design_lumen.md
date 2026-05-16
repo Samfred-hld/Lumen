@@ -135,7 +135,7 @@ rounded:
   lg: "6px"
   full: "9999px"
   note: >
-    Border radii are intentionally near-flat (2–6 px). The design deliberately avoids
+    Border radii are intentionally near-flat (4–6 px). The design deliberately avoids
     rounded-xl friendliness in favour of editorial sharpness. Only pills/badges use full.
 
 spacing:

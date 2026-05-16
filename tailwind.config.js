@@ -128,9 +128,10 @@ module.exports = {
         }
       },
       borderRadius: {
-        DEFAULT: '0.25rem',
-        lg: '0.5rem',
-        xl: '0.75rem',
+        sm: '0.25rem',
+        DEFAULT: '0.375rem',
+        md: '0.375rem',
+        lg: '0.375rem',
         full: '9999px'
       },
       spacing: {
