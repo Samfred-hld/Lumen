@@ -414,7 +414,7 @@ export default function Transactions() {
         </div>
       </div>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard label="RECEITAS" value={formatCurrency(totals.income)} icon="trending_up" variant="income" />
         <KpiCard label="DESPESAS" value={formatCurrency(totals.expense)} icon="trending_down" variant="expense" />
         <KpiCard label="SALDO EM CONTA" value={formatCurrency(totals.balance)} icon="account_balance_wallet" variant="balance" />
@@ -433,10 +433,10 @@ export default function Transactions() {
       )}
 
       {/* Bento Layout: Form + Filter/List */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Novo Lançamento Form (Column Span 4) */}
-        <section className="hidden lg:block lg:col-span-4 space-y-6">
+        {/* Novo Lançamento Form (Column Span 3) */}
+        <section className="hidden lg:block lg:col-span-3 space-y-6">
           <TransactionInlineForm 
             onSave={handleSave} 
             goals={goals} 
@@ -446,8 +446,8 @@ export default function Transactions() {
           />
         </section>
 
-        {/* Transaction List & Filters (Column Span 8) */}
-        <div className="lg:col-span-8 space-y-4">
+        {/* Transaction List & Filters (Column Span 9) */}
+        <div className="lg:col-span-9 space-y-4">
           
           {/* Filters */}
           <div className="bg-surface border border-surface-border p-3 space-y-3">
