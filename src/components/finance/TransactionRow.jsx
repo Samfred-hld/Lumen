@@ -8,6 +8,8 @@ import { getCategoryColor } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import SwipeToDelete from '@/components/ui/swipe-to-delete';
 
+import { Checkbox } from '@/components/ui/checkbox';
+
 // Material Symbols icon component
 function MsIcon({ name, className, size = 20 }) {
   return <span className={cn('material-symbols-outlined', className)} style={{ fontSize: size }}>{name}</span>;
@@ -27,7 +29,7 @@ const getCategoryMsIcon = (category, type) => {
   return 'shopping_bag';
 };
 
-export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate }) {
+export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate, isSelected, onSelect }) {
   const isIncome = t.type === 'income';
   const isExpense = t.type === 'expense';
   const isInvestment = t.type === 'investment';
@@ -37,8 +39,21 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
 
   return (
     <SwipeToDelete onDelete={() => onDelete(t.id)}>
-      <div className="transaction-row grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center cursor-pointer group" onClick={() => onEdit(t)}>
-        <div className="col-span-6 flex items-center gap-sm">
+      <div 
+        className={cn(
+          "transaction-row grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center cursor-pointer group transition-colors",
+          isSelected ? "bg-surface-container-low" : "hover:bg-surface-low/30"
+        )} 
+        onClick={() => onEdit(t)}
+      >
+        <div className="col-span-7 flex items-center gap-sm">
+          <div className="flex items-center px-1" onClick={(e) => e.stopPropagation()}>
+            <Checkbox 
+              checked={isSelected} 
+              onCheckedChange={() => onSelect(t.id)}
+              className="border-surface-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            />
+          </div>
           <div className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
             isIncome ? 'bg-kpi-income/10' : isExpense ? 'bg-kpi-expense/10' : 'bg-info/10'

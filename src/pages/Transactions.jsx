@@ -13,6 +13,7 @@ import CSVImport from '@/components/finance/CSVImport';
 import QuickEntry from '@/components/finance/QuickEntry';
 import SuggestionBanner from '@/components/finance/SuggestionBanner';
 import InstallmentConfirm from '@/components/finance/InstallmentConfirm';
+import { Checkbox } from '@/components/ui/checkbox';
 import Pagination from '@/components/ui/pagination';
 import { formatCurrency, formatDate, filterByMonth, calcTotals, getTypeBg, getMonthKey, todayISO } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
@@ -53,6 +54,7 @@ export default function Transactions() {
   const [isImporting, setIsImporting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState([]);
   const PAGE_SIZE = 20;
   const categories = getCategories();
   const paymentMethods = getPaymentMethods();
@@ -194,6 +196,41 @@ export default function Transactions() {
     addChangelogEntry({ action: 'delete', entityType: 'série de parcelas', entityName: `${seriesTx.length} parcelas` });
     refetch();
     toast({ title: 'Série excluída', description: `${seriesTx.length} parcelas removidas` });
+  };
+
+  // Selection Logic
+  const handleSelectOne = (id) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleAll = () => {
+    if (selectedIds.length === paginatedTx.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(paginatedTx.map(t => t.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const count = selectedIds.length;
+    if (count === 0) return;
+    
+    if (!window.confirm(`Deseja realmente excluir ${count} transações selecionadas?`)) return;
+
+    try {
+      // Usando bulk delete se disponível ou loop
+      await Promise.all(selectedIds.map(id => base44.entities.Transaction.delete(id)));
+      
+      addChangelogEntry({ action: 'delete', entityType: 'lote de transações', entityName: `${count} registros` });
+      toast({ title: `${count} transações excluídas`, description: 'A operação foi concluída com sucesso.' });
+      
+      setSelectedIds([]);
+      refetch();
+    } catch (err) {
+      toast({ title: 'Erro ao excluir em massa', description: err.message, variant: 'destructive' });
+    }
   };
 
   const handleCSVImport = async (txList, onProgress) => {
@@ -481,6 +518,48 @@ export default function Transactions() {
 
           {/* List Container */}
           <div className="bg-surface border border-surface-border">
+            {/* Selection Bar / List Header */}
+            <div className={cn(
+              "flex items-center justify-between px-xs py-2 border-b border-surface-border transition-all",
+              selectedIds.length > 0 ? "bg-primary/5" : "bg-surface"
+            )}>
+              <div className="flex items-center gap-sm">
+                <div className="flex items-center px-1">
+                  <Checkbox 
+                    checked={paginatedTx.length > 0 && selectedIds.length === paginatedTx.length}
+                    onCheckedChange={handleToggleAll}
+                    className="border-surface-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                </div>
+                {selectedIds.length > 0 ? (
+                  <span className="text-[11px] font-bold text-primary uppercase tracking-wider">
+                    {selectedIds.length} selecionado{selectedIds.length > 1 ? 's' : ''}
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Transações do Mês
+                  </span>
+                )}
+              </div>
+
+              {selectedIds.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setSelectedIds([])} 
+                    className="text-[10px] font-bold text-muted-foreground hover:text-on-surface uppercase tracking-wider px-2 py-1 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    onClick={handleBulkDelete}
+                    className="flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-md text-[10px] font-bold uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm"
+                  >
+                    <MsIcon name="delete" size={14} /> Excluir Seleção
+                  </button>
+                </div>
+              )}
+            </div>
+
             {filtered.length === 0 ? (
               <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-surface-low/50">
                 <div className="w-16 h-16 mb-5 rounded-full bg-surface shadow-sm border border-surface-border flex items-center justify-center">
@@ -500,6 +579,8 @@ export default function Transactions() {
                       onDelete={handleDelete}
                       onEdit={handleEdit}
                       onDuplicate={handleDuplicate}
+                      isSelected={selectedIds.includes(t.id)}
+                      onSelect={handleSelectOne}
                     />
                   ))}
                 </div>
