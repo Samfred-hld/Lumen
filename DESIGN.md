@@ -1,5 +1,6 @@
 ---
 name: Lúmen Dark Theme
+status: deprecated — superseded by design_lumen.md
 colors:
   surface: '#0b1326'
   surface-dim: '#0b1326'

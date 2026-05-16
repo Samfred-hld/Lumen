@@ -153,6 +153,17 @@ spacing:
   mobile-header-height: "56px"
   mobile-nav-height: "64px"
 
+zIndex:
+  content: "10"
+  calendar: "20"
+  header: "40"
+  sidebar: "50"
+  overlay: "60"
+  modal: "70"
+  alert: "80"
+  search: "90"
+  top: "100"
+
 shadows:
   sm: "0 1px 2px 0 rgba(15, 23, 42, 0.05)"
   card: "0 1px 3px 0 rgba(15, 23, 42, 0.10), 0 1px 2px -1px rgba(15, 23, 42, 0.10)"

@@ -61,6 +61,17 @@ body {
     --header-bg: #FFFFFF;
     --sidebar-bg: #0A1628;
 
+    /* ── Z-Index Scale ── */
+    --z-content: 10;    /* sticky headers, chart tooltips */
+    --z-calendar: 20;   /* calendar focus */
+    --z-header: 40;     /* top header bar, mobile backdrop */
+    --z-sidebar: 50;    /* sidebar, bottom nav, FAB, floating surfaces */
+    --z-overlay: 60;    /* dropdowns, selects, popovers, tooltips */
+    --z-modal: 70;      /* dialogs, sheets, drawers */
+    --z-alert: 80;      /* alert dialogs */
+    --z-search: 90;     /* global search overlay */
+    --z-top: 100;       /* keyboard shortcuts, toasts */
+
     /* ── shadcn/ui CSS vars (mapped to Teal/Navy) ── */
     --background: 210 40% 98%;           /* #F8FAFC */
     --foreground: 222.2 84% 4.9%;        /* #0F172A */
@@ -346,16 +357,6 @@ body {
   }
   .shadow-float {
     box-shadow: var(--shadow-float);
-  }
-
-  /* Glass — warm in light, cool in dark */
-  .glass {
-    background: hsl(30 25% 98% / 0.75);
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-  }
-  [data-theme="dark"] .glass {
-    background: hsl(222 47% 7% / 0.80);
   }
 
   /* Gradients — solid colors for clean aesthetic */
