@@ -923,3 +923,18 @@ body {
     border-radius: var(--radius) !important;
   }
 }
+
+/* ═══════════════════════════════════════════
+   Reduced Motion — a11y (prefers-reduced-motion)
+   Desabilita todas as animações e transições
+   ═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
