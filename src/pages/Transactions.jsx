@@ -30,7 +30,7 @@ import * as XLSX from 'xlsx';
 
 import TransactionRow from '@/components/finance/TransactionRow';
 import TransactionInlineForm from '@/components/finance/TransactionInlineForm';
-import { TrendingUp, TrendingDown, Wallet, CreditCard } from 'lucide-react';
+import { KpiCard } from '@/components/dashboard/KpiCard';
 
 export default function Transactions() {
   const [searchParams] = useSearchParams();
@@ -322,7 +322,7 @@ export default function Transactions() {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-4 lg:p-6 space-y-6 pb-24 lg:pb-6">
+    <div className="py-xl space-y-6">
       {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
@@ -338,7 +338,7 @@ export default function Transactions() {
             <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
               <FileSpreadsheet size={16} /> EXCEL
             </button>
-            <button onClick={() => { setEditing(null); setShowModal(true); }} className="lg:hidden flex items-center gap-2 px-6 py-2 bg-inverse-surface text-inverse-on-surface rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-surface-container-highest shadow-sm transition-all">
+            <button onClick={() => { setEditing(null); setShowModal(true); }} className="lg:hidden flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
               <Plus size={16} /> NOVA
             </button>
           </div>
@@ -377,47 +377,15 @@ export default function Transactions() {
         </div>
       </div>
 
-      {/* KPI Summary Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Receitas */}
-        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-emerald-500"></div>
-          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
-            <TrendingUp size={16} className="text-emerald-500" /> RECEITAS
-          </div>
-          <div className="tabular-nums text-2xl font-bold text-emerald-600">{formatCurrency(totals.income)}</div>
-        </div>
-        
-        {/* Despesas */}
-        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-red-500"></div>
-          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
-            <TrendingDown size={16} className="text-red-500" /> DESPESAS
-          </div>
-          <div className="tabular-nums text-2xl font-bold text-red-600">{formatCurrency(totals.expense)}</div>
-        </div>
-        
-        {/* Saldo em Conta */}
-        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-muted-foreground"></div>
-          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
-            <Wallet size={16} /> SALDO EM CONTA
-          </div>
-          <div className="tabular-nums text-2xl font-bold text-on-background">{formatCurrency(totals.balance)}</div>
-        </div>
-        
-        {/* Fatura Cartão */}
-        <div className="bg-surface border border-surface-border p-5 relative group hover:shadow-lg transition-all duration-300">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-amber-500"></div>
-          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-bold uppercase tracking-widest mb-2">
-            <CreditCard size={16} className="text-amber-500" /> FATURA CARTÃO
-          </div>
-          <div className="tabular-nums text-2xl font-bold text-amber-600">{formatCurrency(totals.creditCard)}</div>
-        </div>
-      </div>
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+        <KpiCard label="RECEITAS" value={formatCurrency(totals.income)} icon="trending_up" variant="income" />
+        <KpiCard label="DESPESAS" value={formatCurrency(totals.expense)} icon="trending_down" variant="expense" />
+        <KpiCard label="SALDO EM CONTA" value={formatCurrency(totals.balance)} icon="account_balance_wallet" variant="balance" />
+        <KpiCard label="FATURA CARTÃO" value={formatCurrency(totals.creditCard)} icon="credit_card" variant="investment" />
+      </section>
 
       {/* Aviso de transações em outros meses */}
-      {otherMonthsCount > 0 && monthTx.length === 0 && (
+      {otherMonthsCount > 0 && monthTx.length < 3 && otherMonthsCount > monthTx.length && (
         <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700">
           <MsIcon name="calendar_today" size={14} className="font-semibold" />
           <span>
@@ -439,19 +407,6 @@ export default function Transactions() {
             transaction={editing}
             onCancel={() => setEditing(null)}
           />
-
-          {/* Small Insight Card */}
-          <div className="bg-inverse-surface text-inverse-on-surface p-5 rounded-lg shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
-            <h4 className="font-bold text-sm mb-2 relative z-10">Meta de Economia</h4>
-            <div className="flex justify-between items-end mb-4 relative z-10">
-              <span className="tabular-nums text-2xl font-bold">R$ 0,00</span>
-              <span className="text-emerald-400 font-bold text-[10px] uppercase tracking-wider">0% concluído</span>
-            </div>
-            <div className="w-full h-1.5 bg-white/10 rounded-full relative z-10">
-              <div className="h-full bg-emerald-400 rounded-full" style={{ width: '0%' }}></div>
-            </div>
-          </div>
         </section>
 
         {/* Transaction List & Filters (Column Span 8) */}
@@ -467,15 +422,15 @@ export default function Transactions() {
               >TODOS</button>
               <button 
                 onClick={() => setFilterType('income')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'income' ? "bg-emerald-600 text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'income' ? "bg-kpi-income text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >RECEITAS</button>
               <button 
                 onClick={() => setFilterType('expense')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'expense' ? "bg-red-600 text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'expense' ? "bg-kpi-expense text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >DESPESAS</button>
               <button 
                 onClick={() => setFilterType('investment')} 
-                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'investment' ? "bg-violet-600 text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
+                className={cn("px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors", filterType === 'investment' ? "bg-info text-white" : "border border-surface-border text-muted-foreground hover:bg-surface-low")}
               >INVESTIMENTOS</button>
             </div>
 
@@ -586,13 +541,6 @@ export default function Transactions() {
         transaction={confirmDelete}
       />
       
-      {/* Floating Action Button (Mobile Contextual) */}
-      <button 
-        onClick={() => { setEditing(null); setShowModal(true); }}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-inverse-surface text-inverse-on-surface rounded-full shadow-2xl flex items-center justify-center lg:hidden z-50 hover:scale-110 active:scale-95 transition-transform"
-      >
-        <Plus size={24} />
-      </button>
     </div>
   );
 }

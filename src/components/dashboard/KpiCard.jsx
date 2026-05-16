@@ -2,10 +2,10 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 const KPI_STYLES = {
-  income:     { accent: 'bg-kpi-income',    valueColor: 'text-on-surface', iconClass: 'text-kpi-income' },
-  expense:    { accent: 'bg-kpi-expense',   valueColor: 'text-on-surface', iconClass: 'text-kpi-expense' },
+  income:     { accent: 'bg-kpi-income',    valueColor: 'text-kpi-income', iconClass: 'text-kpi-income' },
+  expense:    { accent: 'bg-kpi-expense',   valueColor: 'text-kpi-expense', iconClass: 'text-kpi-expense' },
   balance:    { accent: 'bg-secondary-container', valueColor: 'text-on-surface', iconClass: 'text-secondary' },
-  investment: { accent: 'bg-warning',       valueColor: 'text-on-surface', iconClass: 'text-warning' },
+  investment: { accent: 'bg-warning',       valueColor: 'text-warning', iconClass: 'text-warning' },
 };
 
 export function KpiCard({ label, value, icon, variant = 'balance', delta, deltaLabel }) {
@@ -25,7 +25,7 @@ export function KpiCard({ label, value, icon, variant = 'balance', delta, deltaL
         <span className="font-label-caps text-label-caps text-on-surface-variant">{label}</span>
         <span className={cn("material-symbols-outlined text-sm", s.iconClass)}>{icon}</span>
       </div>
-      <div className="font-headline text-headline text-on-surface">{value}</div>
+      <div className={cn("font-headline text-headline", s.valueColor)}>{value}</div>
       {delta !== undefined && (
         <div className="flex items-center gap-1 mt-xs" aria-hidden="true">
           {delta > 0 ? (

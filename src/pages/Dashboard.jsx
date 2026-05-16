@@ -46,7 +46,7 @@ export default function Dashboard() {
       if (isOnboarded()) { checkDueDateNotifications(); return; }
       const cloudResult = await fetchOnboarded();
       if (cancelled) return;
-      if (cloudResult && cloudResult !== 'false') { checkDueDateNotifications(); return; }
+      if (cloudResult && cloudResult !== 'false') { setOnboarded(); checkDueDateNotifications(); return; }
       const timer = setTimeout(() => { if (!cancelled) setShowOnboarding(true); }, 800);
       return () => clearTimeout(timer);
     }
@@ -54,7 +54,7 @@ export default function Dashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  const { data: rawTransactions, refetch: refetchTx } = useTransactions();
+  const { data: rawTransactions, isLoading: txLoading, refetch: refetchTx } = useTransactions();
   const { data: rawGoals } = useGoals();
   const { data: rawBudgets } = useBudgets();
   const { data: rawCards } = useCards();
@@ -249,14 +249,14 @@ export default function Dashboard() {
 
       {/* ═══ Alerts ═══ */}
       {alerts.length > 0 && (
-        <div className="flex items-center gap-2 p-3 bg-error-container border border-danger/20 rounded text-danger text-sm mb-xl">
+        <div className="flex items-center gap-2 p-3 bg-error-container border border-error-container rounded text-danger text-sm mb-xl">
           <MsIcon name="warning" size={16} />
           <span>{alerts.length} orçamento(s) ultrapassado(s): {alerts.map(a => a.category).join(', ')}</span>
         </div>
       )}
 
       {/* ═══ KPI Grid ═══ */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md mb-xl">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm md:gap-md mb-xl">
         <KpiCard label="ENTRADAS" value={formatCurrency(totals.income)} icon="trending_up" variant="income"
           delta={getDelta(totals.income, prevTotals.income)} deltaLabel="vs mês ant." />
         <KpiCard label="SAÍDAS" value={formatCurrency(totals.expense)} icon="trending_down" variant="expense"
@@ -272,7 +272,7 @@ export default function Dashboard() {
         <section className="lg:col-span-8">
           <div className="flex items-center justify-between mb-md pb-xs border-b border-surface-border">
             <h2 className="font-headline text-headline">Transações Recentes</h2>
-            <Link to="/transactions" className="font-label-caps text-label-caps text-primary-light hover:underline uppercase">Ver Tudo</Link>
+            <Link to="/transactions" className="font-label-caps text-label-caps text-primary-light hover:underline uppercase">VER TUDO</Link>
           </div>
           <div className="flex flex-col">
             {/* Header */}
@@ -316,7 +316,7 @@ export default function Dashboard() {
 
         {/* Health Score (4 cols) */}
         <section className="lg:col-span-4">
-          <div className="bg-surface border-2 border-surface-border p-lg">
+          <div className="bg-surface border border-surface-border p-lg">
             <h2 className="font-headline text-headline mb-lg">Saúde Financeira</h2>
             <div className="relative flex flex-col items-center justify-center mb-xl">
               <div className="w-48 h-48 rounded-full border-[12px] border-surface-container-low flex items-center justify-center relative">
@@ -386,11 +386,71 @@ export default function Dashboard() {
                 ? `Seu maior gasto é ${topExpense[0]} (${formatCurrency(topExpense[1])}). Analise se há espaço para otimização.`
                 : null;
 
-            return (
-              <div className="mt-lg bg-on-primary-fixed p-lg text-on-primary flex flex-col gap-sm">
+  if (txLoading && transactions.length === 0 && goals.length === 0 && budgets.length === 0 && cards.length === 0) {
+    return (
+      <>
+        <section className="py-xl mb-md">
+          <p className="font-label-caps text-label-caps text-on-surface-variant tracking-[0.15em] mb-xs">DISPONÍVEL ESTE MÊS</p>
+          <div className="h-[60px] w-64 shimmer rounded" />
+          <div className="h-[1px] w-full bg-editorial-rule mt-md" />
+        </section>
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm md:gap-md mb-xl">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-surface border border-surface-border p-card-padding">
+              <div className="h-[3px] w-full shimmer mb-sm" />
+              <div className="h-3 w-24 shimmer rounded mb-sm" />
+              <div className="h-8 w-32 shimmer rounded" />
+            </div>
+          ))}
+        </section>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl mb-xl">
+          <section className="lg:col-span-8">
+            <div className="flex items-center justify-between mb-md pb-xs border-b border-surface-border">
+              <div className="h-5 w-40 shimmer rounded" />
+              <div className="h-4 w-20 shimmer rounded" />
+            </div>
+            <div className="flex flex-col">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className="grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center">
+                  <div className="col-span-6 flex items-center gap-sm">
+                    <div className="w-8 h-8 rounded-full shimmer" />
+                    <div className="h-4 w-32 shimmer rounded" />
+                  </div>
+                  <div className="col-span-3"><div className="h-4 w-16 shimmer rounded" /></div>
+                  <div className="col-span-3 flex justify-end"><div className="h-4 w-20 shimmer rounded" /></div>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="lg:col-span-4">
+            <div className="bg-surface border border-surface-border p-lg">
+              <div className="h-5 w-40 shimmer rounded mb-lg" />
+              <div className="flex flex-col items-center justify-center mb-xl">
+                <div className="w-48 h-48 rounded-full shimmer" />
+              </div>
+              <div className="space-y-md">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex flex-col gap-xs">
+                    <div className="flex justify-between">
+                      <div className="h-3 w-32 shimmer rounded" />
+                      <div className="h-3 w-16 shimmer rounded" />
+                    </div>
+                    <div className="h-1 w-full shimmer rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      </>
+    );
+  }
+
+  return (
+              <div className="mt-lg bg-primary-container p-lg text-on-primary-container flex flex-col gap-sm">
                 <MsIcon name="auto_awesome" className="text-primary-light" size={24} />
                 <h3 className="font-title text-title">Análise de IA</h3>
-                <p className="font-body-sm text-body-sm text-on-primary/70">{insightText}</p>
+                <p className="font-body-sm text-body-sm text-on-primary-container/70">{insightText}</p>
               </div>
             );
           })()}

@@ -8,6 +8,7 @@ import { getNotifications, markAsRead, markAllAsRead, getUnreadCount, generateBu
 import GlobalSearch from '@/components/GlobalSearch';
 import FAB from '@/components/ui/fab';
 import { useTransactionModal } from '@/lib/transactionModalStore';
+import { useAuth } from '@/lib/AuthContext';
 
 // Material Symbols icon component
 function MsIcon({ name, className, size = 24, filled = false }) {
@@ -196,6 +197,7 @@ export default function Layout() {
   const [showGlobalSearch, setShowGlobalSearch] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [theme, setThemeState] = useState(() => getTheme());
   useEffect(() => {
@@ -256,11 +258,13 @@ export default function Layout() {
         {/* Logo Header — Navy in both themes */}
         <div className="bg-sidebar-header border-b border-sidebar-header-border">
           <div className={cn("px-lg py-lg flex items-center justify-center", collapsed && "px-0")}>
-            <img
-              src="/DarkTheme_logo.png"
-              alt="Lúmen"
-              className="w-14 h-14 object-contain shrink-0"
-            />
+            <div className="w-9 h-9 shrink-0" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+              <img
+                src="/DarkTheme_logo.png"
+                alt="Lúmen"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
 
@@ -343,16 +347,20 @@ export default function Layout() {
             className="flex items-center gap-2 flex-1 max-w-md py-2 px-3 rounded-lg border border-surface-border hover:border-primary/40 hover:bg-surface-container-low transition-all cursor-text group"
           >
             <MsIcon name="search" size={18} className="text-on-surface-variant group-hover:text-primary transition-colors" />
-            <span className="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface-variant/80 transition-colors">Buscar transações...</span>
+            <span className="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface-variant/80 transition-colors">Buscar transações</span>
             <kbd className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-muted-foreground font-mono-kbd border border-surface-border">⌘K</kbd>
           </button>
         </div>
         <div className="flex items-center gap-md">
           <NotificationCenter />
           <div className="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-surface-border">
-            <div className="w-full h-full bg-primary-light flex items-center justify-center">
-              <MsIcon name="person" size={16} className="text-on-primary" />
-            </div>
+            {user?.avatar ? (
+              <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-primary-light flex items-center justify-center">
+                <MsIcon name="person" size={16} className="text-on-primary" />
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -389,13 +397,7 @@ export default function Layout() {
         })}
       </nav>
 
-      {/* FAB (Mobile) */}
-      <button
-        className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center z-50 md:hidden scale-100 active:scale-90 transition-transform"
-        onClick={() => useTransactionModal.open()}
-      >
-        <MsIcon name="add" size={28} />
-      </button>
+      <FAB onNewTransaction={() => useTransactionModal.open()} />
 
       <ShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <GlobalSearch open={showGlobalSearch} onClose={() => setShowGlobalSearch(false)} />

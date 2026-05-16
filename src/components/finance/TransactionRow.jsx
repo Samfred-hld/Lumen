@@ -36,36 +36,11 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
   const valuePrefix = isIncome ? '+ ' : isExpense ? '- ' : '';
 
   return (
-    <>
-      {/* ── Mobile ── */}
-      <SwipeToDelete onDelete={() => onDelete(t.id)} className="lg:hidden">
-        <div className="transaction-row grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center cursor-pointer" onClick={() => onEdit(t)}>
-          <div className="col-span-6 flex items-center gap-sm">
-            <div className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center",
-              isIncome ? 'bg-kpi-income/10' : isExpense ? 'bg-kpi-expense/10' : 'bg-info/10'
-            )}>
-              <MsIcon name={getCategoryMsIcon(t.category, t.type)} size={16}
-                className={isIncome ? 'text-kpi-income' : isExpense ? 'text-kpi-expense' : 'text-info'} />
-            </div>
-            <span className="font-body-lg text-body-lg font-bold">{t.description}</span>
-          </div>
-          <div className="col-span-3">
-            <span className="px-xs py-[2px] bg-surface-container-high rounded text-[10px] font-label-caps text-on-surface-variant">
-              {(t.category || '—').toUpperCase()}
-            </span>
-          </div>
-          <div className={cn("col-span-3 text-right font-mono-number text-mono-number font-bold", valueColor)}>
-            {valuePrefix}{formatCurrency(t.value)}
-          </div>
-        </div>
-      </SwipeToDelete>
-
-      {/* ── Desktop ── */}
-      <div className="transaction-row grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center cursor-pointer hidden lg:grid" onClick={() => onEdit(t)}>
+    <SwipeToDelete onDelete={() => onDelete(t.id)}>
+      <div className="transaction-row grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center cursor-pointer group" onClick={() => onEdit(t)}>
         <div className="col-span-6 flex items-center gap-sm">
           <div className={cn(
-            "w-8 h-8 rounded-full flex items-center justify-center",
+            "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
             isIncome ? 'bg-kpi-income/10' : isExpense ? 'bg-kpi-expense/10' : 'bg-info/10'
           )}>
             <MsIcon name={getCategoryMsIcon(t.category, t.type)} size={16}
@@ -73,7 +48,7 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
           </div>
           <div className="flex-1 min-w-0">
             <span className="font-body-lg text-body-lg font-bold">{t.description}</span>
-            <div className="flex items-center gap-2 mt-0.5">
+            <div className="hidden lg:flex items-center gap-2 mt-0.5">
               <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
                 {isToday(t.date) ? 'HOJE' : formatSmartDate(t.date).toUpperCase()}
               </span>
@@ -95,10 +70,10 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
             {(t.category || '—').toUpperCase()}
           </span>
         </div>
-        <div className={cn("col-span-2 text-right font-mono-number text-mono-number font-bold", valueColor)}>
+        <div className={cn("col-span-3 lg:col-span-2 text-right font-mono-number text-mono-number font-bold", valueColor)}>
           {valuePrefix}{formatCurrency(t.value)}
         </div>
-        <div className="col-span-1 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="col-span-1 hidden lg:flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button onClick={(e) => { e.stopPropagation(); onDuplicate(t); }} className="p-1 hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Duplicar">
             <Copy size={14} />
           </button>
@@ -110,6 +85,6 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
           </button>
         </div>
       </div>
-    </>
+    </SwipeToDelete>
   );
 }

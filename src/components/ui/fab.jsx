@@ -11,7 +11,7 @@ export default function FAB({ onNewIncome, onNewExpense, onNewTransaction }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 flex flex-col-reverse items-center gap-3 lg:bottom-6 lg:right-6">
+    <div className="fixed bottom-20 right-4 z-50 flex flex-col-reverse items-center gap-3 md:hidden">
       {/* Sub-actions */}
       {expanded && (
         <>
