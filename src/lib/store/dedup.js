@@ -1,66 +1,47 @@
-// ══════════════════════════════════════════
-// LÚMEN — Auto-deduplicação
-// ══════════════════════════════════════════
+import { supabase } from '@/api/supabaseClient';
 
-import { base44 } from '@/api/base44Client';
-import { setLocal } from './helpers';
+let _dedupRanThisSession = false;
+export { _dedupRanThisSession };
 
-// Flag de sessão — dedup roda 1x por carregamento da aba
-export let _dedupRanThisSession = false;
+const entityConfigs = [
+  { table: 'transactions', pk: 'id', keys: ['description', 'date', 'value'] },
+  { table: 'budgets', pk: 'id', keys: ['category', 'month'] },
+  { table: 'goals', pk: 'id', keys: ['name'] },
+  { table: 'cards', pk: 'id', keys: ['name'] },
+  { table: 'rules', pk: 'id', keys: ['keyword'] },
+  { table: 'templates', pk: 'id', keys: ['description'] },
+];
 
-/**
- * Deduplicação automática de Card, Rule e Template.
- * Roda 1x por sessão após initStore. Silencioso — só loga se encontrar algo.
- */
 export async function _autoDeduplicate() {
   if (_dedupRanThisSession) return;
   _dedupRanThisSession = true;
 
-  const tasks = [
-    { entity: 'Card', key: 'name' },
-    { entity: 'Rule', key: 'keyword' },
-    { entity: 'Template', key: 'description' },
-  ];
-
-  for (const { entity, key } of tasks) {
+  for (const config of entityConfigs) {
     try {
-      if (!base44?.entities?.[entity]) continue;
-      const items = await base44.entities[entity].list('', 10000);
-      if (!items?.length) continue;
+      const { data, error } = await supabase
+        .from(config.table)
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      // Agrupar por campo-chave (case-insensitive)
-      const groups = new Map();
-      for (const item of items) {
-        const k = (item[key] || '').trim().toLowerCase();
-        if (!k) continue;
-        if (!groups.has(k)) groups.set(k, []);
-        groups.get(k).push(item);
-      }
+      if (error || !data?.length) continue;
 
-      // Deletar duplicatas (mantém o mais recente)
-      let removed = 0;
-      for (const [, group] of groups) {
-        if (group.length <= 1) continue;
-        group.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
-        const toDelete = group.slice(1);
-        try {
-          // Tentar deleteMany com IDs específicos
-          await base44.entities[entity].deleteMany({ id: { $in: toDelete.map(d => d.id) } });
-          removed += toDelete.length;
-        } catch {
-          // Fallback: deletar um por um
-          for (const dup of toDelete) {
-            try { await base44.entities[entity].delete(dup.id); removed++; } catch {}
-          }
+      const seen = new Map();
+      const toRemove = [];
+
+      for (const row of data) {
+        const key = config.keys.map(k => String(row[k] || '').toLowerCase()).join('|');
+        if (seen.has(key)) {
+          toRemove.push(row[config.pk]);
+        } else {
+          seen.set(key, true);
         }
       }
 
-      if (removed > 0) {
-        console.log(`[AutoDedup] ${entity}: ${removed} duplicatas removidas`);
-        // Atualizar localStorage com estado limpo
-        const fresh = await base44.entities[entity].list('', 1000);
-        setLocal(entity === 'Card' ? 'cards' : entity === 'Rule' ? 'rules' : 'templates', fresh || []);
+      if (toRemove.length) {
+        await supabase.from(config.table).delete().in(config.pk, toRemove);
       }
-    } catch {}
+    } catch (err) {
+      console.warn('[Dedup] Erro:', config.table, err);
+    }
   }
 }

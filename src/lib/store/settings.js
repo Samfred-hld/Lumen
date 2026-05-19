@@ -1,15 +1,16 @@
-// ══════════════════════════════════════════
-// LÚMEN — Settings (Base44 entity key-value with localStorage cache)
-// ══════════════════════════════════════════
-
-import { base44 } from '@/api/base44Client';
-import { getLocal, setLocal, removeLocal, ensureEntity } from './helpers';
+import { supabase } from '@/api/supabaseClient';
+import { getLocal, setLocal, removeLocal } from './helpers';
 
 async function getSettingFromCloud(key) {
-  if (!(await ensureEntity('Setting'))) return null;
   try {
-    const results = await base44.entities.Setting.filter({ key });
-    if (results?.length) return JSON.parse(results[0].value);
+    const { data, error } = await supabase
+      .from('settings')
+      .select('*')
+      .eq('key', key)
+      .limit(1);
+
+    if (error) throw error;
+    if (data?.length) return typeof data[0].value === 'string' ? JSON.parse(data[0].value) : data[0].value;
   } catch (err) {
     console.error('[Store] Erro em getSettingFromCloud:', err);
   }
@@ -17,14 +18,21 @@ async function getSettingFromCloud(key) {
 }
 
 async function setSettingToCloud(key, value) {
-  if (!(await ensureEntity('Setting'))) return;
   try {
+    const { data: existing, error: findError } = await supabase
+      .from('settings')
+      .select('id')
+      .eq('key', key)
+      .limit(1);
+
+    if (findError) throw findError;
+
     const jsonVal = JSON.stringify(value);
-    const existing = await base44.entities.Setting.filter({ key });
+
     if (existing?.length) {
-      await base44.entities.Setting.update(existing[0].id, { value: jsonVal });
+      await supabase.from('settings').update({ value: jsonVal }).eq('id', existing[0].id);
     } else {
-      await base44.entities.Setting.create({ key, value: jsonVal });
+      await supabase.from('settings').insert({ key, value: jsonVal });
     }
   } catch (err) {
     console.error('[Store] Erro em setSettingToCloud:', err);
@@ -44,11 +52,7 @@ export async function saveSalaryConfig(c) {
 }
 
 // ── Theme ──
-export function getTheme() {
-  const saved = getLocal('theme', null);
-  if (saved) return saved;
-  return 'light'; // Default to light theme
-}
+export function getTheme() { return getLocal('theme', 'light'); }
 export async function fetchTheme() {
   const cloud = await getSettingFromCloud('theme');
   if (cloud) { setLocal('theme', cloud); return cloud; }
@@ -103,7 +107,7 @@ export async function fetchExtraCats() {
   return getExtraCats();
 }
 
-// ── Dashboard Sections Config ──
+// ── Dashboard Sections ──
 const DEFAULT_DASH_SECTIONS = [
   { id: 'resumo', label: 'Resumo', visible: true },
   { id: 'graficos', label: 'Gráficos', visible: true },
@@ -128,12 +132,12 @@ export async function fetchDashSections() {
   return getDashSections();
 }
 
-// ── Quick Entry Draft (local only — no need for cloud) ──
+// ── Quick Entry Draft ──
 export function getQuickDraft() { return getLocal('quickDraft', null); }
 export function saveQuickDraft(draft) { setLocal('quickDraft', draft); }
 export function clearQuickDraft() { removeLocal('quickDraft'); }
 
-// ── Suggestions Log (monthly) ──
+// ── Suggestions Log ──
 export function getSuggestionsLog() { return getLocal('suggestionsLog', {}); }
 export async function setSuggestionApplied(monthKey, type) {
   const log = getSuggestionsLog();
