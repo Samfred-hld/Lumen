@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/api/supabaseClient';
+import { useSupabaseRealtime } from './useSupabaseRealtime';
 
 export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
+  useSupabaseRealtime('transactions', 'transactions', pauseSubscribeRef);
+
   return useQuery({
     queryKey: ['transactions'],
     queryFn: async () => {
@@ -19,6 +22,8 @@ export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
 }
 
 export function useBudgets() {
+  useSupabaseRealtime('budgets', 'budgets');
+
   return useQuery({
     queryKey: ['budgets'],
     queryFn: async () => {
@@ -34,6 +39,8 @@ export function useBudgets() {
 }
 
 export function useGoals() {
+  useSupabaseRealtime('goals', 'goals');
+
   return useQuery({
     queryKey: ['goals'],
     queryFn: async () => {
@@ -49,6 +56,8 @@ export function useGoals() {
 }
 
 export function useCards() {
+  useSupabaseRealtime('cards', 'cards');
+
   return useQuery({
     queryKey: ['cards'],
     queryFn: async () => {
