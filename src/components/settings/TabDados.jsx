@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import MsIcon from '@/components/ui/ms-icon';
 import { getChangelog, addChangelogEntry, clearAllData, getExtraCats, getRules, getSalaryConfig, addCard, saveExtraCats, saveRules, saveSalaryConfig, lsSet } from '@/lib/store';
-import { base44 } from '@/api/base44Client';
 
 // ═══ Section wrapper ═══
 function Section({ icon: Icon, title, children, actions }) {
@@ -195,7 +194,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
                 <Button variant="destructive" className="flex-1" disabled={confirmText !== 'EXCLUIR TUDO'} onClick={async () => {
                   setClearing(true); setClearProgress(0);
                   try {
-                    const result = await clearAllData(base44, (step, total, label) => {
+                    const result = await clearAllData((step, total, label) => {
                       setClearProgress(Math.round((step / total) * 100)); setClearStep(label);
                     });
                     setClearStep('Concluído!');

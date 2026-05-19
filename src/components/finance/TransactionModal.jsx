@@ -16,7 +16,6 @@ import { suggestCategoryFromRules, getTemplates, getPaymentMethods } from '@/lib
 import { detectInstallment, isRefundOrPayment } from '@/lib/transactionDetectors';
 import { getInvoiceMonth } from '@/lib/csvParser';
 import { Checkbox } from '@/components/ui/checkbox';
-import { base44 } from '@/api/base44Client';
 import { useTransactions, useCards } from '@/hooks/useData';
 
 // ═══ Zod Validation Schema ═══

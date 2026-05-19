@@ -6,7 +6,7 @@ import React, { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Plus, Trash2, Pencil, Repeat, Clock, CheckCircle2, AlertTriangle, History, Target, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -284,17 +284,17 @@ export default function Planejamento() {
       const existing = monthBudgets.find(b => b.category === category);
       if (existing) {
         if (existing.limit !== limit) {
-          await base44.entities.Budget.update(existing.id, { limit });
+          await supabase.from('budgets').update({ limit }).eq('id', existing.id);
         }
       } else {
-        await base44.entities.Budget.create({ category, limit, month: monthKey, isRecurring: false });
+        await supabase.from('budgets').insert({ category, limit, month: monthKey, isRecurring: false }).select().single();
       }
     }
 
     // Delete budgets for categories removed (had budget, now empty/removed)
     for (const b of monthBudgets) {
       if (!budgetValues.hasOwnProperty(b.category) || parseFloat(budgetValues[b.category]) <= 0) {
-        await base44.entities.Budget.delete(b.id);
+        await supabase.from('budgets').delete().eq('id', b.id);
       }
     }
 
@@ -303,28 +303,28 @@ export default function Planejamento() {
   };
 
   const handleDeleteBudget = async (id) => {
-    await base44.entities.Budget.delete(id);
+    await supabase.from('budgets').delete().eq('id', id);
     refetchBudgets();
   };
 
   // Handlers — Goals
   const handleSaveGoal = async (data) => {
-    if (editingGoal) await base44.entities.Goal.update(editingGoal.id, data);
-    else await base44.entities.Goal.create(data);
+    if (editingGoal) await supabase.from('goals').update(data).eq('id', editingGoal.id);
+    else await supabase.from('goals').insert(data).select().single();
     refetchGoals();
     setShowGoalModal(false);
     setEditingGoal(null);
   };
 
   const handleDeleteGoal = async (id) => {
-    await base44.entities.Goal.delete(id);
+    await supabase.from('goals').delete().eq('id', id);
     refetchGoals();
   };
 
   const handleDeposit = async (amount) => {
     const goal = depositGoal;
     const current = getGoalProgress(goal, transactions);
-    await base44.entities.Goal.update(goal.id, { currentValue: current + amount });
+    await supabase.from('goals').update({ currentValue: current + amount }).eq('id', goal.id);
     refetchGoals();
     setDepositGoal(null);
   };

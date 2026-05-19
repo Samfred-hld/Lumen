@@ -4,7 +4,7 @@
 // Run in browser console: lumenSetup.run()
 // Or import and call from Settings page.
 
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 
 import { LS_PREFIX } from './store/helpers'; // Prefix dinâmico por usuário
 
@@ -32,16 +32,26 @@ const CONFIG_KEYS = [
   'theme', 'onboarded', 'lastRecurringGen',
 ];
 
+const ENTITY_TABLE_MAP = {
+  Transaction: 'transactions',
+  Budget: 'budgets',
+  Goal: 'goals',
+  UserConfig: 'user_configs',
+  Card: 'cards',
+  Rule: 'rules',
+  Template: 'templates',
+  Setting: 'settings',
+};
+
 /**
- * Testa se uma entidade existe criando um registro de teste
+ * Testa se uma entidade existe consultando a tabela
  */
 async function testEntity(entityName) {
   try {
-    const entity = base44.entities[entityName];
-    if (!entity) return { exists: false, error: 'Entity not in SDK' };
+    const table = ENTITY_TABLE_MAP[entityName];
+    if (!table) return { exists: false, error: 'Unknown entity' };
 
-    // Try to list (lightweight check)
-    await entity.list('', 1);
+    await supabase.from(table).select('*').limit(1);
     return { exists: true };
   } catch (e) {
     return { exists: false, error: e.message };
@@ -53,13 +63,12 @@ async function testEntity(entityName) {
  */
 async function createEntity(entityName, testRecord) {
   try {
-    const entity = base44.entities[entityName];
-    if (!entity) return { created: false, error: 'Entity not in SDK' };
+    const table = ENTITY_TABLE_MAP[entityName];
+    if (!table) return { created: false, error: 'Unknown entity' };
 
-    const created = await entity.create(testRecord);
-    // Delete the test record
+    const { data: created } = await supabase.from(table).insert(testRecord).select().single();
     if (created?.id) {
-      await entity.delete(created.id);
+      await supabase.from(table).delete().eq('id', created.id);
     }
     return { created: true };
   } catch (e) {
@@ -79,18 +88,18 @@ async function migrateConfigs() {
       if (!localValue) { results.skipped++; continue; }
 
       // Check if already in cloud
-      const existing = await base44.entities.UserConfig.filter({ key });
+      const { data: existing } = await supabase.from('user_configs').select('*').eq('key', key);
       if (existing?.length > 0) {
         // Update if different
         if (existing[0].value !== localValue) {
-          await base44.entities.UserConfig.update(existing[0].id, { value: localValue });
+          await supabase.from('user_configs').update({ value: localValue }).eq('id', existing[0].id);
         }
         results.skipped++;
         continue;
       }
 
       // Create in cloud
-      await base44.entities.UserConfig.create({ key, value: localValue });
+      await supabase.from('user_configs').insert({ key, value: localValue }).select().single();
       results.migrated++;
     } catch (e) {
       console.warn(`Failed to migrate ${key}:`, e);
@@ -112,11 +121,12 @@ async function migrateToEntities() {
     try { return JSON.parse(localStorage.getItem(LS_PREFIX + key) || 'null'); } catch { return null; }
   };
 
-  // Helper: check if an entity schema exists in the app
+  // Helper: check if a table exists
   const entityExists = async (entityName) => {
     try {
-      if (!base44.entities[entityName]) return false;
-      await base44.entities[entityName].list('', 1);
+      const table = ENTITY_TABLE_MAP[entityName];
+      if (!table) return false;
+      await supabase.from(table).select('*').limit(1);
       return true;
     } catch (e) {
       return !e.message?.includes('not found');
@@ -129,10 +139,10 @@ async function migrateToEntities() {
       results.errors.push('Card: schema not created in Base44 — skipping');
     } else {
       const cards = getLocal('cards') || [];
-      const existing = await base44.entities.Card.list('', 1000);
+      const { data: existing } = await supabase.from('cards').select('*').limit(1000);
       if (!existing?.length && cards.length) {
         for (const c of cards) {
-          await base44.entities.Card.create({
+          await supabase.from('cards').insert({
             name: c.name || '',
             color: c.color || '#3b82f6',
             limit: parseFloat(c.limit) || 0,
@@ -152,10 +162,10 @@ async function migrateToEntities() {
       results.errors.push('Rule: schema not created in Base44 — skipping');
     } else {
       const rules = getLocal('rules') || [];
-      const existing = await base44.entities.Rule.list('', 1000);
+      const { data: existing } = await supabase.from('rules').select('*').limit(1000);
       if (!existing?.length && rules.length) {
         for (const r of rules) {
-          await base44.entities.Rule.create({
+          await supabase.from('rules').insert({
             keyword: r.keyword || '',
             category: r.category || '',
           });
@@ -171,10 +181,10 @@ async function migrateToEntities() {
       results.errors.push('Template: schema not created in Base44 — skipping');
     } else {
       const templates = getLocal('templates') || [];
-      const existing = await base44.entities.Template.list('', 1000);
+      const { data: existing } = await supabase.from('templates').select('*').limit(1000);
       if (!existing?.length && templates.length) {
         for (const t of templates) {
-          await base44.entities.Template.create({
+          await supabase.from('templates').insert({
             description: t.description || '',
             value: parseFloat(t.value) || 0,
             category: t.category || '',
@@ -196,9 +206,9 @@ async function migrateToEntities() {
       for (const key of settingKeys) {
         const val = getLocal(key);
         if (val === null) continue;
-        const existing = await base44.entities.Setting.filter({ key });
+        const { data: existing } = await supabase.from('settings').select('*').eq('key', key);
         if (!existing?.length) {
-          await base44.entities.Setting.create({ key, value: JSON.stringify(val) });
+          await supabase.from('settings').insert({ key, value: JSON.stringify(val) });
           results.settings++;
         }
       }
@@ -213,7 +223,7 @@ async function migrateToEntities() {
  */
 async function pullFromCloud() {
   try {
-    const configs = await base44.entities.UserConfig.list('', 500);
+    const { data: configs } = await supabase.from('user_configs').select('*').limit(500);
     if (!configs?.length) return { pulled: 0 };
 
     let pulled = 0;
@@ -278,24 +288,19 @@ export const lumenSetup = { run, testEntity, createEntity, migrateConfigs, migra
  * Migra cartões do localStorage para a entidade Card no Base44.
  * Upsert por campo `name` para evitar duplicatas.
  */
-async function migrateCardsToCloud(b44) {
-  const client = b44 || base44;
+async function migrateCardsToCloud() {
   if (isClearing()) {
     console.info('[migrateCardsToCloud] Limpeza em andamento — skipping');
     return { migrated: 0, skipped: true, reason: 'clearing in progress' };
   }
-  if (!client?.entities?.Card) {
-    console.info('[migrateCardsToCloud] Card entity not available in SDK — skipping migration');
-    return { migrated: 0, skipped: true, reason: 'Card entity not in SDK' };
-  }
 
-  // Check if Card schema actually exists in the app
+  // Check if Card table exists
   try {
-    await client.entities.Card.list('', 1);
+    await supabase.from('cards').select('*').limit(1);
   } catch (e) {
     if (e.message?.includes('not found')) {
-      console.info('[migrateCardsToCloud] Card schema not created in Base44 yet — skipping');
-      return { migrated: 0, skipped: true, reason: 'Card schema not found in app' };
+      console.info('[migrateCardsToCloud] Card table not found — skipping');
+      return { migrated: 0, skipped: true, reason: 'Card table not found' };
     }
   }
 
@@ -309,7 +314,8 @@ async function migrateCardsToCloud(b44) {
   // Fetch existing cloud cards to avoid duplicates
   let existing = [];
   try {
-    existing = await client.entities.Card.list('', 1000) || [];
+    const { data } = await supabase.from('cards').select('*').limit(1000);
+    existing = data || [];
   } catch {}
   const existingNames = new Set(existing.map(c => (c.name || '').toLowerCase()));
 
@@ -320,7 +326,7 @@ async function migrateCardsToCloud(b44) {
     if (existingNames.has(name.toLowerCase())) continue;
 
     try {
-      await client.entities.Card.create({
+      await supabase.from('cards').insert({
         name,
         color: c.color || '#3b82f6',
         limit: parseFloat(c.limit) || 0,
@@ -337,7 +343,7 @@ async function migrateCardsToCloud(b44) {
 
   // Sync localStorage with cloud state after migration
   try {
-    const fresh = await client.entities.Card.list('', 1000);
+    const { data: fresh } = await supabase.from('cards').select('*').limit(1000);
     if (fresh?.length) localStorage.setItem(LS_PREFIX + 'cards', JSON.stringify(fresh));
   } catch {}
 
@@ -348,16 +354,11 @@ async function migrateCardsToCloud(b44) {
  * Remove cartões duplicados do Base44, mantendo o mais recente de cada nome.
  * Pode ser chamado via console: lumenSetup.deduplicateCards()
  */
-async function deduplicateCards(b44) {
-  const client = b44 || base44;
-  if (!client?.entities?.Card) {
-    console.warn('[deduplicateCards] Card entity not available');
-    return { removed: 0, error: 'Card entity not available' };
-  }
-
+async function deduplicateCards() {
   let allCards;
   try {
-    allCards = await client.entities.Card.list('', 10000);
+    const { data } = await supabase.from('cards').select('*').limit(10000);
+    allCards = data || [];
   } catch (e) {
     return { removed: 0, error: e.message };
   }
@@ -385,13 +386,13 @@ async function deduplicateCards(b44) {
     console.log(`[deduplicateCards] "${name}": ${cards.length} cópias — mantendo ${keep.id}, deletando ${toDelete.length}`);
 
     try {
-      await client.entities.Card.deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+      await supabase.from('cards').delete().in('id', toDelete.map(d => d.id));
       removed += toDelete.length;
     } catch {
       // Fallback: um por um
       for (const card of toDelete) {
         try {
-          await client.entities.Card.delete(card.id);
+          await supabase.from('cards').delete().eq('id', card.id);
           removed++;
         } catch (e) {
           errors.push(`Card[${card.id}]: ${e.message}`);
@@ -402,7 +403,7 @@ async function deduplicateCards(b44) {
 
   // Atualizar localStorage com estado limpo
   try {
-    const fresh = await client.entities.Card.list('', 1000);
+    const { data: fresh } = await supabase.from('cards').select('*').limit(1000);
     localStorage.setItem(LS_PREFIX + 'cards', JSON.stringify(fresh || []));
   } catch {}
 
@@ -413,13 +414,11 @@ async function deduplicateCards(b44) {
 /**
  * Remove regras duplicadas do Base44, mantendo a mais recente de cada keyword.
  */
-async function deduplicateRules(b44) {
-  const client = b44 || base44;
-  if (!client?.entities?.Rule) return { removed: 0, error: 'Rule entity not available' };
-
+async function deduplicateRules() {
   let allRules;
   try {
-    allRules = await client.entities.Rule.list('', 10000);
+    const { data } = await supabase.from('rules').select('*').limit(10000);
+    allRules = data || [];
   } catch (e) {
     return { removed: 0, error: e.message };
   }
@@ -440,17 +439,17 @@ async function deduplicateRules(b44) {
     rules.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
     const toDelete = rules.slice(1);
     try {
-      await client.entities.Rule.deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+      await supabase.from('rules').delete().in('id', toDelete.map(d => d.id));
       removed += toDelete.length;
     } catch {
       for (const rule of toDelete) {
-        try { await client.entities.Rule.delete(rule.id); removed++; } catch {}
+        try { await supabase.from('rules').delete().eq('id', rule.id); removed++; } catch {}
       }
     }
   }
 
   try {
-    const fresh = await client.entities.Rule.list('', 1000);
+    const { data: fresh } = await supabase.from('rules').select('*').limit(1000);
     localStorage.setItem(LS_PREFIX + 'rules', JSON.stringify(fresh || []));
   } catch {}
 
@@ -460,13 +459,11 @@ async function deduplicateRules(b44) {
 /**
  * Remove templates duplicados do Base44, mantendo o mais recente de cada descrição.
  */
-async function deduplicateTemplates(b44) {
-  const client = b44 || base44;
-  if (!client?.entities?.Template) return { removed: 0, error: 'Template entity not available' };
-
+async function deduplicateTemplates() {
   let allTpls;
   try {
-    allTpls = await client.entities.Template.list('', 10000);
+    const { data } = await supabase.from('templates').select('*').limit(10000);
+    allTpls = data || [];
   } catch (e) {
     return { removed: 0, error: e.message };
   }
@@ -487,17 +484,17 @@ async function deduplicateTemplates(b44) {
     tpls.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
     const toDelete = tpls.slice(1);
     try {
-      await client.entities.Template.deleteMany({ id: { $in: toDelete.map(d => d.id) } });
+      await supabase.from('templates').delete().in('id', toDelete.map(d => d.id));
       removed += toDelete.length;
     } catch {
       for (const tpl of toDelete) {
-        try { await client.entities.Template.delete(tpl.id); removed++; } catch {}
+        try { await supabase.from('templates').delete().eq('id', tpl.id); removed++; } catch {}
       }
     }
   }
 
   try {
-    const fresh = await client.entities.Template.list('', 1000);
+    const { data: fresh } = await supabase.from('templates').select('*').limit(1000);
     localStorage.setItem(LS_PREFIX + 'templates', JSON.stringify(fresh || []));
   } catch {}
 

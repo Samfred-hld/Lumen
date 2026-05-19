@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useSearchParams } from 'react-router-dom';
 import { Plus, Search, ChevronLeft, ChevronRight, Upload, X, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -133,10 +133,10 @@ export default function Transactions() {
 
   const handleSave = async (data) => {
     if (editing) {
-      await base44.entities.Transaction.update(editing.id, data);
+      await supabase.from('transactions').update(data).eq('id', editing.id);
       addChangelogEntry({ action: 'update', entityType: 'transação', entityName: data.description });
     } else {
-      await base44.entities.Transaction.create(data);
+      await supabase.from('transactions').insert(data).select().single();
       addChangelogEntry({ action: 'create', entityType: 'transação', entityName: data.description });
     }
     refetch();
@@ -166,7 +166,7 @@ export default function Transactions() {
 
   const deleteSingle = async (id) => {
     const tx = transactions.find(t => t.id === id);
-    await base44.entities.Transaction.delete(id);
+    await supabase.from('transactions').delete().eq('id', id);
     addChangelogEntry({ action: 'delete', entityType: 'transação', entityName: tx?.description });
     refetch();
     if (tx) {
@@ -177,7 +177,7 @@ export default function Transactions() {
         action: (
           <button
             onClick={async () => {
-              await base44.entities.Transaction.create(txData);
+              await supabase.from('transactions').insert(txData).select().single();
               addChangelogEntry({ action: 'create', entityType: 'transação', entityName: `(desfeita) ${tx.description}` });
               refetch();
             }}
@@ -192,7 +192,7 @@ export default function Transactions() {
 
   const deleteSeries = async (seriesId) => {
     const seriesTx = transactions.filter(t => t.installmentSeriesId === seriesId);
-    await Promise.all(seriesTx.map(tx => base44.entities.Transaction.delete(tx.id)));
+    await Promise.all(seriesTx.map(tx => supabase.from('transactions').delete().eq('id', tx.id)));
     addChangelogEntry({ action: 'delete', entityType: 'série de parcelas', entityName: `${seriesTx.length} parcelas` });
     refetch();
     toast({ title: 'Série excluída', description: `${seriesTx.length} parcelas removidas` });
@@ -221,7 +221,7 @@ export default function Transactions() {
 
     try {
       // Usando bulk delete se disponível ou loop
-      await Promise.all(selectedIds.map(id => base44.entities.Transaction.delete(id)));
+      await Promise.all(selectedIds.map(id => supabase.from('transactions').delete().eq('id', id)));
       
       addChangelogEntry({ action: 'delete', entityType: 'lote de transações', entityName: `${count} registros` });
       toast({ title: `${count} transações excluídas`, description: 'A operação foi concluída com sucesso.' });
@@ -269,7 +269,7 @@ export default function Transactions() {
       try {
         for (let i = 0; i < deduped.length; i += BATCH_SIZE) {
           const batch = deduped.slice(i, i + BATCH_SIZE);
-          await base44.entities.Transaction.bulkCreate(batch);
+          await supabase.from('transactions').insert(batch);
           imported += batch.length;
           onProgress?.(imported);
         }
@@ -315,7 +315,7 @@ export default function Transactions() {
 
   const handleDuplicate = async (t) => {
     const { id, createdAt, ...rest } = t;
-    await base44.entities.Transaction.create({
+    await supabase.from('transactions').insert({
       ...rest,
       date: new Date().toISOString().split('T')[0],
       isInstallment: false,
@@ -323,7 +323,7 @@ export default function Transactions() {
       installmentCurrent: null,
       installmentSeriesId: null,
       installmentTotalValue: null,
-    });
+    }).select().single();
     addChangelogEntry({ action: 'create', entityType: 'transação', entityName: `(duplicada) ${t.description}` });
     refetch();
   };

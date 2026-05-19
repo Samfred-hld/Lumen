@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getCategories } from '@/lib/categories';
 import { getCustomPaymentMethods, saveCustomPaymentMethods, getTemplates, saveTemplates, addTemplate, deleteTemplate, syncTemplatesToCloud } from '@/lib/store';
-import { base44 } from '@/api/base44Client';
 
 // ═══ Section wrapper ═══
 function Section({ icon: Icon, title, children, actions }) {
@@ -138,7 +137,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
                 </span>
                 <div className="flex gap-1 opacity-0 group-hover/tpl:opacity-100 transition-opacity">
                   <button onClick={() => { setEditingTemplate(t); setShowTemplateModal(true); }} className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="Editar template"><Pencil size={12} /></button>
-                  <button onClick={() => { deleteTemplate(t.id); setTemplates(getTemplates()); syncTemplatesToCloud(base44); }} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir template"><Trash2 size={12} /></button>
+                  <button onClick={() => { deleteTemplate(t.id); setTemplates(getTemplates()); syncTemplatesToCloud(); }} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir template"><Trash2 size={12} /></button>
                 </div>
               </div>
             ))}
@@ -182,7 +181,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
         setTemplates(getTemplates());
         setShowTemplateModal(false);
         setEditingTemplate(null);
-        syncTemplatesToCloud(base44);
+        syncTemplatesToCloud();
       }} template={editingTemplate} />
     </>
   );

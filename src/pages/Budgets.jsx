@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Plus, Trash2, Pencil, ChevronLeft, ChevronRight, TrendingUp, Repeat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -142,22 +142,22 @@ export default function Budgets() {
 
   const handleSave = async (data) => {
     const payload = { ...data, month: monthKey };
-    if (editing) await base44.entities.Budget.update(editing.id, payload);
-    else await base44.entities.Budget.create(payload);
+    if (editing) await supabase.from('budgets').update(payload).eq('id', editing.id);
+    else await supabase.from('budgets').insert(payload).select().single();
     refetch();
     setShowModal(false);
     setEditing(null);
   };
 
   const handleDelete = async (id) => {
-    await base44.entities.Budget.delete(id);
+    await supabase.from('budgets').delete().eq('id', id);
     refetch();
   };
 
   const handleInlineSave = async (budget) => {
     const val = parseFloat(inlineValue);
     if (!isNaN(val) && val > 0) {
-      await base44.entities.Budget.update(budget.id, { limit: val });
+      await supabase.from('budgets').update({ limit: val }).eq('id', budget.id);
       refetch();
     }
     setInlineEditId(null);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus, CreditCard, Settings } from 'lucide-react';
 import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey, getGoalProgress } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
@@ -98,7 +98,7 @@ export default function Dashboard() {
   }, [budgets, currentYear, currentMonth]);
 
   const handleSave = async (data) => {
-    await base44.entities.Transaction.create(data);
+    await supabase.from('transactions').insert(data).select().single();
     refetchTx();
     setShowModal(false);
   };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { ChevronLeft, ChevronRight, Plus, X, CreditCard, Calendar, Download, Pencil, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -136,15 +136,15 @@ export default function CalendarPage() {
 
   const handleDeleteTx = async (id) => {
     if (!confirm('Excluir esta transação?')) return;
-    await base44.entities.Transaction.delete(id);
+    await supabase.from('transactions').delete().eq('id', id);
     refetch();
   };
 
   const handleSaveTx = async (data) => {
     if (editingTx) {
-      await base44.entities.Transaction.update(editingTx.id, data);
+      await supabase.from('transactions').update(data).eq('id', editingTx.id);
     } else {
-      await base44.entities.Transaction.create({ ...data, date: newTxDate || data.date });
+      await supabase.from('transactions').insert({ ...data, date: newTxDate || data.date }).select().single();
     }
     refetch();
     setEditingTx(null);

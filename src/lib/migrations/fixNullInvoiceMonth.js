@@ -9,7 +9,7 @@
 // 2. Cole: await window.__fixNullInvoiceMonth()
 // 3. Aguarde a conclusão — vai mostrar quantas transações foram atualizadas
 
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { getCards } from '@/lib/store/cards';
 import { getInvoiceMonth } from '@/lib/csvParser';
 
@@ -39,7 +39,8 @@ export async function fixNullInvoiceMonth() {
   // Fetch all transactions (up to 5000)
   let allTx = [];
   try {
-    allTx = await base44.entities.Transaction.list('-date', 5000);
+    const { data: txData } = await supabase.from('transactions').select('*').order('date', { ascending: false }).limit(5000);
+    allTx = txData;
   } catch (err) {
     console.error('[Migration] Erro ao buscar transações:', err);
     return { updated: 0, skipped: 0, errors: [err.message] };
@@ -103,7 +104,7 @@ export async function fixNullInvoiceMonth() {
     const batch = toUpdate.slice(i, i + BATCH_SIZE);
     for (const { id, patch } of batch) {
       try {
-        await base44.entities.Transaction.update(id, patch);
+        await supabase.from('transactions').update(patch).eq('id', id);
         updated++;
       } catch (err) {
         errors.push(`ID ${id}: ${err.message}`);

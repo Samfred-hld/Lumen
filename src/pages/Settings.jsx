@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
 import {
   Moon, Sun, Check, AlertCircle
 } from 'lucide-react';

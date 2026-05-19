@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Plus, Trash2, Pencil, Target, CheckCircle2, Clock, AlertTriangle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -392,22 +392,22 @@ export default function Goals() {
   const { data: transactions = [], refetch: refetchTx } = useTransactions(500);
 
   const handleSave = async (data) => {
-    if (editing) await base44.entities.Goal.update(editing.id, data);
-    else await base44.entities.Goal.create(data);
+    if (editing) await supabase.from('goals').update(data).eq('id', editing.id);
+    else await supabase.from('goals').insert(data).select().single();
     refetch();
     setShowModal(false);
     setEditing(null);
   };
 
   const handleDelete = async (id) => {
-    await base44.entities.Goal.delete(id);
+    await supabase.from('goals').delete().eq('id', id);
     refetch();
   };
 
   const handleDeposit = async (amount) => {
     const goal = depositGoal;
     const current = getGoalProgress(goal, transactions);
-    await base44.entities.Goal.update(goal.id, { currentValue: current + amount });
+    await supabase.from('goals').update({ currentValue: current + amount }).eq('id', goal.id);
     refetch();
     setDepositGoal(null);
   };

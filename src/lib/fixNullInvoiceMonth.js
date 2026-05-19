@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════
 // One-time utility to correct transactions imported without invoiceMonth/cardId.
 
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { getInvoiceMonth } from '@/lib/csvParser';
 import { getCards } from '@/lib/store';
 
@@ -13,7 +13,7 @@ import { getCards } from '@/lib/store';
  * @returns {{ fixed: number, skipped: number, needsReview: object[] }}
  */
 export async function fixNullInvoiceMonth(onProgress) {
-  const transactions = await base44.entities.Transaction.list('-date', 5000);
+  const { data: transactions } = await supabase.from('transactions').select('*').order('date', { ascending: false }).limit(5000);
   const cards = getCards();
 
   const toFix = transactions.filter(t => !t.invoiceMonth);
@@ -45,7 +45,7 @@ export async function fixNullInvoiceMonth(onProgress) {
       continue;
     }
 
-    await base44.entities.Transaction.update(t.id, { invoiceMonth, cardId });
+    await supabase.from('transactions').update({ invoiceMonth, cardId }).eq('id', t.id);
     fixed++;
   }
 
