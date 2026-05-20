@@ -288,11 +288,11 @@ Several P0/P1 features are missing that limit the app's value. Users cannot mana
 **Plans:** 5 plans
 
 Plans:
-- [x] 02-01-PLAN.md — Icon migration: create iconMap.js + migrate 22 custom files from lucide-react to MsIcon
-- [x] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
-- [x] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
-- [x] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
-- [x] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
+- [ ] 03-01-PLAN.md — Enhanced global search (all entities) + Goal timeline visualization
+- [ ] 03-02-PLAN.md — Budget comparison dashboard with sparklines
+- [ ] 03-03-PLAN.md — Investment tracking v1 (portfolio page with allocation pie chart)
+- [ ] 03-04-PLAN.md — Notification preferences + Bill reminders + Dashboard insights
+- [ ] 03-05-PLAN.md — Recurring transactions page + Route/navigation wiring
 **UI hint:** yes
 
 ---
@@ -344,7 +344,7 @@ The app is fully online-dependent — if Base44 is unreachable, the app shows an
 | 0. Base44 → Supabase | 9/9 | ✓ Complete | 2026-05-19 |
 | 1. Foundation Hardening | 4/4 | ✓ Complete | 2026-05-19 |
 | 2. UI Consolidation | 0/5 | Plans created | - |
-| 3. Feature Gaps | 0/7 | Not started | - |
+| 3. Feature Gaps | 0/5 | Plans created | - |
 | 4. Polish & Platform | 0/6 | Not started | - |
 
 ---
