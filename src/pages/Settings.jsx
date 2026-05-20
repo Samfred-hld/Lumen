@@ -15,6 +15,7 @@ import { useCards, useTransactions, useBudgets, useGoals } from '@/hooks/useData
 import TabPersonalizacao from '@/components/settings/TabPersonalizacao';
 import TabAutomacao from '@/components/settings/TabAutomacao';
 import TabDados from '@/components/settings/TabDados';
+import TabNotificacoes from '@/components/settings/TabNotificacoes';
 import MsIcon from '@/components/ui/ms-icon';
 
 // ═══ Card Modal ═══
@@ -145,6 +146,7 @@ export default function SettingsPage() {
   const TABS = [
     { id: 'personalizacao', label: 'Personalização', icon: 'palette' },
     { id: 'automacao', label: 'Automação', icon: 'bolt' },
+    { id: 'notificacoes', label: 'Notificações', icon: 'notifications' },
     { id: 'backup', label: 'Backup & Dados', icon: 'save' },
   ];
 
@@ -226,6 +228,8 @@ export default function SettingsPage() {
           onNewRule={() => setShowRuleModal(true)}
         />
       )}
+
+      {activeTab === 'notificacoes' && <TabNotificacoes />}
 
       {activeTab === 'backup' && (
         <TabDados
