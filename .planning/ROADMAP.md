@@ -46,7 +46,7 @@ Lúmen is a **production financial management app** for Brazilian users with:
 
 ## Phases
 
-- [ ] **Phase 0: Base44 → Supabase Migration** — Replace Base44 BaaS with Supabase (auth, database, real-time, edge functions)
+- [x] **Phase 0: Base44 → Supabase Migration** — Replace Base44 BaaS with Supabase (auth, database, real-time, edge functions)
 - [ ] **Phase 1: Foundation Hardening** — Tests, TypeScript strict mode, linting, CI safeguards, monitoring
 - [ ] **Phase 2: UI Consolidation** — Unify design system, consolidate duplicated components, fix UI-REVIEW issues
 - [ ] **Phase 3: Feature Gaps** — Investment tracking, recurring transactions UI, budget comparison, search, notifications
@@ -187,7 +187,13 @@ This phase addresses the highest-risk technical debt. The app is in production w
 4. Error boundary captures crash metadata (component name, error message, stack trace) and logs it in structured format
 5. Bot commit activity is visible via `npm run bot:diff` — developer can inspect what changed since last review
 
-**Plans:** 7 (TBD)
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Install Vitest + Testing Library, write ≥30 unit tests for financeUtils.js
+- [ ] 01-02-PLAN.md — Write unit tests for csvParser.js helpers (encoding, parsing, date/amount normalization)
+- [ ] 01-03-PLAN.md — Enable TypeScript strict mode, convert financeUtils + categories to .ts, fix ESLint coverage
+- [ ] 01-04-PLAN.md — CI guardrails (bot:diff, audit, build:check) and error boundary [CRASH] logging
 
 ---
 
@@ -321,8 +327,8 @@ The app is fully online-dependent — if Base44 is unreachable, the app shows an
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Base44 → Supabase | 0/9 | Not started | - |
-| 1. Foundation Hardening | 0/7 | Not started | - |
+| 0. Base44 → Supabase | 9/9 | ✓ Complete | 2026-05-19 |
+| 1. Foundation Hardening | 0/4 | Not started | - |
 | 2. UI Consolidation | 0/7 | Not started | - |
 | 3. Feature Gaps | 0/7 | Not started | - |
 | 4. Polish & Platform | 0/6 | Not started | - |
