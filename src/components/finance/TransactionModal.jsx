@@ -254,7 +254,6 @@ export default function TransactionModal({ open, onClose, onSave, transaction, g
       title={transaction ? 'Editar Transação' : 'Nova Transação'}
     >
 
-    >
       <div className="space-y-md">
         <h3 className="font-title text-title flex items-center gap-2 mb-2">
           <MsIcon name="edit_note" size={20} />
