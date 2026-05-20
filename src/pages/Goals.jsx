@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AdaptiveModal } from '@/components/ui/adaptive-modal';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import GoalCard from '@/components/finance/GoalCard';
 import { formatCurrency, formatDate, getGoalProgress, clampDateInput } from '@/lib/financeUtils';
 import { cn } from '@/lib/utils';
 import { useTransactions, useGoals } from '@/hooks/useData';
@@ -208,97 +208,6 @@ function GoalModal({ open, onClose, onSave, goal }) {
   );
 }
 
-function calcMonthsToGoal(goal) {
-  const remaining = (goal.targetValue || 0) - (goal.currentValue || 0);
-  if (remaining <= 0) return null;
-  const avgMonthly = goal.targetValue / 12;
-  return Math.ceil(remaining / avgMonthly);
-}
-
-function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }) {
-  const current = getGoalProgress(goal, transactions);
-  const pct = Math.min(100, goal.targetValue > 0 ? (current / goal.targetValue) * 100 : 0);
-  const done = pct >= 100;
-  const today = new Date().toISOString().split('T')[0];
-  const overdue = goal.deadline && goal.deadline < today && !done;
-  const daysLeft = goal.deadline ? Math.ceil((new Date(goal.deadline) - new Date()) / 86400000) : null;
-
-  return (
-    <Card className="border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300 overflow-hidden group">
-      <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${goal.color || '#10b981'}, ${goal.color || '#10b981'}88)` }} />
-      <CardContent className="p-4 space-y-3">
-        <div className="flex items-start justify-between flex-wrap gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-sm truncate">{goal.name}</h3>
-              <Badge variant="outline" className="text-[10px] py-0 px-1.5 shrink-0">
-                {(goal.progressMode || 'linked') === 'manual' ? 'manual' : 'automático'}
-              </Badge>
-              {done && <MsIcon name="check_circle" size={14} className="text-emerald-500 shrink-0" />}
-              {overdue && !done && <MsIcon name="warning" size={14} className="text-red-500 shrink-0" />}
-            </div>
-            {goal.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{goal.description}</p>}
-          </div>
-          <div className="flex gap-1 shrink-0 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={() => onEdit(goal)} className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="Editar meta"><MsIcon name="edit" size={12} /></button>
-            <button onClick={() => onDelete(goal.id)} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir meta"><MsIcon name="delete" size={12} /></button>
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div>
-          <div className="flex justify-between text-sm mb-1.5">
-            <span className="font-bold tabular-nums" style={{ color: goal.color }}>{formatCurrency(current)}</span>
-            <span className="text-muted-foreground tabular-nums">{formatCurrency(goal.targetValue)}</span>
-          </div>
-          <div className="h-2.5 bg-muted rounded-full overflow-hidden progress-animated">
-            <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${goal.color || '#10b981'}, ${goal.color || '#10b981'}cc)` }} />
-          </div>
-          <div className="flex justify-between mt-1.5">
-            <span className="text-xs font-bold" style={{ color: goal.color }}>{pct.toFixed(1)}%</span>
-            {daysLeft !== null && (
-              <span className={cn("text-xs flex items-center gap-1 font-medium", overdue ? 'text-red-500' : 'text-muted-foreground')}>
-                <MsIcon name="schedule" size={10} />
-                {done ? 'Concluída' : overdue ? `Atrasada ${Math.abs(daysLeft)}d` : `${daysLeft}d restantes`}
-              </span>
-            )}
-          </div>
-          {!done && (() => {
-            const months = calcMonthsToGoal(goal);
-            if (!months) return null;
-            return (
-              <p className="text-[10px] text-muted-foreground text-center mt-1">
-                <MsIcon name="trending_up" size={14} className="align-middle mr-1" />Projecao: ~{months} mes(es) para concluir
-              </p>
-            );
-          })()}
-        </div>
-
-        {!done && (
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onDeposit(goal)}
-              title="Registra manualmente o valor alocado para esta meta. Nao movimenta sua conta automaticamente."
-              className="flex-1 text-xs h-8 rounded hover:bg-primary hover:text-primary-foreground transition-colors"
-            >
-              <MsIcon name="add" size={12} className="mr-1" /> Registrar progresso
-            </Button>
-            <Button size="sm" variant="outline" className="h-8 rounded text-xs" onClick={() => onHistory(goal)}>
-              <MsIcon name="history" size={12} />
-            </Button>
-          </div>
-        )}
-        {done && (
-          <Button size="sm" variant="outline" className="w-full text-xs h-8 rounded" onClick={() => onHistory(goal)}>
-            <MsIcon name="history" size={12} className="mr-1" /> Histórico
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 function DepositModal({ open, onClose, onSave, goal }) {
   const [value, setValue] = useState('');
@@ -345,14 +254,14 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
     >
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <Card className="border-0 shadow-sm"><CardContent className="p-3">
+          <div className="bg-surface border border-surface-border p-card-padding">
             <p className="text-[10px] text-muted-foreground uppercase font-semibold">Total Entradas</p>
             <p className="text-lg font-bold text-emerald-600 tabular-nums">{formatCurrency(totalIn)}</p>
-          </CardContent></Card>
-          <Card className="border-0 shadow-sm"><CardContent className="p-3">
+          </div>
+          <div className="bg-surface border border-surface-border p-card-padding">
             <p className="text-[10px] text-muted-foreground uppercase font-semibold">Total Saídas</p>
             <p className="text-lg font-bold text-red-500 tabular-nums">{formatCurrency(totalOut)}</p>
-          </CardContent></Card>
+          </div>
         </div>
 
         {goalTx.length === 0 ? (
@@ -428,26 +337,24 @@ export default function Goals() {
 
       {goals.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Card className="border-0 shadow-sm"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Acumulado</p><p className="text-xl font-bold text-emerald-600 mt-1">{formatCurrency(totalCurrent)}</p></CardContent></Card>
-          <Card className="border-0 shadow-sm"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total de Metas</p><p className="text-xl font-bold mt-1">{formatCurrency(totalTarget)}</p></CardContent></Card>
+          <div className="bg-surface border border-surface-border p-card-padding"><p className="text-xs text-muted-foreground">Total Acumulado</p><p className="text-xl font-bold text-emerald-600 mt-1">{formatCurrency(totalCurrent)}</p></div>
+          <div className="bg-surface border border-surface-border p-card-padding"><p className="text-xs text-muted-foreground">Total de Metas</p><p className="text-xl font-bold mt-1">{formatCurrency(totalTarget)}</p></div>
         </div>
       )}
 
       {goals.length === 0 ? (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-10 text-center">
-            <MsIcon name="flag" size={32} className="mx-auto text-muted-foreground mb-3" />
-            <p className="text-muted-foreground text-sm">Nenhuma meta cadastrada</p>
-            <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeira meta</Button>
-          </CardContent>
-        </Card>
+        <div className="bg-surface border border-surface-border p-xl text-center">
+          <MsIcon name="flag" size={32} className="mx-auto text-muted-foreground mb-3" />
+          <p className="text-muted-foreground text-sm">Nenhuma meta cadastrada</p>
+          <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeira meta</Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {goals.map(g => (
             <GoalCard
               key={g.id}
               goal={g}
-              transactions={transactions}
+              currentProgress={getGoalProgress(g, transactions)}
               onEdit={g => { setEditing(g); setShowModal(true); }}
               onDelete={handleDelete}
               onDeposit={g => setDepositGoal(g)}

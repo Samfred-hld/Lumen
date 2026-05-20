@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import MsIcon from '@/components/ui/ms-icon';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -222,8 +221,7 @@ export default function CalendarPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Calendar grid */}
         <div className="lg:col-span-2">
-          <Card className="border-0 shadow-card overflow-hidden">
-            <CardContent className="p-3 sm:p-4">
+          <div className="bg-surface border border-surface-border p-card-padding overflow-hidden">
               {/* Day headers */}
               <div className="grid grid-cols-7 mb-2">
                 {DAY_NAMES.map(d => (
@@ -301,24 +299,23 @@ export default function CalendarPage() {
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
+          </div>
         </div>
 
         {/* Day detail panel — desktop only */}
         <div className="hidden lg:block space-y-3">
           {selectedDay ? (
-            <Card className="border-0 shadow-card overflow-hidden">
-              <CardHeader className="pb-2">
+            <div className="bg-surface border border-surface-border p-card-padding overflow-hidden">
+              <div className="mb-md">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
+                  <h3 className="font-headline text-headline">
                     {selectedDay} de {MONTH_NAMES[currentMonth]}
                     {selectedDayTx.length > 0 && (
                       <span className="text-xs font-normal text-muted-foreground ml-2">
                         ({selectedDayTx.length} transação{selectedDayTx.length > 1 ? 'ões' : 'ão'})
                       </span>
                     )}
-                  </CardTitle>
+                  </h3>
                   <div className="flex gap-1">
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => handleAddOnDay(selectedDay)}>
                       <MsIcon name="add" size={12} className="mr-1" /> Novo
@@ -328,8 +325,8 @@ export default function CalendarPage() {
                     </button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-3">
+              </div>
+              <div className="pt-0 space-y-3">
                 {/* Card events */}
                 {selectedDayCardEvents.length > 0 && (
                   <div className="space-y-1.5">
@@ -433,20 +430,17 @@ export default function CalendarPage() {
                     </div>
                   </>
                 ) : null}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ) : (
-            <Card className="border-0 shadow-card">
-              <CardContent className="p-6 text-center text-muted-foreground">
-                <MsIcon name="calendar_month" size={24} className="mx-auto mb-2 opacity-40" />
-                <p className="text-sm">Clique em um dia para ver os lançamentos</p>
-              </CardContent>
-            </Card>
+            <div className="bg-surface border border-surface-border p-xl text-center text-muted-foreground">
+              <MsIcon name="calendar_month" size={24} className="mx-auto mb-2 opacity-40" />
+              <p className="text-sm">Clique em um dia para ver os lançamentos</p>
+            </div>
           )}
 
           {/* Month summary */}
-          <Card className="border-0 shadow-card overflow-hidden">
-            <CardContent className="p-4 space-y-2">
+          <div className="bg-surface border border-surface-border p-card-padding space-y-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Resumo do Mês</p>
               <div className="flex justify-between text-sm">
                 <span>Receitas</span>
@@ -504,8 +498,7 @@ export default function CalendarPage() {
                   </div>
                 );
               })()}
-            </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
 
@@ -535,7 +528,7 @@ export default function CalendarPage() {
                         evt.type === 'closing' ? 'bg-blue-50 border-blue-200 text-blue-800' : 'bg-amber-50 border-amber-200 text-amber-800'
                       )}
                     >
-                      <CreditCard size={14} />
+                      <MsIcon name="credit_card" size={14} />
                       <div className="flex-1">
                         <span className="font-semibold">{evt.card.name}</span>
                         <span className="ml-1 opacity-70">
@@ -622,7 +615,7 @@ export default function CalendarPage() {
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <CreditCard size={18} />
+              <MsIcon name="credit_card" size={18} />
               {cardStatementCard?.name} — Fatura
             </DialogTitle>
           </DialogHeader>

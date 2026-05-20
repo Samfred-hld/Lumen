@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdaptiveModal } from '@/components/ui/adaptive-modal';
-import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency, filterByMonth, getMonthKey } from '@/lib/financeUtils';
 import { DEFAULT_CATEGORIES, MONTH_NAMES, CAT_COLORS } from '@/lib/categories';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -192,21 +191,19 @@ export default function Budgets() {
       {/* Summary */}
       {monthBudgets.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-fade-in">
-          <Card className="border-0 shadow-card gradient-blue"><CardContent className="p-4"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Orçamento Total</p><p className="text-xl font-bold mt-1 tabular-nums">{formatCurrency(totalLimit)}</p></CardContent></Card>
-          <Card className="border-0 shadow-card gradient-red"><CardContent className="p-4"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total Gasto</p><p className="text-xl font-bold mt-1 text-red-500 tabular-nums">{formatCurrency(totalSpent)}</p></CardContent></Card>
-          <Card className="border-0 shadow-card gradient-emerald"><CardContent className="p-4"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Disponível</p><p className={cn("text-xl font-bold mt-1 tabular-nums", totalLimit - totalSpent >= 0 ? 'text-emerald-600' : 'text-red-500')}>{formatCurrency(totalLimit - totalSpent)}</p></CardContent></Card>
+          <div className="bg-surface border border-surface-border p-card-padding gradient-blue"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Orçamento Total</p><p className="text-xl font-bold mt-1 tabular-nums">{formatCurrency(totalLimit)}</p></div>
+          <div className="bg-surface border border-surface-border p-card-padding gradient-red"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total Gasto</p><p className="text-xl font-bold mt-1 text-red-500 tabular-nums">{formatCurrency(totalSpent)}</p></div>
+          <div className="bg-surface border border-surface-border p-card-padding gradient-emerald"><p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Disponível</p><p className={cn("text-xl font-bold mt-1 tabular-nums", totalLimit - totalSpent >= 0 ? 'text-emerald-600' : 'text-red-500')}>{formatCurrency(totalLimit - totalSpent)}</p></div>
         </div>
       )}
 
       {/* Budget cards */}
       {monthBudgets.length === 0 ? (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-10 text-center">
-            <MsIcon name="trending_up" size={32} className="mx-auto text-muted-foreground mb-3" />
-            <p className="text-muted-foreground text-sm">Nenhum orçamento para este mês</p>
-            <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeiro orçamento</Button>
-          </CardContent>
-        </Card>
+        <div className="bg-surface border border-surface-border p-xl text-center">
+          <MsIcon name="trending_up" size={32} className="mx-auto text-muted-foreground mb-3" />
+          <p className="text-muted-foreground text-sm">Nenhum orçamento para este mês</p>
+          <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeiro orçamento</Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {monthBudgets.map(b => {
@@ -219,62 +216,60 @@ export default function Budgets() {
             const color = CAT_COLORS[b.category] || '#94a3b8';
 
             return (
-              <Card key={b.id} className="border-0 shadow-card hover:shadow-card-hover transition-shadow duration-300 overflow-hidden">
-                <div className="h-1" style={{ background: color }} />
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: color }} />
-                      <span className="font-semibold text-sm">{b.category}</span>
-                      {b.isRecurring && <MsIcon name="repeat" size={11} className="text-muted-foreground shrink-0" />}
-                    </div>
-                    <div className="flex gap-1 opacity-60 hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }} className="p-1.5 hover:bg-muted rounded" aria-label="Editar limite"><MsIcon name="edit" size={12} /></button>
-                      <button onClick={() => handleDelete(b.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" aria-label="Excluir orçamento"><MsIcon name="delete" size={12} /></button>
-                    </div>
+              <div key={b.id} className="bg-surface border border-surface-border p-card-padding relative group hover:shadow-lg transition-shadow overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[3px]" style={{ background: color }} />
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: color }} />
+                    <span className="font-semibold text-sm">{b.category}</span>
+                    {b.isRecurring && <MsIcon name="repeat" size={11} className="text-muted-foreground shrink-0" />}
                   </div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className={cn("font-bold tabular-nums", over ? 'text-red-500' : warn ? 'text-amber-600' : 'text-foreground')}>
-                      {formatCurrency(spent)}
-                    </span>
-                    {inlineEditId === b.id ? (
-                      <Input
-                        type="number"
-                        value={inlineValue}
-                        onChange={e => setInlineValue(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter') handleInlineSave(b); if (e.key === 'Escape') { setInlineEditId(null); setInlineValue(''); } }}
-                        onBlur={() => handleInlineSave(b)}
-                        className="h-6 w-24 text-right text-sm font-semibold tabular-nums px-1"
-                        autoFocus
-                        min="0"
-                        step="0.01"
-                      />
-                    ) : (
-                      <span
-                        className="text-muted-foreground tabular-nums cursor-pointer hover:text-foreground transition-colors"
-                        onDoubleClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }}
-                        title="Duplo-clique para editar"
-                      >
-                        {formatCurrency(b.limit)}
-                      </span>
-                    )}
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }} className="p-1.5 hover:bg-muted rounded" aria-label="Editar limite"><MsIcon name="edit" size={12} /></button>
+                    <button onClick={() => handleDelete(b.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" aria-label="Excluir orçamento"><MsIcon name="delete" size={12} /></button>
                   </div>
-                  <div className="h-2.5 bg-muted rounded-full overflow-hidden progress-animated">
-                    <div
-                      className={cn("h-full rounded-full transition-all duration-700 ease-out", over ? 'bg-red-500' : warn ? 'bg-amber-500' : 'bg-emerald-500')}
-                      style={{ width: `${pct}%` }}
+                </div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className={cn("font-bold tabular-nums", over ? 'text-red-500' : warn ? 'text-amber-600' : 'text-foreground')}>
+                    {formatCurrency(spent)}
+                  </span>
+                  {inlineEditId === b.id ? (
+                    <Input
+                      type="number"
+                      value={inlineValue}
+                      onChange={e => setInlineValue(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleInlineSave(b); if (e.key === 'Escape') { setInlineEditId(null); setInlineValue(''); } }}
+                      onBlur={() => handleInlineSave(b)}
+                      className="h-6 w-24 text-right text-sm font-semibold tabular-nums px-1"
+                      autoFocus
+                      min="0"
+                      step="0.01"
                     />
-                  </div>
-                  <div className="flex justify-between mt-2">
-                    <span className={cn("text-xs font-semibold", over ? 'text-red-500' : warn ? 'text-amber-600' : 'text-muted-foreground')}>
-                      {over ? `Excedeu ${formatCurrency(spent - b.limit)}` : `${pct.toFixed(0)}% usado`}
+                  ) : (
+                    <span
+                      className="text-muted-foreground tabular-nums cursor-pointer hover:text-foreground transition-colors"
+                      onDoubleClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }}
+                      title="Duplo-clique para editar"
+                    >
+                      {formatCurrency(b.limit)}
                     </span>
-                    <span className="text-xs text-muted-foreground tabular-nums">
-                      Restam {formatCurrency(Math.max(0, b.limit - spent))}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+                  )}
+                </div>
+                <div className="h-2.5 bg-muted rounded-full overflow-hidden progress-animated">
+                  <div
+                    className={cn("h-full rounded-full transition-all duration-700 ease-out", over ? 'bg-red-500' : warn ? 'bg-amber-500' : 'bg-emerald-500')}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <div className="flex justify-between mt-2">
+                  <span className={cn("text-xs font-semibold", over ? 'text-red-500' : warn ? 'text-amber-600' : 'text-muted-foreground')}>
+                    {over ? `Excedeu ${formatCurrency(spent - b.limit)}` : `${pct.toFixed(0)}% usado`}
+                  </span>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    Restam {formatCurrency(Math.max(0, b.limit - spent))}
+                  </span>
+                </div>
+              </div>
             );
           })}
         </div>
