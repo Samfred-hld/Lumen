@@ -29,20 +29,24 @@ created: 2026-05-19
 
 ## Spacing Scale
 
-Declared values (must be multiples of 4):
+Standard set: {4, 8, 16, 24, 32, 48, 64} — all values must be multiples of 4.
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| xs | 4px | Icon gaps, inline padding, compact element spacing |
-| base | 8px | Default element spacing, vertical rhythm |
-| sm | 12px | Tight element grouping, pill padding |
-| md | 16px | Standard section gaps, card internal spacing |
-| lg | 24px | Page horizontal padding (`px-lg`), section padding |
-| xl | 40px | Page vertical padding (`py-xl`), major section breaks |
+| Token | Value | Usage | Standard? |
+|-------|-------|-------|-----------|
+| xs | 4px | Icon gaps, inline padding, compact element spacing | Yes |
+| base | 8px | Default element spacing, vertical rhythm | Yes |
+| sm | 12px | Tight element grouping, pill padding | Exception* |
+| md | 16px | Standard section gaps, card internal spacing | Yes |
+| lg | 24px | Page horizontal padding (`px-lg`), section padding | Yes |
+| xl | 40px | Page vertical padding (`py-xl`), major section breaks | Exception* |
 
 **Source:** Pre-populated from `tailwind.config.js` spacing tokens and CONTEXT.md decision D-03.
 
-Exceptions: `card-padding: 20px` used for card internal padding (not a standard scale value but already established). `mobile-nav-height: 64px`, `mobile-header-height: 56px`, `sidebar-width: 264px` are layout constants, not content spacing.
+**Exceptions justified:**
+- `sm` (12px): Needed for pill/badge internal padding where 8px is too tight and 16px too loose. Already established in existing UI.
+- `xl` (40px): CONTEXT.md decision D-03 mandates `py-xl` for all page vertical padding. 40px provides the breathing room the Swiss editorial aesthetic requires; 32px is too tight, 48px too generous.
+
+Other exceptions: `card-padding: 20px` (established card internal constant). `mobile-nav-height: 64px`, `mobile-header-height: 56px`, `sidebar-width: 264px` are layout constants, not content spacing.
 
 ---
 
@@ -50,17 +54,19 @@ Exceptions: `card-padding: 20px` used for card internal padding (not a standard 
 
 | Role | Size | Weight | Line Height | Token |
 |------|------|--------|-------------|-------|
-| Display | 22px | 700 | 1.2 | `display-sm` |
+| Display | 22px | 600 | 1.2 | `display-sm` |
 | Heading | 18px | 600 | 1.56 (28px) | `headline` |
 | Body | 14px | 400 | 1.43 (20px) | `body-lg` |
 | Label | 11px | 600 | 1.45 (16px) | `label-caps` |
 
 **Source:** Pre-populated from `tailwind.config.js` fontSize tokens. These 4 roles cover all UI text in the phase.
 
+**Font weights:** 2 weights only — 400 (body) and 600 (display, headings, labels). Weight 700 dropped; `title` token uses 600 instead.
+
 Additional tokens available but not primary roles:
-- `title` (14px/700) — used for card titles, same size as body but bold
+- `title` (14px/600) — used for card titles, same size as body but semibold
 - `body-sm` (12px/400) — used for secondary metadata, delta labels
-- `display-hero`/`display` (60px/700) — reserved for splash/hero sections, not used in phase 02
+- `display-hero`/`display` (60px/600) — reserved for splash/hero sections, not used in phase 02
 
 ---
 
@@ -137,6 +143,17 @@ All user-facing text in Brazilian Portuguese (pt-BR).
 ### Vendor Components (DO NOT MODIFY)
 
 All files in `src/components/ui/` that are shadcn vendor code (accordion, alert-dialog, button, calendar, checkbox, command, dialog, dropdown-menu, etc.) keep their internal lucide-react imports. Decision D-08/D-13.
+
+---
+
+## Visual Hierarchy
+
+**Primary focal point (Dashboard):** The 4 KPI cards (Entradas, Saídas, Balanço, Investimentos) are the primary visual anchor. The eye should land there first — they occupy the top section with `HeroBalance` above and category/charts below. Skeleton shapes mirror this priority.
+
+**Secondary focal points:**
+- Transactions: KPI row at top, then transaction list
+- Reports: Chart areas dominate, stat cards supplement
+- Budgets/Goals: Card grid is the primary content area
 
 ---
 
@@ -236,6 +253,7 @@ No third-party registries declared for this phase. No vetting gate required.
 - Position: `fixed bottom-24 right-6`
 - z-index: `var(--z-sidebar)` (50)
 - Styling: `bg-primary text-primary-foreground` (teal)
+- Accessibility: `aria-label="Nova transação"` for screen readers (icon-only on mobile)
 
 ### Skeleton Display Logic (D-12)
 
@@ -250,11 +268,11 @@ if (data)               → show data
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS (focal point declared, FAB aria-label added)
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS (2 weights: 400 + 600)
+- [x] Dimension 5 Spacing: PASS (exceptions justified: 12px, 40px)
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** APPROVED (fixes applied for typography weight count + spacing justification)
