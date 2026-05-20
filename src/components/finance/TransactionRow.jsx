@@ -70,13 +70,13 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
           {valuePrefix}{formatCurrency(t.value)}
         </div>
         <div className="col-span-1 hidden lg:flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={(e) => { e.stopPropagation(); onDuplicate(t); }} className="p-1 hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Duplicar">
+          <button onClick={(e) => { e.stopPropagation(); onDuplicate(t); }} className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Duplicar">
             <MsIcon name="content_copy" size={14} />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); onEdit(t); }} className="p-1 hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Editar">
+          <button onClick={(e) => { e.stopPropagation(); onEdit(t); }} className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Editar">
             <MsIcon name="edit" size={14} />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); onDelete(t.id); }} className="p-1 hover:bg-error-container rounded text-danger transition-colors" title="Excluir">
+          <button onClick={(e) => { e.stopPropagation(); onDelete(t.id); }} className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-container rounded text-danger transition-colors" title="Excluir">
             <MsIcon name="delete" size={14} />
           </button>
         </div>
