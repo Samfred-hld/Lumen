@@ -25,7 +25,6 @@ export default function Planejamento() {
   const [showBudgetManager, setShowBudgetManager] = useState(false);
   const [budgetValues, setBudgetValues] = useState({});
   const [newCategory, setNewCategory] = useState('');
-  const [editingBudget, setEditingBudget] = useState(null);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [depositGoal, setDepositGoal] = useState(null);
@@ -105,7 +104,7 @@ export default function Planejamento() {
             <div className="bg-surface border border-surface-border p-xl text-center"><MsIcon name="account_balance" size={40} className="text-muted-foreground mx-auto mb-md" /><p className="text-muted-foreground text-sm mb-md">Nenhum orcamento para este mes</p><Button size="sm" onClick={openBudgetManager}><MsIcon name="add" size={14} className="mr-1" /> Gerenciar orcamentos</Button></div>
           ) : !showBudgetManager && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-              {monthBudgets.map(b => { const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + (t.value || 0), 0); return <BudgetCard key={b.id} budget={b} spent={spent} onEdit={(budget) => { setEditingBudget(budget); openBudgetManager(); }} onDelete={async (id) => { await supabase.from('budgets').delete().eq('id', id); refetchBudgets(); }} />; })}
+              {monthBudgets.map(b => { const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + (t.value || 0), 0); return <BudgetCard key={b.id} budget={b} spent={spent} onEdit={() => openBudgetManager()} onDelete={async (id) => { await supabase.from('budgets').delete().eq('id', id); refetchBudgets(); }} />; })}
             </div>
           )}
         </div>
