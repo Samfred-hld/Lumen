@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Download } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import MsIcon from '@/components/ui/ms-icon';
 import { formatCurrency, groupByCategory, calcTotals, getLast6Months, getMonthKey, toMonthKey } from '@/lib/financeUtils';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import {
@@ -206,7 +205,7 @@ export default function Reports() {
             a.download = `lumen_relatorio_${new Date().toISOString().split('T')[0]}.csv`;
             a.click(); URL.revokeObjectURL(url);
           }}>
-            <FileText size={12} className="mr-1" /> CSV
+            <MsIcon name="description" size={12} className="mr-1" /> CSV
           </Button>
           <Button variant="outline" size="sm" className="h-9 text-xs" disabled={isExporting} onClick={async () => {
             if (!reportRef.current) return;
@@ -284,7 +283,7 @@ export default function Reports() {
               setIsExporting(false);
             }
           }}>
-            <Download size={12} className={cn("mr-1", isExporting && "animate-spin")} />
+            <MsIcon name="download" size={12} className={cn("mr-1", isExporting && "animate-spin")} />
             {isExporting ? 'Gerando...' : 'Exportar PDF'}
           </Button>
         </div>

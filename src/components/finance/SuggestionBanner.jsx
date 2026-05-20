@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lightbulb, DollarSign, FileText, CreditCard, X } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { getSalaryConfig, getTemplates, getFinancings, getSuggestionsLog, setSuggestionApplied } from '@/lib/store';
 import { getMonthKey } from '@/lib/financeUtils';
 
@@ -108,7 +108,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
     <div className="bg-amber-50 border border-amber-200 rounded px-4 py-3.5 flex items-center justify-between gap-4 flex-wrap animate-fade-in">
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 rounded bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
-          <Lightbulb size={16} className="text-amber-600" />
+          <MsIcon name="lightbulb" size={16} className="text-amber-600" />
         </div>
         <div>
           <p className="text-sm font-bold text-amber-900">Sugestões do mês</p>
@@ -123,7 +123,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
             onClick={applySalary}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors shadow-sm"
           >
-            <DollarSign size={12} />
+            <MsIcon name="attach_money" size={12} />
             Salário ({formatCurrency(salaryConfig.value)})
           </button>
         )}
@@ -132,7 +132,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
             onClick={applyFixedTemplates}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors shadow-sm"
           >
-            <FileText size={12} />
+            <MsIcon name="description" size={12} />
             Despesas Fixas
           </button>
         )}
@@ -141,7 +141,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
             onClick={applyFinancings}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors shadow-sm"
           >
-            <CreditCard size={12} />
+            <MsIcon name="credit_card" size={12} />
             Financiamento
           </button>
         )}
@@ -150,7 +150,7 @@ export default function SuggestionBanner({ currentMonth, currentYear, transactio
           className="p-1.5 rounded border border-amber-300 text-amber-600 hover:bg-amber-100 transition-colors"
           aria-label="Dispensar sugestões"
         >
-          <X size={14} />
+          <MsIcon name="close" size={14} />
         </button>
       </div>
     </div>

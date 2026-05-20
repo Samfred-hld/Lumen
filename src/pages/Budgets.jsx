@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/api/supabaseClient';
-import { Plus, Trash2, Pencil, ChevronLeft, ChevronRight, TrendingUp, Repeat } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -111,7 +111,7 @@ function BudgetModal({ open, onClose, onSave, budget, monthKey }) {
               )}
             />
             <Label htmlFor="isRecurring" className="cursor-pointer font-normal text-sm flex items-center gap-1.5">
-              <Repeat size={12} /> Repetir todo mês
+              <MsIcon name="repeat" size={12} /> Repetir todo mês
             </Label>
           </div>
         </form>
@@ -179,12 +179,12 @@ export default function Budgets() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
-            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
+            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><MsIcon name="chevron_left" size={14} /></button>
             <span className="text-sm font-medium px-2 min-w-[110px] text-center">{MONTH_NAMES[currentMonth]} {currentYear}</span>
-            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
+            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><MsIcon name="chevron_right" size={14} /></button>
           </div>
           <Button size="sm" onClick={() => { setEditing(null); setShowModal(true); }}>
-            <Plus size={14} className="mr-1" /> Novo
+            <MsIcon name="add" size={14} className="mr-1" /> Novo
           </Button>
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function Budgets() {
       {monthBudgets.length === 0 ? (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-10 text-center">
-            <TrendingUp size={32} className="mx-auto text-muted-foreground mb-3" />
+            <MsIcon name="trending_up" size={32} className="mx-auto text-muted-foreground mb-3" />
             <p className="text-muted-foreground text-sm">Nenhum orçamento para este mês</p>
             <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeiro orçamento</Button>
           </CardContent>
@@ -226,11 +226,11 @@ export default function Budgets() {
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: color }} />
                       <span className="font-semibold text-sm">{b.category}</span>
-                      {b.isRecurring && <Repeat size={11} className="text-muted-foreground shrink-0" />}
+                      {b.isRecurring && <MsIcon name="repeat" size={11} className="text-muted-foreground shrink-0" />}
                     </div>
                     <div className="flex gap-1 opacity-60 hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }} className="p-1.5 hover:bg-muted rounded" aria-label="Editar limite"><Pencil size={12} /></button>
-                      <button onClick={() => handleDelete(b.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" aria-label="Excluir orçamento"><Trash2 size={12} /></button>
+                      <button onClick={() => { setInlineEditId(b.id); setInlineValue(String(b.limit)); }} className="p-1.5 hover:bg-muted rounded" aria-label="Editar limite"><MsIcon name="edit" size={12} /></button>
+                      <button onClick={() => handleDelete(b.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" aria-label="Excluir orçamento"><MsIcon name="delete" size={12} /></button>
                     </div>
                   </div>
                   <div className="flex justify-between text-sm mb-2">

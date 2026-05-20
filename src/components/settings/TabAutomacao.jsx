@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wand2, DollarSign, Wallet, Layers, Plus, Pencil, Trash2 } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,12 +13,12 @@ import { getCategories } from '@/lib/categories';
 import { getCustomPaymentMethods, saveCustomPaymentMethods, getTemplates, saveTemplates, addTemplate, deleteTemplate, syncTemplatesToCloud } from '@/lib/store';
 
 // ═══ Section wrapper ═══
-function Section({ icon: Icon, title, children, actions }) {
+function Section({ icon, title, children, actions }) {
   return (
     <div className="rounded border border-border/60 bg-card shadow-sm">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded bg-primary/10"><Icon size={16} className="text-primary" /></div>
+          <div className="p-2 rounded bg-primary/10"><MsIcon name={icon} size={16} className="text-primary" /></div>
           <h3 className="text-sm font-semibold">{title}</h3>
         </div>
         {actions}
@@ -39,17 +39,17 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
   return (
     <>
       {/* ── Rules ── */}
-      <Section icon={Wand2} title="Regras de Categorização Automática" actions={<Button size="sm" variant="outline" onClick={onNewRule}><Plus size={12} className="mr-1" />Nova Regra</Button>}>
+      <Section icon="auto_fix_high" title="Regras de Categorização Automática" actions={<Button size="sm" variant="outline" onClick={onNewRule}><Plus size={12} className="mr-1" />Nova Regra</Button>}>
         <p className="text-xs text-muted-foreground mb-3">Quando uma transação contiver a palavra-chave, será categorizada automaticamente.</p>
         {rules.length === 0 ? <p className="text-muted-foreground text-sm text-center py-3">Nenhuma regra cadastrada</p> : (
           <div className="space-y-1.5">
             {rules.map(r => (
               <div key={r.id} className="flex items-center gap-3 p-2 rounded border border-border text-sm">
-                <Wand2 size={14} className="text-muted-foreground shrink-0" />
+                <MsIcon name="auto_fix_high" size={14} className="text-muted-foreground shrink-0" />
                 <span className="font-medium flex-1">"{r.keyword}"</span>
                 <span className="text-muted-foreground">→</span>
                 <Badge variant="outline">{r.category}</Badge>
-                <button onClick={() => onDeleteRule(r.id)} className="p-1 hover:bg-red-50 rounded text-red-400" aria-label="Excluir regra"><Trash2 size={12} /></button>
+                <button onClick={() => onDeleteRule(r.id)} className="p-1 hover:bg-red-50 rounded text-red-400" aria-label="Excluir regra"><MsIcon name="delete" size={12} /></button>
               </div>
             ))}
           </div>
@@ -57,7 +57,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
       </Section>
 
       {/* ── Salary ── */}
-      <Section icon={DollarSign} title="Configuração de Renda">
+      <Section icon="attach_money" title="Configuração de Renda">
         <div className="space-y-3">
           <div>
             <Label className="text-xs">Tipo de Renda</Label>
@@ -102,15 +102,15 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
       </Section>
 
       {/* ── Payment Methods ── */}
-      <Section icon={Wallet} title="Meios de Pagamento" actions={<Button size="sm" variant="outline" onClick={() => setShowPMModal(true)}><Plus size={12} className="mr-1" />Novo</Button>}>
+      <Section icon="account_balance_wallet" title="Meios de Pagamento" actions={<Button size="sm" variant="outline" onClick={() => setShowPMModal(true)}><Plus size={12} className="mr-1" />Novo</Button>}>
         <p className="text-xs text-muted-foreground mb-3">Formas de pagamento padrão: Débito, Dinheiro, Pix, Transferência, Crédito. Adicione as suas.</p>
         {customPMs.length === 0 ? <p className="text-muted-foreground text-sm text-center py-3">Nenhum meio personalizado</p> : (
           <div className="space-y-1.5">
             {customPMs.map((pm, i) => (
               <div key={i} className="flex items-center gap-3 p-2 rounded border border-border text-sm">
-                <Wallet size={14} className="text-muted-foreground shrink-0" />
+                <MsIcon name="account_balance_wallet" size={14} className="text-muted-foreground shrink-0" />
                 <span className="font-medium flex-1">{pm}</span>
-                <button onClick={() => { const updated = customPMs.filter((_, idx) => idx !== i); saveCustomPaymentMethods(updated); setCustomPMs(updated); }} className="p-1 hover:bg-red-50 rounded text-red-400" aria-label="Excluir meio de pagamento"><Trash2 size={12} /></button>
+                <button onClick={() => { const updated = customPMs.filter((_, idx) => idx !== i); saveCustomPaymentMethods(updated); setCustomPMs(updated); }} className="p-1 hover:bg-red-50 rounded text-red-400" aria-label="Excluir meio de pagamento"><MsIcon name="delete" size={12} /></button>
               </div>
             ))}
           </div>
@@ -118,7 +118,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
       </Section>
 
       {/* ── Templates ── */}
-      <Section icon={Layers} title="Templates de Transação" actions={<Button size="sm" variant="outline" onClick={() => { setEditingTemplate(null); setShowTemplateModal(true); }}><Plus size={12} className="mr-1" />Novo</Button>}>
+      <Section icon="layers" title="Templates de Transação" actions={<Button size="sm" variant="outline" onClick={() => { setEditingTemplate(null); setShowTemplateModal(true); }}><Plus size={12} className="mr-1" />Novo</Button>}>
         <p className="text-xs text-muted-foreground mb-3">Modelos para lançamentos recorrentes. Use no Quick Entry ou gere automaticamente.</p>
         {templates.length === 0 ? <p className="text-muted-foreground text-sm text-center py-3">Nenhum template cadastrado</p> : (
           <div className="space-y-1.5">
@@ -136,8 +136,8 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
                   {t.type === 'income' ? '+' : '-'}{formatCurrency(t.value)}
                 </span>
                 <div className="flex gap-1 opacity-0 group-hover/tpl:opacity-100 transition-opacity">
-                  <button onClick={() => { setEditingTemplate(t); setShowTemplateModal(true); }} className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="Editar template"><Pencil size={12} /></button>
-                  <button onClick={() => { deleteTemplate(t.id); setTemplates(getTemplates()); syncTemplatesToCloud(); }} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir template"><Trash2 size={12} /></button>
+                  <button onClick={() => { setEditingTemplate(t); setShowTemplateModal(true); }} className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="Editar template"><MsIcon name="edit" size={12} /></button>
+                  <button onClick={() => { deleteTemplate(t.id); setTemplates(getTemplates()); syncTemplatesToCloud(); }} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir template"><MsIcon name="delete" size={12} /></button>
                 </div>
               </div>
             ))}

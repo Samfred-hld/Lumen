@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ArrowRight, TrendingUp, TrendingDown, Gem } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/financeUtils';
 import { useTransactions } from '@/hooks/useData';
@@ -65,9 +65,9 @@ export default function GlobalSearch({ open, onClose }) {
   }, [selectedIdx]);
 
   const typeIcon = (type) => {
-    if (type === 'income') return <TrendingUp size={14} className="text-emerald-500" />;
-    if (type === 'expense') return <TrendingDown size={14} className="text-red-500" />;
-    return <Gem size={14} className="text-violet-500" />;
+    if (type === 'income') return <MsIcon name="trending_up" size={14} className="text-emerald-500" />;
+    if (type === 'expense') return <MsIcon name="trending_down" size={14} className="text-red-500" />;
+    return <MsIcon name="diamond" size={14} className="text-violet-500" />;
   };
 
   if (!open) return null;
@@ -87,7 +87,7 @@ export default function GlobalSearch({ open, onClose }) {
       >
         {/* Input */}
         <div className="flex items-center gap-3 px-4 border-b">
-          <Search size={18} className="text-muted-foreground shrink-0" />
+          <MsIcon name="search" size={18} className="text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -131,7 +131,7 @@ export default function GlobalSearch({ open, onClose }) {
                 )}>
                   {tx.type !== 'income' ? '-' : '+'}{formatCurrency(tx.value)}
                 </span>
-                <ArrowRight size={12} className="text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100" />
+                <MsIcon name="arrow_forward" size={12} className="text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100" />
               </button>
             ))
           )}

@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Plus, CreditCard, Target, Upload, ArrowRight } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { cn } from '@/lib/utils';
 import { setOnboarded } from '@/lib/store';
 import { Link } from 'react-router-dom';
-import MsIcon from '@/components/ui/ms-icon';
 
 const STEPS = [
-  { icon: Sparkles, title: 'Bem-vindo ao Lúmen!', desc: 'Seu assistente de controle financeiro pessoal. Vamos configurar tudo em segundos.', color: 'text-primary' },
-  { icon: Plus, title: 'Registre suas transações', desc: 'Adicione receitas e despesas. Use o botão "Novo" ou pressione N a qualquer momento.', color: 'text-emerald-600', tip: 'Dica: ative "Lançamento fixo" para gastos mensais recorrentes.' },
-  { icon: CreditCard, title: 'Cartões de crédito', desc: 'Cadastre seus cartões em Configurações para controlar faturas e limites.', color: 'text-blue-500', link: '/settings', linkLabel: 'Ir para Configurações' },
-  { icon: Target, title: 'Metas e orçamentos', desc: 'Defina metas de economia e orçamentos por categoria para manter o controle.', color: 'text-amber-600' },
-  { icon: Upload, title: 'Importe seus dados', desc: 'Tem dados em planilha? Importe CSV direto pela página de Transações.', color: 'text-amber-600' },
+  { icon: 'auto_awesome', title: 'Bem-vindo ao Lúmen!', desc: 'Seu assistente de controle financeiro pessoal. Vamos configurar tudo em segundos.', color: 'text-primary' },
+  { icon: 'add', title: 'Registre suas transações', desc: 'Adicione receitas e despesas. Use o botão "Novo" ou pressione N a qualquer momento.', color: 'text-emerald-600', tip: 'Dica: ative "Lançamento fixo" para gastos mensais recorrentes.' },
+  { icon: 'credit_card', title: 'Cartões de crédito', desc: 'Cadastre seus cartões em Configurações para controlar faturas e limites.', color: 'text-blue-500', link: '/settings', linkLabel: 'Ir para Configurações' },
+  { icon: 'flag', title: 'Metas e orçamentos', desc: 'Defina metas de economia e orçamentos por categoria para manter o controle.', color: 'text-amber-600' },
+  { icon: 'upload', title: 'Importe seus dados', desc: 'Tem dados em planilha? Importe CSV direto pela página de Transações.', color: 'text-amber-600' },
 ];
 
 export default function OnboardingModal({ open, onClose }) {
@@ -25,7 +24,7 @@ export default function OnboardingModal({ open, onClose }) {
         <DialogHeader>
           <DialogTitle className="text-center">
             <div className={cn("mx-auto mb-3 w-14 h-14 rounded flex items-center justify-center bg-muted", current.color)} aria-hidden="true">
-              <current.icon size={28} />
+              <MsIcon name={current.icon} size={28} />
             </div>
             {current.title}
           </DialogTitle>
@@ -37,7 +36,7 @@ export default function OnboardingModal({ open, onClose }) {
           )}
           {current.link && (
             <Link to={current.link} onClick={onClose}>
-              <Button variant="outline" size="sm" className="text-xs">{current.linkLabel} <ArrowRight size={12} className="ml-1" /></Button>
+              <Button variant="outline" size="sm" className="text-xs">{current.linkLabel} <MsIcon name="arrow_forward" size={12} className="ml-1" /></Button>
             </Link>
           )}
         </div>

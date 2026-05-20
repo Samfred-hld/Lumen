@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 
 export default function InstallmentConfirm({ open, onClose, onConfirmSingle, onConfirmAll, transaction }) {
   if (!transaction) return null;
@@ -11,7 +11,7 @@ export default function InstallmentConfirm({ open, onClose, onConfirmSingle, onC
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle size={18} className="text-amber-500" />
+            <MsIcon name="warning" size={18} className="text-amber-500" />
             Excluir Parcela
           </DialogTitle>
         </DialogHeader>

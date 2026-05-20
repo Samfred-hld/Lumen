@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Moon, Sun, Check, AlertCircle
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +11,6 @@ import { MONTH_NAMES } from '@/lib/categories';
 import { addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig, getTheme, setTheme } from '@/lib/store';
 import { getCategories } from '@/lib/categories';
 import { useCards, useTransactions, useBudgets, useGoals } from '@/hooks/useData';
-import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react';
 
 import TabPersonalizacao from '@/components/settings/TabPersonalizacao';
 import TabAutomacao from '@/components/settings/TabAutomacao';
@@ -98,13 +94,13 @@ function CardStatementModal({ open, onClose, card, transactions }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Receipt size={18} className="text-primary" /> Extrato: {card.name}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><MsIcon name="receipt" size={18} className="text-primary" /> Extrato: {card.name}</DialogTitle>
         </DialogHeader>
         <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
           <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
-            <button onClick={() => changeStmtMonth(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
+            <button onClick={() => changeStmtMonth(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><MsIcon name="chevron_left" size={14} /></button>
             <span className="text-sm font-medium px-2 min-w-[110px] text-center">{MONTH_NAMES[stmtMonth]} {stmtYear}</span>
-            <button onClick={() => changeStmtMonth(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
+            <button onClick={() => changeStmtMonth(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><MsIcon name="chevron_right" size={14} /></button>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Total da Fatura</p>
@@ -180,15 +176,15 @@ export default function SettingsPage() {
           <p className="text-muted-foreground text-sm mt-0.5">Cartões, categorias, regras, backup e preferências</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-          <Sun size={14} className={cn("transition-colors", !darkMode ? 'text-amber-500' : 'text-muted-foreground')} />
+          <MsIcon name="light_mode" size={14} className={cn("transition-colors", !darkMode ? 'text-amber-500' : 'text-muted-foreground')} />
           <Switch checked={darkMode} onCheckedChange={toggleTheme} />
-          <Moon size={14} className={cn("transition-colors", darkMode ? 'text-blue-400' : 'text-muted-foreground')} />
+          <MsIcon name="dark_mode" size={14} className={cn("transition-colors", darkMode ? 'text-blue-400' : 'text-muted-foreground')} />
         </div>
       </div>
 
       {importMsg && (
         <div className={cn("flex items-center gap-2 p-3 rounded text-sm font-medium", importMsg.includes('sucesso') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200')}>
-          {importMsg.includes('sucesso') ? <Check size={16} /> : <AlertCircle size={16} />}{importMsg}
+          {importMsg.includes('sucesso') ? <MsIcon name="check" size={16} /> : <MsIcon name="error" size={16} />}{importMsg}
         </div>
       )}
 

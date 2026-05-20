@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import MsIcon from '@/components/ui/ms-icon';
 import { lsGet, lsSet } from '@/lib/store';
 
 /**
@@ -27,8 +27,7 @@ export default function DashSection({ id, title, icon: Icon, color, defaultOpen 
           <div className={cn('w-1.5 h-4 rounded-full shrink-0', color || 'bg-primary')} aria-hidden="true" />
         )}
         <span className="text-sm font-semibold text-foreground">{title}</span>
-        <ChevronRight
-          size={14}
+        <MsIcon name="chevron_right" size={14}
           className={cn(
             'text-muted-foreground transition-transform duration-200',
             open && 'rotate-90'

@@ -2,31 +2,13 @@
 // LÚMEN — Transaction Row Component
 // ══════════════════════════════════════════
 import React from 'react';
-import { Pencil, Trash2, Copy } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
+import { getCategoryMsIcon } from '@/lib/iconMap';
 import { formatCurrency, formatSmartDate, isToday } from '@/lib/financeUtils';
 import { cn } from '@/lib/utils';
 import SwipeToDelete from '@/components/ui/swipe-to-delete';
 
 import { Checkbox } from '@/components/ui/checkbox';
-
-// Material Symbols icon component
-function MsIcon({ name, className, size = 20 }) {
-  return <span className={cn('material-symbols-outlined', className)} style={{ fontSize: size }}>{name}</span>;
-}
-
-// Map categories to Material Symbols icons
-const getCategoryMsIcon = (category, type) => {
-  if (type === 'income') return 'payments';
-  if (type === 'investment') return 'trending_up';
-  const c = (category || '').toLowerCase();
-  if (c.includes('alimentação') || c.includes('restaurante')) return 'restaurant';
-  if (c.includes('transporte') || c.includes('carro')) return 'electric_car';
-  if (c.includes('saúde') || c.includes('farmácia')) return 'stethoscope';
-  if (c.includes('compras')) return 'shopping_cart';
-  if (c.includes('tecnologia')) return 'devices';
-  if (c.includes('lazer')) return 'sports_esports';
-  return 'shopping_bag';
-};
 
 export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate, isSelected, onSelect }) {
   const isIncome = t.type === 'income';
@@ -89,13 +71,13 @@ export default function TransactionRow({ t, index, onDelete, onEdit, onDuplicate
         </div>
         <div className="col-span-1 hidden lg:flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button onClick={(e) => { e.stopPropagation(); onDuplicate(t); }} className="p-1 hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Duplicar">
-            <Copy size={14} />
+            <MsIcon name="content_copy" size={14} />
           </button>
           <button onClick={(e) => { e.stopPropagation(); onEdit(t); }} className="p-1 hover:bg-surface-container-low rounded text-muted-foreground transition-colors" title="Editar">
-            <Pencil size={14} />
+            <MsIcon name="edit" size={14} />
           </button>
           <button onClick={(e) => { e.stopPropagation(); onDelete(t.id); }} className="p-1 hover:bg-error-container rounded text-danger transition-colors" title="Excluir">
-            <Trash2 size={14} />
+            <MsIcon name="delete" size={14} />
           </button>
         </div>
       </div>

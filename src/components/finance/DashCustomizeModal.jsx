@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDashSections, saveDashSections } from '@/lib/store';
 import MsIcon from '@/components/ui/ms-icon';
@@ -88,7 +87,7 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
                   : "bg-muted/30 border-border/30 opacity-60"
               )}
             >
-              <GripVertical size={14} className="text-muted-foreground/50 shrink-0" />
+              <MsIcon name="drag_indicator" size={14} className="text-muted-foreground/50 shrink-0" />
               <span className={cn("flex-1 text-sm font-medium", !s.visible && "text-muted-foreground line-through")}>
                 {s.label}
               </span>
@@ -99,7 +98,7 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
                   className="p-1 hover:bg-muted rounded disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Mover para cima"
                 >
-                  <ArrowUp size={12} />
+                  <MsIcon name="arrow_upward" size={12} />
                 </button>
                 <button
                   onClick={() => moveDown(i)}
@@ -107,7 +106,7 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
                   className="p-1 hover:bg-muted rounded disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Mover para baixo"
                 >
-                  <ArrowDown size={12} />
+                  <MsIcon name="arrow_downward" size={12} />
                 </button>
                 <button
                   onClick={() => toggle(i)}
@@ -117,7 +116,7 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
                   )}
                   aria-label={s.visible ? 'Ocultar' : 'Mostrar'}
                 >
-                  {s.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+                  {s.visible ? <MsIcon name="visibility" size={14} /> : <MsIcon name="visibility_off" size={14} />}
                 </button>
               </div>
             </div>
@@ -126,7 +125,7 @@ export default function DashCustomizeModal({ open, onClose, onUpdate }) {
 
         <div className="flex gap-2 pt-2">
           <Button variant="outline" size="sm" className="text-xs" onClick={reset}>
-            <RotateCcw size={12} className="mr-1" /> Restaurar Padrão
+            <MsIcon name="undo" size={12} className="mr-1" /> Restaurar Padrão
           </Button>
           <div className="flex-1" />
           <Button variant="outline" onClick={onClose}>Cancelar</Button>

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Check, AlertCircle, CreditCard, AlertTriangle, Layers, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import MsIcon from '@/components/ui/ms-icon';
@@ -355,7 +354,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Upload size={18} />
+            <MsIcon name="upload" size={18} />
             Importar Fatura de Cartão (CSV)
             {detectedBank && (
               <Badge variant="secondary" className="ml-2 text-[10px]">
@@ -370,13 +369,13 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
           <div className="space-y-4">
             {cardsLoading ? (
               <div className="flex items-center gap-2 bg-muted/50 rounded px-3 py-2 text-xs text-muted-foreground">
-                <Loader2 size={13} className="animate-spin" />
+                <MsIcon name="progress_activity" size={13} className="animate-spin" />
                 <span>Carregando cartões...</span>
               </div>
             ) : cards.length > 0 ? (
               <div>
                 <Label className="text-sm font-semibold flex items-center gap-1.5">
-                  <CreditCard size={14} /> Cartão de Crédito
+                  <MsIcon name="credit_card" size={14} /> Cartão de Crédito
                 </Label>
                 <p className="text-xs text-muted-foreground mb-1.5">
                   Selecione o cartão ANTES de fazer upload — isso ajusta as transações para o ciclo de fatura correto.
@@ -403,7 +402,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
 
             {cards.length > 0 && (!selectedCard || selectedCard === 'none') && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded px-3 py-2 text-xs text-red-700">
-                <AlertCircle size={13} />
+                <MsIcon name="error" size={13} />
                 <span>
                   <strong>Obrigatório:</strong> Selecione um cartão de crédito antes de fazer upload.
                   Sem cartão, o mês da fatura (invoiceMonth) e o vínculo com o cartão (cardId) não serão preenchidos.
@@ -422,7 +421,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               onDrop={e => { if (!cardsLoading) handleDrop(e); }}
               onClick={() => { if (!cardsLoading) fileRef.current?.click(); }}
             >
-              <FileText size={40} className="mx-auto text-muted-foreground mb-3" />
+              <MsIcon name="description" size={40} className="mx-auto text-muted-foreground mb-3" />
               <p className="font-semibold text-sm">{cardsLoading ? 'Aguarde, carregando cartões...' : 'Arraste o arquivo CSV aqui'}</p>
               <p className="text-xs text-muted-foreground mt-1">{cardsLoading ? '' : 'ou clique para selecionar'}</p>
               <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" disabled={cardsLoading} onChange={e => handleFile(e.target.files?.[0])} />
@@ -433,7 +432,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               <div className="bg-red-50 border border-red-200 rounded px-3 py-2 text-xs text-red-700">
                 {parseErrors.map((err, i) => (
                   <p key={i} className="flex items-start gap-1.5">
-                    <AlertCircle size={12} className="mt-0.5 shrink-0" />
+                    <MsIcon name="error" size={12} className="mt-0.5 shrink-0" />
                     {err}
                   </p>
                 ))}
@@ -495,17 +494,17 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               <Badge variant="destructive">{formatCurrency(totalValue)} total</Badge>
               {dupeCount > 0 && (
                 <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 gap-1">
-                  <AlertCircle size={10} /> {dupeCount} duplicada(s)
+                  <MsIcon name="error" size={10} /> {dupeCount} duplicada(s)
                 </Badge>
               )}
               {seriesDupeCount > 0 && (
                 <Badge variant="outline" className="bg-purple-50 text-purple-600 border-purple-200 gap-1">
-                  <Layers size={10} /> {seriesDupeCount} parcela(s) já importada(s)
+                  <MsIcon name="layers" size={10} /> {seriesDupeCount} parcela(s) já importada(s)
                 </Badge>
               )}
               {suspectCount > 0 && (
                 <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300 gap-1">
-                  <AlertTriangle size={10} /> {suspectCount} possível(is)
+                  <MsIcon name="warning" size={10} /> {suspectCount} possível(is)
                 </Badge>
               )}
               {missingCount > 0 && (
@@ -515,7 +514,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               )}
               {instCount > 0 && (
                 <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 gap-1">
-                  <Layers size={10} /> {instCount} parcela(s)
+                  <MsIcon name="layers" size={10} /> {instCount} parcela(s)
                 </Badge>
               )}
               {refundCount > 0 && (
@@ -552,7 +551,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                           <tr className="border-t-2 border-blue-200 bg-blue-50/50">
                             <td colSpan={7} className="p-2 text-xs">
                               <div className="flex items-center gap-2">
-                                <Layers size={14} className="text-blue-600" />
+                                <MsIcon name="layers" size={14} className="text-blue-600" />
                                 <span className="font-bold text-blue-700">
                                   {group.title}
                                 </span>
@@ -616,7 +615,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                                   {labelBadge}
                                   {r._duplicate && (
                                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 border border-red-200 ml-1">
-                                      <AlertCircle size={9} /> Duplicada
+                                      <MsIcon name="error" size={9} /> Duplicada
                                     </span>
                                   )}
                                   {r._duplicateSeries && !r._duplicate && (
@@ -690,7 +689,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                         <td className="p-2">
                           {r._duplicate && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 border border-red-200">
-                              <AlertCircle size={9} /> Duplicada
+                              <MsIcon name="error" size={9} /> Duplicada
                             </span>
                           )}
                           {r._duplicateSeries && !r._duplicate && (
@@ -700,7 +699,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                           )}
                           {r._duplicateSuspect && !r._duplicate && !r._duplicateSeries && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-700 border border-yellow-300">
-                              <AlertTriangle size={9} /> Possível duplicata
+                              <MsIcon name="warning" size={9} /> Possível duplicata
                             </span>
                           )}
                           {r._missingInstallments?.length > 0 && !r._duplicate && !r._duplicateSeries && (
@@ -708,7 +707,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
                               title={`Parcelas anteriores faltando: ${r._missingInstallments.join(', ')}`}
                               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-300"
                             >
-                              <AlertTriangle size={9} /> Faltam: {r._missingInstallments.join(', ')}
+                              <MsIcon name="warning" size={9} /> Faltam: {r._missingInstallments.join(', ')}
                             </span>
                           )}
                           {r.txType === 'refund' && (
@@ -757,7 +756,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             {missingCount > 0 && (
               <div className="bg-orange-50 border border-orange-200 rounded px-3 py-2 text-xs text-orange-700">
                 <p className="font-semibold">
-                  <AlertTriangle size={12} className="inline mr-1" />
+                  <MsIcon name="warning" size={12} className="inline mr-1" />
                   Atenção: {missingCount} série(s) de parcelas possuem parcelas anteriores não importadas.
                   As parcelas faltantes estão listadas em cada linha. Você pode prosseguir —
                   as parcelas anteriores poderão ser importadas de faturas passadas.
@@ -768,7 +767,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
             {seriesDupeCount > 0 && (
               <div className="bg-purple-50 border border-purple-200 rounded px-3 py-2 text-xs text-purple-700">
                 <p className="font-semibold">
-                  <Layers size={12} className="inline mr-1" />
+                  <MsIcon name="layers" size={12} className="inline mr-1" />
                   {seriesDupeCount} parcela(s) já existem no sistema e foram desmarcadas.
                 </p>
               </div>
@@ -780,7 +779,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               <Button className="flex-1" onClick={handleImport} disabled={selectedCount === 0 || importing || isImportingLocal}>
                 {isImportingLocal ? (
                   <>
-                    <Loader2 size={14} className="mr-1.5 animate-spin" />
+                    <MsIcon name="progress_activity" size={14} className="mr-1.5 animate-spin" />
                     {progress.total > 20 ? `Importando ${progress.current}/${progress.total}...` : 'Importando...'}
                   </>
                 ) : (
@@ -797,7 +796,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
         {step === 'done' && (
           <div className="text-center py-6 space-y-4">
             <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto">
-              <Check size={32} className="text-emerald-600" />
+              <MsIcon name="check" size={32} className="text-emerald-600" />
             </div>
             <div>
               <p className="text-lg font-bold">{importCount} transações importadas!</p>

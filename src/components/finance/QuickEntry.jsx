@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, TrendingDown, TrendingUp, QrCode, CreditCard, Banknote, ArrowRightLeft, History } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { cn } from '@/lib/utils';
 import { getCategories } from '@/lib/categories';
 import { suggestCategoryFromRules, getQuickDraft, saveQuickDraft, clearQuickDraft } from '@/lib/store';
@@ -7,11 +7,11 @@ import { clampDateInput } from '@/lib/financeUtils';
 import { useCards } from '@/hooks/useData';
 
 const PM_OPTIONS = [
-  { value: 'Pix', icon: QrCode },
-  { value: 'Débito', icon: CreditCard },
-  { value: 'Crédito', icon: CreditCard },
-  { value: 'Dinheiro', icon: Banknote },
-  { value: 'Transferência', icon: ArrowRightLeft },
+  { value: 'Pix', icon: 'qr_code' },
+  { value: 'Débito', icon: 'credit_card' },
+  { value: 'Crédito', icon: 'credit_card' },
+  { value: 'Dinheiro', icon: 'payments' },
+  { value: 'Transferência', icon: 'swap_horiz' },
 ];
 
 export default function QuickEntry({ onSave }) {
@@ -101,7 +101,7 @@ export default function QuickEntry({ onSave }) {
         onClick={() => setExpanded(true)}
         className="w-full flex items-center gap-3 p-3.5 rounded border border-dashed border-muted-foreground/20 hover:border-primary/40 hover:bg-muted/30 transition-all text-sm text-muted-foreground"
       >
-        <Plus size={16} />
+        <MsIcon name="add" size={16} />
         <span className="font-medium">Novo Lançamento</span>
         <kbd className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-muted border font-mono">N</kbd>
       </button>
@@ -113,7 +113,7 @@ export default function QuickEntry({ onSave }) {
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <div className="w-7 h-7 rounded bg-primary/10 flex items-center justify-center">
-          <Plus size={14} className="text-primary" />
+          <MsIcon name="add" size={14} className="text-primary" />
         </div>
         <span className="font-extrabold text-base">Novo Lançamento</span>
       </div>
@@ -130,7 +130,7 @@ export default function QuickEntry({ onSave }) {
               : 'bg-muted text-muted-foreground border border-border hover:border-red-300'
           )}
         >
-          <TrendingDown size={14} /> Despesa
+          <MsIcon name="trending_down" size={14} /> Despesa
         </button>
         <button
           type="button"
@@ -142,7 +142,7 @@ export default function QuickEntry({ onSave }) {
               : 'bg-muted text-muted-foreground border border-border hover:border-emerald-300'
           )}
         >
-          <TrendingUp size={14} /> Receita
+          <MsIcon name="trending_up" size={14} /> Receita
         </button>
       </div>
 
@@ -201,7 +201,7 @@ export default function QuickEntry({ onSave }) {
                     : 'border-border bg-muted text-muted-foreground hover:border-primary/40'
               )}
             >
-              <Icon size={15} />
+              <MsIcon name={Icon} size={15} />
               {opt.value}
             </button>
           );
@@ -244,7 +244,7 @@ export default function QuickEntry({ onSave }) {
           aria-label="Última categoria usada"
           className="w-11 h-11 rounded border border-border bg-muted flex items-center justify-center text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
         >
-          <History size={16} />
+          <MsIcon name="history" size={16} />
         </button>
       </div>
 
@@ -260,7 +260,7 @@ export default function QuickEntry({ onSave }) {
             : 'bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed'
         )}
       >
-        <Plus size={15} />
+        <MsIcon name="add" size={15} />
         {type === 'expense' ? 'Lançar Despesa' : 'Lançar Receita'}
       </button>
 

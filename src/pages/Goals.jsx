@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/api/supabaseClient';
-import { Plus, Trash2, Pencil, Target, CheckCircle2, Clock, AlertTriangle, History } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,6 @@ import { AdaptiveModal } from '@/components/ui/adaptive-modal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatDate, getGoalProgress, clampDateInput } from '@/lib/financeUtils';
-import MsIcon from '@/components/ui/ms-icon';
 import { cn } from '@/lib/utils';
 import { useTransactions, useGoals } from '@/hooks/useData';
 
@@ -235,14 +234,14 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
               <Badge variant="outline" className="text-[10px] py-0 px-1.5 shrink-0">
                 {(goal.progressMode || 'linked') === 'manual' ? 'manual' : 'automático'}
               </Badge>
-              {done && <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />}
-              {overdue && !done && <AlertTriangle size={14} className="text-red-500 shrink-0" />}
+              {done && <MsIcon name="check_circle" size={14} className="text-emerald-500 shrink-0" />}
+              {overdue && !done && <MsIcon name="warning" size={14} className="text-red-500 shrink-0" />}
             </div>
             {goal.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{goal.description}</p>}
           </div>
           <div className="flex gap-1 shrink-0 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={() => onEdit(goal)} className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="Editar meta"><Pencil size={12} /></button>
-            <button onClick={() => onDelete(goal.id)} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir meta"><Trash2 size={12} /></button>
+            <button onClick={() => onEdit(goal)} className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="Editar meta"><MsIcon name="edit" size={12} /></button>
+            <button onClick={() => onDelete(goal.id)} className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir meta"><MsIcon name="delete" size={12} /></button>
           </div>
         </div>
 
@@ -259,7 +258,7 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
             <span className="text-xs font-bold" style={{ color: goal.color }}>{pct.toFixed(1)}%</span>
             {daysLeft !== null && (
               <span className={cn("text-xs flex items-center gap-1 font-medium", overdue ? 'text-red-500' : 'text-muted-foreground')}>
-                <Clock size={10} />
+                <MsIcon name="schedule" size={10} />
                 {done ? 'Concluída' : overdue ? `Atrasada ${Math.abs(daysLeft)}d` : `${daysLeft}d restantes`}
               </span>
             )}
@@ -284,16 +283,16 @@ function GoalCard({ goal, transactions, onEdit, onDelete, onDeposit, onHistory }
               title="Registra manualmente o valor alocado para esta meta. Nao movimenta sua conta automaticamente."
               className="flex-1 text-xs h-8 rounded hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              <Plus size={12} className="mr-1" /> Registrar progresso
+              <MsIcon name="add" size={12} className="mr-1" /> Registrar progresso
             </Button>
             <Button size="sm" variant="outline" className="h-8 rounded text-xs" onClick={() => onHistory(goal)}>
-              <History size={12} />
+              <MsIcon name="history" size={12} />
             </Button>
           </div>
         )}
         {done && (
           <Button size="sm" variant="outline" className="w-full text-xs h-8 rounded" onClick={() => onHistory(goal)}>
-            <History size={12} className="mr-1" /> Histórico
+            <MsIcon name="history" size={12} className="mr-1" /> Histórico
           </Button>
         )}
       </CardContent>
@@ -339,7 +338,7 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
       onOpenChange={onClose}
       title={
         <span className="flex items-center gap-2">
-          <History size={18} className="text-violet-500" /> Movimentações — {goal.name}
+          <MsIcon name="history" size={18} className="text-violet-500" /> Movimentações — {goal.name}
         </span>
       }
       className="max-w-lg"
@@ -423,7 +422,7 @@ export default function Goals() {
           <p className="text-muted-foreground text-sm mt-0.5">Acompanhe seus objetivos financeiros</p>
         </div>
         <Button size="sm" onClick={() => { setEditing(null); setShowModal(true); }}>
-          <Plus size={14} className="mr-1" /> Nova Meta
+          <MsIcon name="add" size={14} className="mr-1" /> Nova Meta
         </Button>
       </div>
 
@@ -437,7 +436,7 @@ export default function Goals() {
       {goals.length === 0 ? (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-10 text-center">
-            <Target size={32} className="mx-auto text-muted-foreground mb-3" />
+            <MsIcon name="flag" size={32} className="mx-auto text-muted-foreground mb-3" />
             <p className="text-muted-foreground text-sm">Nenhuma meta cadastrada</p>
             <Button size="sm" className="mt-3" onClick={() => setShowModal(true)}>Criar primeira meta</Button>
           </CardContent>

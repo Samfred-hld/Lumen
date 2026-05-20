@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Search, ChevronLeft, ChevronRight, Upload, X, FileSpreadsheet } from 'lucide-react';
 import MsIcon from '@/components/ui/ms-icon';
 import TransactionModal from '@/components/finance/TransactionModal';
 import CSVImport from '@/components/finance/CSVImport';
@@ -362,18 +361,18 @@ export default function Transactions() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-3">
             <button onClick={() => setShowCSVImport(true)} disabled={isImporting} className="flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
-              <Upload size={16} /> CSV
+              <MsIcon name="upload" size={16} /> CSV
             </button>
             <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
-              <FileSpreadsheet size={16} /> EXCEL
+              <MsIcon name="table_chart" size={16} /> EXCEL
             </button>
             <button onClick={() => { setEditing(null); setShowModal(true); }} className="lg:hidden flex items-center gap-2 px-3 py-2 border border-surface-border rounded-lg hover:bg-surface-low transition-all text-[11px] font-bold uppercase tracking-widest text-on-surface bg-surface shadow-sm">
-              <Plus size={16} /> NOVA
+              <MsIcon name="add" size={16} /> NOVA
             </button>
           </div>
           
           <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar">
-            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-surface-container rounded text-muted-foreground hover:text-on-background transition-colors mr-2"><ChevronLeft size={18} /></button>
+            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-surface-container rounded text-muted-foreground hover:text-on-background transition-colors mr-2"><MsIcon name="chevron_left" size={18} /></button>
             {MONTH_SHORT.map((monthStr, index) => {
               const isActive = index === currentMonth;
               const hasData = monthsWithData && monthsWithData.has ? monthsWithData.has(getMonthKey(currentYear, index)) : false;
@@ -398,7 +397,7 @@ export default function Transactions() {
                 </button>
               );
             })}
-            <button onClick={() => navigate(1)} className="p-1.5 hover:bg-surface-container rounded text-muted-foreground hover:text-on-background transition-colors ml-2"><ChevronRight size={18} /></button>
+            <button onClick={() => navigate(1)} className="p-1.5 hover:bg-surface-container rounded text-muted-foreground hover:text-on-background transition-colors ml-2"><MsIcon name="chevron_right" size={18} /></button>
             
             <div className="h-4 w-[1px] bg-surface-border mx-2"></div>
             <span className="px-2 font-bold text-[11px] text-on-surface uppercase tracking-widest">{currentYear}</span>
@@ -502,7 +501,7 @@ export default function Transactions() {
               {/* Active filter count + clear */}
               {advFilterCount > 0 && (
                 <button onClick={clearAdvFilters} className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                  <X size={12} /> LIMPAR ({advFilterCount})
+                  <MsIcon name="close" size={12} /> LIMPAR ({advFilterCount})
                 </button>
               )}
             </div>
@@ -555,7 +554,7 @@ export default function Transactions() {
             {filtered.length === 0 ? (
               <div className="py-16 px-6 text-center flex flex-col items-center justify-center bg-surface-low/50">
                 <div className="w-16 h-16 mb-5 rounded-full bg-surface shadow-sm border border-surface-border flex items-center justify-center">
-                  <Search size={24} className="text-muted-foreground" />
+                  <MsIcon name="search" size={24} className="text-muted-foreground" />
                 </div>
                 <h3 className="text-base font-semibold text-on-surface mb-1">Nenhuma transação encontrada</h3>
                 <p className="text-sm text-muted-foreground max-w-[260px]">Ajuste os filtros de busca ou adicione um novo registro para começar.</p>

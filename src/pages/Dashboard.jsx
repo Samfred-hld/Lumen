@@ -17,15 +17,7 @@ import OnboardingModal from '@/components/dashboard/OnboardingModal';
 import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
 import GoalsSection from '@/components/dashboard/GoalsSection';
-
-// Material Symbols icon component
-function MsIcon({ name, className, size = 24 }) {
-  return (
-    <span className={cn('material-symbols-outlined', className)} style={{ fontSize: size }}>
-      {name}
-    </span>
-  );
-}
+import MsIcon from '@/components/ui/ms-icon';
 
 export default function Dashboard() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Layers, Edit3, TrendingDown, TrendingUp } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { clampDateInput } from '@/lib/financeUtils';
@@ -244,7 +244,7 @@ export default function TransactionInlineForm({ onSave, transaction, goals = [],
   return (
     <div className="bg-surface border border-surface-border p-card-padding h-fit relative">
       <h3 className="font-title text-title mb-md flex items-center gap-2">
-        <Edit3 className="w-[18px] h-[18px] text-on-surface-variant" />
+        <MsIcon name="edit_note" size={18} className="text-on-surface-variant" />
         {transaction ? 'Editar Lançamento' : 'Novo Lançamento'}
       </h3>
       
@@ -260,7 +260,7 @@ export default function TransactionInlineForm({ onSave, transaction, goals = [],
               isExpense ? "bg-kpi-expense text-on-primary" : "text-on-surface-variant hover:bg-surface-container-low"
             )}
           >
-            <TrendingDown className="w-4 h-4" /> Despesa
+            <MsIcon name="trending_down" size={16} /> Despesa
           </button>
           <button 
             type="button"
@@ -270,7 +270,7 @@ export default function TransactionInlineForm({ onSave, transaction, goals = [],
               isIncome ? "bg-kpi-income text-on-primary" : "text-on-surface-variant hover:bg-surface-container-low"
             )}
           >
-            <TrendingUp className="w-4 h-4" /> Receita
+            <MsIcon name="trending_up" size={16} /> Receita
           </button>
         </div>
 
@@ -443,7 +443,7 @@ export default function TransactionInlineForm({ onSave, transaction, goals = [],
                       )}
                     />
                     <label htmlFor="isInstallmentInline" className="text-xs font-bold text-on-surface-variant cursor-pointer flex items-center gap-1">
-                      <Layers className="w-3 h-3" /> Compra parcelada
+                      <MsIcon name="layers" size={12} /> Compra parcelada
                     </label>
                   </div>
                   

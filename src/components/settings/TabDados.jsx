@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Download, Upload, FileText, Receipt, History, ChevronDown, ChevronRight, Trash2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,12 +9,12 @@ import MsIcon from '@/components/ui/ms-icon';
 import { getChangelog, addChangelogEntry, clearAllData, getExtraCats, getRules, getSalaryConfig, addCard, saveExtraCats, saveRules, saveSalaryConfig, lsSet } from '@/lib/store';
 
 // ═══ Section wrapper ═══
-function Section({ icon: Icon, title, children, actions }) {
+function Section({ icon, title, children, actions }) {
   return (
     <div className="rounded border border-border/60 bg-card shadow-sm">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded bg-primary/10"><Icon size={16} className="text-primary" /></div>
+          <div className="p-2 rounded bg-primary/10"><MsIcon name={icon} size={16} className="text-primary" /></div>
           <h3 className="text-sm font-semibold">{title}</h3>
         </div>
         {actions}
@@ -92,31 +91,31 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
   return (
     <>
       {/* ── Export / Import ── */}
-      <Section icon={Download} title="Exportar / Importar Dados">
+      <Section icon="download" title="Exportar / Importar Dados">
         <p className="text-xs text-muted-foreground mb-4">
           Mantenha seus dados seguros. Você pode exportar seu histórico em formato CSV (para Excel/Google Sheets), gerar um relatório em PDF ou criar um Backup completo em JSON para restaurar futuramente.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-3 p-4 rounded-md border border-surface-border bg-surface-low">
             <h4 className="text-sm font-semibold text-on-surface flex items-center gap-2">
-              <Download size={16} className="text-muted-foreground" /> Exportar Dados
+              <MsIcon name="download" size={16} className="text-muted-foreground" /> Exportar Dados
             </h4>
             <div className="grid grid-cols-1 gap-2">
               <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportCSV}>
-                <FileText size={14} className="mr-2 text-emerald-600" /> CSV (Planilha)
+                <MsIcon name="description" size={14} className="mr-2 text-emerald-600" /> CSV (Planilha)
               </Button>
               <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportJSON}>
-                <FileText size={14} className="mr-2 text-blue-600" /> JSON (Backup Completo)
+                <MsIcon name="description" size={14} className="mr-2 text-blue-600" /> JSON (Backup Completo)
               </Button>
               <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportPDF}>
-                <Receipt size={14} className="mr-2 text-red-600" /> PDF (Relatório Mensal)
+                <MsIcon name="receipt" size={14} className="mr-2 text-red-600" /> PDF (Relatório Mensal)
               </Button>
             </div>
           </div>
 
           <div className="space-y-3 p-4 rounded-md border border-surface-border bg-surface-low flex flex-col">
             <h4 className="text-sm font-semibold text-on-surface flex items-center gap-2">
-              <Upload size={16} className="text-muted-foreground" /> Importar Backup
+              <MsIcon name="upload" size={16} className="text-muted-foreground" /> Importar Backup
             </h4>
             <p className="text-xs text-muted-foreground flex-1">
               Restaure todo o seu histórico enviando o arquivo JSON gerado pela exportação de backup completo.
@@ -125,7 +124,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
               <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" id="import-json-settings" />
               <Button size="sm" className="w-full" asChild>
                 <label htmlFor="import-json-settings" className="cursor-pointer inline-flex items-center justify-center">
-                  <Upload size={14} className="mr-2" /> Restaurar Arquivo JSON
+                  <MsIcon name="upload" size={14} className="mr-2" /> Restaurar Arquivo JSON
                 </label>
               </Button>
             </label>
@@ -134,9 +133,9 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
       </Section>
 
       {/* ── Changelog ── */}
-      <Section icon={History} title="Histórico de Alterações">
+      <Section icon="history" title="Histórico de Alterações">
         <Button size="sm" variant="outline" className="text-xs mb-3" onClick={() => setShowChangelog(!showChangelog)}>
-          {showChangelog ? <ChevronDown size={12} className="mr-1" /> : <ChevronRight size={12} className="mr-1" />}
+          {showChangelog ? <MsIcon name="expand_more" size={12} className="mr-1" /> : <MsIcon name="chevron_right" size={12} className="mr-1" />}
           {showChangelog ? 'Ocultar' : 'Ver'} Histórico ({changelog.length})
         </Button>
         {showChangelog && (
@@ -157,13 +156,13 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
       </Section>
 
       {/* ── Danger Zone ── */}
-      <Section icon={Trash2} title="Limpar Todos os Dados">
+      <Section icon="delete" title="Limpar Todos os Dados">
         <p className="text-xs text-muted-foreground mb-3">
           Remove todas as transações, metas, orçamentos, cartões, regras e configurações.
           <strong className="text-red-600"> Esta ação é irreversível.</strong> Faça um backup antes.
         </p>
         <Button size="sm" variant="destructive" className="text-xs" onClick={() => setShowClearConfirm(true)}>
-          <Trash2 size={12} className="mr-1" /> Limpar Tudo
+          <MsIcon name="delete" size={12} className="mr-1" /> Limpar Tudo
         </Button>
       </Section>
 
@@ -172,7 +171,7 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
-              <AlertCircle size={18} /> Limpar Todos os Dados
+              <MsIcon name="error" size={18} /> Limpar Todos os Dados
             </DialogTitle>
           </DialogHeader>
           {!clearing && !clearStep && (

@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/api/supabaseClient';
-import { Plus, Trash2, Pencil, Repeat, CheckCircle2, AlertTriangle } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
+import { CAT_MATERIAL_ICONS } from '@/lib/iconMap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,55 +19,6 @@ import { DEFAULT_CATEGORIES, MONTH_NAMES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useBudgets, useTransactions, useGoals } from '@/hooks/useData';
-
-// Material Symbols icon component
-function MsIcon({ name, className, size = 24, filled = false }) {
-  return (
-    <span
-      className={cn('material-symbols-outlined', className)}
-      style={{ fontSize: size, fontVariationSettings: `'FILL' ${filled ? 1 : 0}` }}
-    >
-      {name}
-    </span>
-  );
-}
-
-// Category icon mapping for Material Symbols
-const CAT_MATERIAL_ICONS = {
-  'Alimentação': 'restaurant',
-  'Transporte': 'directions_car',
-  'Combustível': 'local_gas_station',
-  'Moradia': 'home',
-  'Saúde': 'local_hospital',
-  'Academia': 'fitness_center',
-  'Lazer': 'sports_esports',
-  'Streaming': 'subscriptions',
-  'Entretenimiento': 'movie',
-  'Telecomunicações': 'phone_android',
-  'Serviços': 'build',
-  'Educação': 'school',
-  'Educação Online': 'computer',
-  'Compras online': 'shopping_cart',
-  'Vestuário': 'checkroom',
-  'Pet': 'pets',
-  'Casa': 'home',
-  'Seguro': 'shield',
-  'Impostos': 'receipt',
-  'Contas': 'receipt_long',
-  'Viagens': 'flight',
-  'Presentes': 'card_giftcard',
-  'Doações': 'volunteer_activism',
-  'Beleza': 'spa',
-  'Bem-estar': 'self_improvement',
-  'Papelaria': 'edit',
-  'Salário': 'payments',
-  'Investimentos': 'account_balance',
-  'Financeiro': 'account_balance_wallet',
-  'Outros': 'more_horiz',
-  'Tarifas bancárias': 'credit_card',
-  'Encargos': 'gavel',
-  'Aluguel de Veículos': 'directions_car',
-};
 
 // ═══ Goal Schema ═══
 const GOAL_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316'];
@@ -418,7 +370,7 @@ export default function Planejamento() {
                       </div>
                       <button onClick={() => handleRemoveCategory(category)}
                         className="p-1 hover:bg-red-50 rounded text-red-400 shrink-0" aria-label="Remover">
-                        <Trash2 size={12} />
+                        <MsIcon name="delete" size={12} />
                       </button>
                     </div>
                   );
@@ -457,7 +409,7 @@ export default function Planejamento() {
               <MsIcon name="account_balance" size={40} className="text-muted-foreground mx-auto mb-md" />
               <p className="text-muted-foreground text-sm mb-md">Nenhum orçamento para este mês</p>
               <Button size="sm" onClick={openBudgetManager}>
-                <Plus size={14} className="mr-1" /> Gerenciar orçamentos
+                <MsIcon name="add" size={14} className="mr-1" /> Gerenciar orçamentos
               </Button>
             </div>
           ) : (
@@ -479,7 +431,7 @@ export default function Planejamento() {
                         <p className="font-title text-title">{b.category}</p>
                         {b.isRecurring && (
                           <p className="font-body-sm text-on-surface-variant flex items-center gap-xs mt-xs">
-                            <Repeat size={10} /> Recorrente
+                            <MsIcon name="repeat" size={10} /> Recorrente
                           </p>
                         )}
                       </div>
@@ -488,11 +440,11 @@ export default function Planejamento() {
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => { setEditingBudget(b); openBudgetManager(); }}
                             className="p-1 hover:bg-surface-container-low rounded text-muted-foreground" aria-label="Editar">
-                            <Pencil size={12} />
+                            <MsIcon name="edit" size={12} />
                           </button>
                           <button onClick={() => handleDeleteBudget(b.id)}
                             className="p-1 hover:bg-red-50 rounded text-red-400" aria-label="Excluir">
-                            <Trash2 size={12} />
+                            <MsIcon name="delete" size={12} />
                           </button>
                         </div>
                       </div>
@@ -537,7 +489,7 @@ export default function Planejamento() {
               <MsIcon name="flag" size={40} className="text-muted-foreground mx-auto mb-md" />
               <p className="text-muted-foreground text-sm mb-md">Nenhum objetivo cadastrado</p>
               <Button size="sm" onClick={() => setShowGoalModal(true)}>
-                <Plus size={14} className="mr-1" /> Criar primeiro objetivo
+                <MsIcon name="add" size={14} className="mr-1" /> Criar primeiro objetivo
               </Button>
             </div>
           ) : (
@@ -560,8 +512,8 @@ export default function Planejamento() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-sm">
                           <p className="font-title text-title truncate">{g.name}</p>
-                          {done && <CheckCircle2 size={14} className="text-success shrink-0" />}
-                          {overdue && !done && <AlertTriangle size={14} className="text-danger shrink-0" />}
+                          {done && <MsIcon name="check_circle" size={14} className="text-success shrink-0" />}
+                          {overdue && !done && <MsIcon name="warning" size={14} className="text-danger shrink-0" />}
                         </div>
                         {g.description && <p className="font-body-sm text-on-surface-variant mt-xs truncate">{g.description}</p>}
                       </div>
@@ -604,17 +556,17 @@ export default function Planejamento() {
                       {!done && (
                         <Button size="sm" variant="outline" onClick={() => setDepositGoal(g)}
                           className="flex-1 text-xs h-8 rounded hover:bg-primary hover:text-primary-foreground transition-colors">
-                          <Plus size={12} className="mr-1" /> Registrar
+                          <MsIcon name="add" size={12} className="mr-1" /> Registrar
                         </Button>
                       )}
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => { setEditingGoal(g); setShowGoalModal(true); }}
                           className="p-1.5 hover:bg-surface-container rounded text-muted-foreground" aria-label="Editar">
-                          <Pencil size={12} />
+                          <MsIcon name="edit" size={12} />
                         </button>
                         <button onClick={() => handleDeleteGoal(g.id)}
                           className="p-1.5 hover:bg-red-50 rounded text-red-400" aria-label="Excluir">
-                          <Trash2 size={12} />
+                          <MsIcon name="delete" size={12} />
                         </button>
                       </div>
                     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Columns3 } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 
 /**
  * Manual column mapping UI for CSV imports when auto-detection fails.
@@ -47,12 +47,12 @@ export default function ColumnMapper({ headers, onApply, onCancel }) {
   return (
     <div className="space-y-4 p-4 bg-muted/30 rounded border">
       <div className="flex items-center gap-2 text-sm font-semibold">
-        <Columns3 size={16} />
+        <MsIcon name="view_column" size={16} />
         Mapeamento Manual de Colunas
       </div>
 
       <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700">
-        <AlertTriangle size={13} />
+        <MsIcon name="warning" size={13} />
         <span>Não foi possível detectar as colunas automaticamente. Mapeie manualmente abaixo.</span>
       </div>
 

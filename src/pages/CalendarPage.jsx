@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
-import { ChevronLeft, ChevronRight, Plus, X, CreditCard, Calendar, Download, Pencil, Trash2 } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,7 +12,6 @@ import TransactionModal from '@/components/finance/TransactionModal';
 import { cn } from '@/lib/utils';
 // store imports removed — using useCards() hook instead
 import { getCategoryIcon } from '@/lib/categories';
-import MsIcon from '@/components/ui/ms-icon';
 import { useTransactions, useGoals, useCards } from '@/hooks/useData';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -196,12 +195,12 @@ export default function CalendarPage() {
             </span>
           </div>
           <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => exportCalendarCSV(monthTx, cards, currentMonth, currentYear)}>
-            <Download size={13} className="mr-1" /> CSV
+            <MsIcon name="download" size={13} className="mr-1" /> CSV
           </Button>
           <div className="flex items-center gap-1 bg-card border rounded px-2 py-1">
-            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><ChevronLeft size={14} /></button>
+            <button onClick={() => navigate(-1)} className="p-1 hover:bg-muted rounded" aria-label="Mês anterior"><MsIcon name="chevron_left" size={14} /></button>
             <span className="text-sm font-medium px-3 min-w-[130px] text-center">{MONTH_NAMES[currentMonth]} {currentYear}</span>
-            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><ChevronRight size={14} /></button>
+            <button onClick={() => navigate(1)} className="p-1 hover:bg-muted rounded" aria-label="Próximo mês"><MsIcon name="chevron_right" size={14} /></button>
           </div>
         </div>
       </div>
@@ -292,7 +291,7 @@ export default function CalendarPage() {
                             </span>
                           )}
                           {eventCount > 0 && txCount === 0 && (
-                            <CreditCard size={10} className={cn(isSelected ? "text-primary-foreground/60" : "text-muted-foreground")} />
+                            <MsIcon name="credit_card" size={10} className={cn(isSelected ? "text-primary-foreground/60" : "text-muted-foreground")} />
                           )}
                         </>
                       ) : (
@@ -322,10 +321,10 @@ export default function CalendarPage() {
                   </CardTitle>
                   <div className="flex gap-1">
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => handleAddOnDay(selectedDay)}>
-                      <Plus size={12} className="mr-1" /> Novo
+                      <MsIcon name="add" size={12} className="mr-1" /> Novo
                     </Button>
                     <button onClick={() => setSelectedDay(null)} className="p-1 hover:bg-muted rounded text-muted-foreground" aria-label="Fechar">
-                      <X size={14} />
+                      <MsIcon name="close" size={14} />
                     </button>
                   </div>
                 </div>
@@ -343,7 +342,7 @@ export default function CalendarPage() {
                           evt.type === 'closing' ? 'bg-blue-50 border-blue-200 text-blue-800' : 'bg-amber-50 border-amber-200 text-amber-800'
                         )}
                       >
-                        <CreditCard size={14} />
+                        <MsIcon name="credit_card" size={14} />
                         <div className="flex-1">
                           <span className="font-semibold">{evt.card.name}</span>
                           <span className="ml-1 opacity-70">
@@ -418,14 +417,14 @@ export default function CalendarPage() {
                                 className="p-1 hover:bg-blue-50 rounded text-muted-foreground hover:text-blue-600"
                                 aria-label="Editar"
                               >
-                                <Pencil size={12} />
+                                <MsIcon name="edit" size={12} />
                               </button>
                               <button
                                 onClick={() => handleDeleteTx(t.id)}
                                 className="p-1 hover:bg-red-50 rounded text-muted-foreground hover:text-red-600"
                                 aria-label="Excluir"
                               >
-                                <Trash2 size={12} />
+                                <MsIcon name="delete" size={12} />
                               </button>
                             </div>
                           </div>
@@ -439,7 +438,7 @@ export default function CalendarPage() {
           ) : (
             <Card className="border-0 shadow-card">
               <CardContent className="p-6 text-center text-muted-foreground">
-                <Calendar size={24} className="mx-auto mb-2 opacity-40" />
+                <MsIcon name="calendar_month" size={24} className="mx-auto mb-2 opacity-40" />
                 <p className="text-sm">Clique em um dia para ver os lançamentos</p>
               </CardContent>
             </Card>
@@ -494,7 +493,7 @@ export default function CalendarPage() {
                         onClick={() => setCardStatementCard(evt.card)}
                         className="flex items-center gap-2 text-xs w-full text-left hover:bg-muted/50 rounded px-1 py-0.5 transition-colors"
                       >
-                        <CreditCard size={12} className={evt.type === 'closing' ? 'text-blue-500' : 'text-amber-500'} />
+                        <MsIcon name="credit_card" size={12} className={evt.type === 'closing' ? 'text-blue-500' : 'text-amber-500'} />
                         <span className="text-muted-foreground">{evt.day}/{String(currentMonth + 1).padStart(2, '0')}</span>
                         <span className="font-medium truncate flex-1">{evt.card.name}</span>
                         <span className={cn("text-[10px]", evt.type === 'closing' ? 'text-blue-600' : 'text-amber-600')}>

@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { CalendarClock, ChevronDown, ChevronRight } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, filterByMonth, calcTotals, getLast6Months, getCurrentMonthKey, getMonthKey, toMonthKey } from '@/lib/financeUtils';
@@ -109,7 +109,7 @@ export default function CashFlowForecast({ transactions }) {
     <div className="bg-surface border border-surface-border rounded-lg shadow-sm overflow-hidden flex flex-col group">
       <div className="p-3 border-b border-surface-border flex items-center justify-between">
         <h3 className="text-sm font-semibold flex items-center gap-2">
-          <CalendarClock size={18} /> Fluxo de Caixa — Previsão
+          <MsIcon name="calendar_month" size={18} /> Fluxo de Caixa — Previsão
         </h3>
         <Select value={months.toString()} onValueChange={v => setMonths(parseInt(v))}>
           <SelectTrigger className="w-[100px] h-8 text-xs"><SelectValue /></SelectTrigger>
@@ -167,7 +167,7 @@ export default function CashFlowForecast({ transactions }) {
             onClick={() => setShowDetails(!showDetails)}
             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-on-surface transition-colors font-medium"
           >
-            {showDetails ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            {showDetails ? <MsIcon name="expand_more" size={12} /> : <MsIcon name="chevron_right" size={12} />}
             {showDetails ? 'Ocultar' : 'Ver'} detalhamento mensal
           </button>
         </div>
