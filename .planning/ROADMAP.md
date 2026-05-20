@@ -288,10 +288,10 @@ Several P0/P1 features are missing that limit the app's value. Users cannot mana
 **Plans:** 5 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Enhanced global search (all entities) + Goal timeline visualization
-- [ ] 03-02-PLAN.md — Budget comparison dashboard with sparklines
-- [ ] 03-03-PLAN.md — Investment tracking v1 (portfolio page with allocation pie chart)
-- [ ] 03-04-PLAN.md — Notification preferences + Bill reminders + Dashboard insights
+- [x] 03-01-PLAN.md — Enhanced global search (all entities) + Goal timeline visualization
+- [x] 03-02-PLAN.md — Budget comparison dashboard with sparklines
+- [x] 03-03-PLAN.md — Investment tracking v1 (portfolio page with allocation pie chart)
+- [x] 03-04-PLAN.md — Notification preferences + Bill reminders + Dashboard insights
 - [ ] 03-05-PLAN.md — Recurring transactions page + Route/navigation wiring
 **UI hint:** yes
 
