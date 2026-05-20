@@ -290,6 +290,108 @@ function InvestmentHistoryModal({ open, onClose, goal, transactions }) {
   );
 }
 
+// ═══ Goal Timeline Component ═══
+const STATUS_ORDER = { overdue: 0, 'at-risk': 1, 'on-track': 2, completed: 3, 'no-deadline': 4 };
+const STATUS_LABELS = {
+  completed: 'Concluído',
+  'on-track': 'No prazo',
+  'at-risk': 'Atenção',
+  overdue: 'Vencido',
+  'no-deadline': 'Sem prazo',
+};
+const STATUS_COLORS = {
+  completed: { badge: 'bg-emerald-100 text-emerald-700 border-emerald-200', border: 'border-l-emerald-500' },
+  'on-track': { badge: 'bg-blue-100 text-blue-700 border-blue-200', border: 'border-l-blue-500' },
+  'at-risk': { badge: 'bg-amber-100 text-amber-700 border-amber-200', border: 'border-l-amber-500' },
+  overdue: { badge: 'bg-red-100 text-red-700 border-red-200', border: 'border-l-red-500' },
+  'no-deadline': { badge: 'bg-muted text-muted-foreground border-border', border: 'border-l-gray-300' },
+};
+
+function getGoalStatus(goal, progress) {
+  if (!goal.deadline) return 'no-deadline';
+  const pct = goal.targetValue > 0 ? (progress / goal.targetValue) * 100 : 0;
+  if (pct >= 100) return 'completed';
+  const days = Math.ceil((new Date(goal.deadline) - new Date()) / 86400000);
+  if (days < 0) return 'overdue';
+  if (days <= 30 && pct < 50) return 'at-risk';
+  return 'on-track';
+}
+
+function GoalTimeline({ goals, transactions }) {
+  const timelineItems = goals
+    .map(g => {
+      const progress = getGoalProgress(g, transactions);
+      const pct = g.targetValue > 0 ? Math.min(100, (progress / g.targetValue) * 100) : 0;
+      const days = g.deadline ? Math.ceil((new Date(g.deadline) - new Date()) / 86400000) : null;
+      const status = getGoalStatus(g, progress);
+      return { goal: g, progress, pct, days, status };
+    })
+    .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+
+  const hasDeadlines = goals.some(g => g.deadline);
+
+  if (!hasDeadlines) {
+    return (
+      <div className="text-center py-6 text-sm text-muted-foreground">
+        Defina prazos nas metas para visualizar o cronograma
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {timelineItems.map(({ goal, pct, days, status }) => {
+        const colors = STATUS_COLORS[status];
+        const deadlineText = days === null
+          ? ''
+          : days < 0
+            ? `vencido há ${Math.abs(days)}d`
+            : days === 0
+              ? 'vence hoje'
+              : `vence em ${days}d`;
+
+        return (
+          <div
+            key={goal.id}
+            className={cn(
+              "bg-surface border border-surface-border p-card-padding border-l-4",
+              colors.border
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <p className="font-title text-title truncate">{goal.name}</p>
+                <span className={cn("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", colors.badge)}>
+                  {STATUS_LABELS[status]}
+                </span>
+              </div>
+              {deadlineText && (
+                <span className="text-xs text-muted-foreground shrink-0 ml-2 flex items-center gap-1">
+                  <MsIcon name="event" size={12} />
+                  {deadlineText}
+                </span>
+              )}
+            </div>
+
+            {/* Progress bar */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct}%`, background: goal.color || '#10b981' }}
+                />
+              </div>
+              <span className="text-xs font-mono-number tabular-nums text-muted-foreground shrink-0">
+                {Math.round(pct)}%
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Goals() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -361,6 +463,14 @@ export default function Goals() {
               onHistory={g => setHistoryGoal(g)}
             />
           ))}
+        </div>
+      )}
+
+      {/* Timeline section */}
+      {goals.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="font-headline text-headline">Cronograma das Metas</h2>
+          <GoalTimeline goals={goals} transactions={transactions} />
         </div>
       )}
 
