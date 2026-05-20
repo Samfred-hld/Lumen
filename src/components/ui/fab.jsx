@@ -4,30 +4,30 @@
 // Mobile-friendly quick action button.
 
 import React, { useState } from 'react';
-import { Plus, TrendingUp, TrendingDown, X } from 'lucide-react';
+import MsIcon from '@/components/ui/ms-icon';
 import { cn } from '@/lib/utils';
 
 export default function FAB({ onNewIncome, onNewExpense, onNewTransaction }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 flex flex-col-reverse items-center gap-3 md:hidden">
+    <div className="fixed bottom-24 right-6 z-50 flex flex-col-reverse items-center gap-3 md:hidden">
       {/* Sub-actions */}
       {expanded && (
         <>
           <button
             onClick={() => { setExpanded(false); onNewIncome?.(); }}
-            className="w-12 h-12 rounded-full bg-emerald-500 text-white shadow-elevated flex items-center justify-center hover:bg-emerald-600 active:scale-95 transition-all animate-fade-in"
+            className="w-12 h-12 rounded-full bg-success text-white shadow-elevated flex items-center justify-center hover:bg-success/90 active:scale-95 transition-all animate-fade-in"
             aria-label="Nova receita"
           >
-            <TrendingUp size={20} />
+            <MsIcon name="trending_up" size={20} />
           </button>
           <button
             onClick={() => { setExpanded(false); onNewExpense?.(); }}
-            className="w-12 h-12 rounded-full bg-red-500 text-white shadow-elevated flex items-center justify-center hover:bg-red-600 active:scale-95 transition-all animate-fade-in"
+            className="w-12 h-12 rounded-full bg-danger text-white shadow-elevated flex items-center justify-center hover:bg-danger/90 active:scale-95 transition-all animate-fade-in"
             aria-label="Nova despesa"
           >
-            <TrendingDown size={20} />
+            <MsIcon name="trending_down" size={20} />
           </button>
         </>
       )}
@@ -47,7 +47,7 @@ export default function FAB({ onNewIncome, onNewExpense, onNewTransaction }) {
         )}
         aria-label={expanded ? "Fechar" : "Nova transação"}
       >
-        {expanded ? <X size={24} /> : <Plus size={24} />}
+        {expanded ? <MsIcon name="close" size={24} /> : <MsIcon name="add" size={24} />}
       </button>
     </div>
   );
