@@ -5,6 +5,21 @@
 import React from 'react';
 import MsIcon from '@/components/ui/ms-icon';
 
+window.addEventListener('error', (event) => {
+  const payload = {
+    component: 'window.onerror',
+    message: event.message || event.error?.message || 'Unknown error',
+    stack: event.error?.stack || '',
+    timestamp: new Date().toISOString(),
+    url: window.location.href,
+    userAgent: navigator.userAgent,
+    source: event.filename || '',
+    line: event.lineno || 0,
+    col: event.colno || 0,
+  };
+  console.error('[CRASH]', JSON.stringify(payload));
+});
+
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -16,7 +31,16 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('[Lúmen ErrorBoundary]', error, errorInfo);
+    const crashPayload = {
+      component: errorInfo?.componentStack?.split('\n')?.[0]?.trim() || 'Unknown',
+      message: error?.message || 'Unknown error',
+      stack: error?.stack || '',
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+    };
+    console.error('[CRASH]', JSON.stringify(crashPayload));
+    console.error('[CRASH]', error?.message, errorInfo?.componentStack?.split('\n')?.slice(0, 3)?.join(' → '));
   }
 
   render() {
