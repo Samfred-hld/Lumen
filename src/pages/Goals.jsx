@@ -324,7 +324,7 @@ export default function Goals() {
   const totalCurrent = goals.reduce((s, g) => s + getGoalProgress(g, transactions), 0);
 
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-5">
+    <div className="py-xl max-w-5xl mx-auto space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Metas</h1>

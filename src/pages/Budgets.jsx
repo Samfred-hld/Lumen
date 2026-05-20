@@ -170,7 +170,7 @@ export default function Budgets() {
   }, 0);
 
   return (
-    <div className="p-4 lg:p-6 max-w-4xl mx-auto space-y-5">
+    <div className="py-xl max-w-4xl mx-auto space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Orçamentos</h1>

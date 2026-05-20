@@ -163,7 +163,7 @@ export default function Reports() {
   }));
 
   return (
-    <div ref={reportRef} className="p-4 lg:p-6 max-w-6xl mx-auto space-y-6">
+    <div ref={reportRef} className="py-xl max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
