@@ -239,8 +239,8 @@ The codebase has accumulated fragmentation during rapid feature development. Thr
 
 Plans:
 - [x] 02-01-PLAN.md — Icon migration: create iconMap.js + migrate 22 custom files from lucide-react to MsIcon
-- [ ] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
-- [ ] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
+- [x] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
+- [x] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
 - [ ] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
 - [ ] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
 **UI hint:** yes
@@ -289,8 +289,8 @@ Several P0/P1 features are missing that limit the app's value. Users cannot mana
 
 Plans:
 - [x] 02-01-PLAN.md — Icon migration: create iconMap.js + migrate 22 custom files from lucide-react to MsIcon
-- [ ] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
-- [ ] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
+- [x] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
+- [x] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
 - [ ] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
 - [ ] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
 **UI hint:** yes
