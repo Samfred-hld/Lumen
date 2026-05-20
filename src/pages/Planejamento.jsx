@@ -7,7 +7,7 @@ import GoalCard from '@/components/finance/GoalCard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatCurrency, filterByMonth, getMonthKey, getGoalProgress, calcTotals } from '@/lib/financeUtils';
-import { DEFAULT_CATEGORIES, MONTH_NAMES } from '@/lib/categories';
+import { DEFAULT_CATEGORIES, MONTH_NAMES, CAT_COLORS } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useBudgets, useTransactions, useGoals } from '@/hooks/useData';
@@ -28,6 +28,7 @@ export default function Planejamento() {
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [depositGoal, setDepositGoal] = useState(null);
+  const [activeTab, setActiveTab] = useState('orcamentos');
 
   const monthBudgets = useMemo(() => budgets.filter(b => b.month === monthKey), [budgets, monthKey]);
   const monthTx = useMemo(() => filterByMonth(transactions, currentYear, currentMonth), [transactions, currentYear, currentMonth]);
@@ -67,6 +68,28 @@ export default function Planejamento() {
         </div>
       </section>
 
+      {/* Tab Navigation */}
+      <div className="flex gap-1 bg-muted/50 p-1 rounded">
+        {[
+          { id: 'orcamentos', label: 'Orçamentos', icon: 'account_balance' },
+          { id: 'comparacao', label: 'Comparação', icon: 'compare_arrows' },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded text-sm font-medium transition-all duration-200",
+              activeTab === tab.id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <MsIcon name={tab.icon} size={14} />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Orcamentos Tab */}
+      {activeTab === 'orcamentos' && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
         <div className="lg:col-span-8 space-y-lg">
           <div className="flex items-center justify-between border-b border-surface-border pb-base">
@@ -129,6 +152,72 @@ export default function Planejamento() {
           })()}
         </div>
       </div>
+      )}
+
+      {/* Comparacao Tab */}
+      {activeTab === 'comparacao' && (
+        <div className="space-y-lg">
+          {monthBudgets.length === 0 ? (
+            <div className="bg-surface border border-surface-border p-xl text-center">
+              <MsIcon name="compare_arrows" size={40} className="text-muted-foreground mx-auto mb-md" />
+              <p className="text-muted-foreground text-sm mb-md">Nenhum orçamento para comparar. Crie orçamentos na aba 'Orçamentos'.</p>
+              <Button size="sm" onClick={() => setActiveTab('orcamentos')}>
+                <MsIcon name="account_balance" size={14} className="mr-1" /> Ir para Orçamentos
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-surface border border-surface-border rounded overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-surface-border bg-surface-container-low">
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Categoria</th>
+                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Orçamento</th>
+                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Gasto</th>
+                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">% Usado</th>
+                    <th className="text-center py-3 px-4 font-medium text-muted-foreground">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthBudgets.map(b => {
+                    const spent = monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((s, t) => s + (t.value || 0), 0);
+                    const pct = b.limit > 0 ? (spent / b.limit) * 100 : 0;
+                    const color = CAT_COLORS[b.category] || '#94a3b8';
+                    const statusColor = pct > 100 ? 'text-red-500' : pct > 80 ? 'text-amber-500' : 'text-emerald-500';
+                    const statusIcon = pct > 100 ? 'error' : pct > 80 ? 'warning' : 'check_circle';
+                    return (
+                      <tr key={b.id} className="border-b border-surface-border last:border-0 hover:bg-surface-container-low/50 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
+                            <span className="font-medium">{b.category}</span>
+                          </div>
+                        </td>
+                        <td className="text-right py-3 px-4 font-mono-number tabular-nums">{formatCurrency(b.limit)}</td>
+                        <td className="text-right py-3 px-4 font-mono-number tabular-nums">{formatCurrency(spent)}</td>
+                        <td className="text-right py-3 px-4 font-mono-number tabular-nums">{pct.toFixed(0)}%</td>
+                        <td className="text-center py-3 px-4">
+                          <MsIcon name={statusIcon} size={18} className={statusColor} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-surface-container-low font-medium">
+                    <td className="py-3 px-4">Total</td>
+                    <td className="text-right py-3 px-4 font-mono-number tabular-nums">{formatCurrency(monthBudgets.reduce((s, b) => s + (b.limit || 0), 0))}</td>
+                    <td className="text-right py-3 px-4 font-mono-number tabular-nums">{formatCurrency(monthBudgets.reduce((s, b) => s + monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((a, t) => a + (t.value || 0), 0), 0))}</td>
+                    <td className="text-right py-3 px-4 font-mono-number tabular-nums">
+                      {(() => { const totalLimit = monthBudgets.reduce((s, b) => s + (b.limit || 0), 0); const totalSpent = monthBudgets.reduce((s, b) => s + monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((a, t) => a + (t.value || 0), 0), 0); return totalLimit > 0 ? `${(totalSpent / totalLimit * 100).toFixed(0)}%` : '0%'; })()}
+                    </td>
+                    <td className="text-center py-3 px-4">-</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       <GoalModal open={showGoalModal} onClose={() => { setShowGoalModal(false); setEditingGoal(null); }} onSave={handleSaveGoal} goal={editingGoal} />
       <DepositModal open={!!depositGoal} onClose={() => setDepositGoal(null)} onSave={handleDeposit} goal={depositGoal} />
