@@ -99,11 +99,35 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const updateEmail = async (newEmail) => {
+    const { data, error } = await supabase.auth.updateUser({ email: newEmail });
+    if (error) throw error;
+    return data;
+  };
+
+  const deleteAccount = async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession) throw new Error('No active session');
+
+    const { error } = await supabase.functions.invoke('delete-account', {
+      headers: { Authorization: `Bearer ${currentSession.access_token}` }
+    });
+    if (error) throw error;
+    await logout();
+  };
+
+  const getSession = async () => {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data;
+  };
+
   return (
     <AuthContext.Provider value={{
       user, session, isAuthenticated, isLoadingAuth, isLoadingPublicSettings,
       authError, appPublicSettings, authChecked,
       login, signup, logout, resetPassword, updatePassword,
+      updateEmail, deleteAccount, getSession,
       checkAuthState
     }}>
       {children}
