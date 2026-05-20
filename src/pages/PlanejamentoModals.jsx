@@ -5,8 +5,10 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdaptiveModal } from '@/components/ui/adaptive-modal';
 import { clampDateInput } from '@/lib/financeUtils';
+import { INVESTMENT_TYPES } from '@/lib/insights';
 import { cn } from '@/lib/utils';
 
 const GOAL_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316'];
@@ -19,28 +21,31 @@ const goalSchema = z.object({
   description: z.string().optional(),
 });
 
-export function GoalModal({ open, onClose, onSave, goal }) {
+export function GoalModal({ open, onClose, onSave, goal, defaultInvestmentType = '' }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(goalSchema),
     defaultValues: { name: '', targetValue: undefined, currentValue: undefined, deadline: '', description: '' },
   });
   const [progressMode, setProgressMode] = useState('linked');
   const [color, setColor] = useState('#10b981');
+  const [investmentType, setInvestmentType] = useState('');
 
   React.useEffect(() => {
     if (goal) {
       reset({ name: goal.name || '', targetValue: goal.targetValue || undefined, currentValue: goal.currentValue ?? undefined, deadline: goal.deadline || '', description: goal.description || goal.icon || '' });
       setColor(goal.color || '#10b981');
       setProgressMode(goal.progressMode || 'linked');
+      setInvestmentType(goal.investmentType || '');
     } else {
       reset({ name: '', targetValue: undefined, currentValue: undefined, deadline: '', description: '' });
       setColor('#10b981');
       setProgressMode('linked');
+      setInvestmentType(defaultInvestmentType || '');
     }
-  }, [goal, open, reset]);
+  }, [goal, open, reset, defaultInvestmentType]);
 
   const onSubmit = (data) => {
-    onSave({ ...data, color, progressMode, currentValue: progressMode === 'manual' && data.currentValue !== undefined ? data.currentValue : null });
+    onSave({ ...data, color, progressMode, investmentType: investmentType || null, currentValue: progressMode === 'manual' && data.currentValue !== undefined ? data.currentValue : null });
   };
 
   return (
@@ -74,6 +79,19 @@ export function GoalModal({ open, onClose, onSave, goal }) {
             onChange={(e) => register('deadline').onChange({ target: { value: clampDateInput(e.target.value), name: 'deadline' } })} className="mt-1" />
         </div>
         <div><Label>Descricao</Label><Input {...register('description')} className="mt-1" placeholder="Opcional..." /></div>
+        <div>
+          <Label>Tipo de Investimento</Label>
+          <Select value={investmentType} onValueChange={setInvestmentType}>
+            <SelectTrigger className="mt-1">
+              <SelectValue placeholder="Selecione (opcional)" />
+            </SelectTrigger>
+            <SelectContent>
+              {INVESTMENT_TYPES.map(t => (
+                <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div>
           <Label>Cor</Label>
           <div className="flex gap-2 mt-1">
