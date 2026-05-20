@@ -117,6 +117,7 @@ const DEFAULT_DASH_SECTIONS = [
   { id: 'planejado', label: 'Planejado vs Real', visible: true },
   { id: 'previsao', label: 'Previsão', visible: true },
   { id: 'vencimentos', label: 'Próximos Vencimentos', visible: true },
+  { id: 'insights', label: 'Insights Financeiros', visible: true },
 ];
 export function getDashSections() {
   const raw = getLocal('dashSections', DEFAULT_DASH_SECTIONS);

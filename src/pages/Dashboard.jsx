@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/api/supabaseClient';
-import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey, getGoalProgress } from '@/lib/financeUtils';
+import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey, getGoalProgress, toMonthKey } from '@/lib/financeUtils';
+import { subMonths } from 'date-fns';
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import TransactionModal from '@/components/finance/TransactionModal';
@@ -19,6 +20,191 @@ import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
 import GoalsSection from '@/components/dashboard/GoalsSection';
 import MsIcon from '@/components/ui/ms-icon';
 import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
+
+// ═══ Insights Section Component ═══
+function InsightsSection({ transactions, budgets, goals, currentMonth, currentYear }) {
+  const insights = React.useMemo(() => {
+    const result = [];
+    const monthKey = getMonthKey(currentYear, currentMonth);
+    const currentMonthTx = transactions.filter(t => t.date?.startsWith(monthKey));
+    const expenseTx = currentMonthTx.filter(t => t.type === 'expense');
+
+    if (expenseTx.length < 2) return [];
+
+    // Current month category breakdown
+    const currentByCategory = {};
+    expenseTx.forEach(t => {
+      const cat = t.category || 'Outros';
+      currentByCategory[cat] = (currentByCategory[cat] || 0) + (t.value || 0);
+    });
+    const currentTotal = expenseTx.reduce((s, t) => s + (t.value || 0), 0);
+    const currentEntries = Object.entries(currentByCategory).sort((a, b) => b[1] - a[1]);
+
+    // Previous month data
+    const prevDate = subMonths(new Date(currentYear, currentMonth), 1);
+    const prevKey = toMonthKey(prevDate);
+    const prevMonthTx = transactions.filter(t => t.date?.startsWith(prevKey) && t.type === 'expense');
+    const prevByCategory = {};
+    prevMonthTx.forEach(t => {
+      const cat = t.category || 'Outros';
+      prevByCategory[cat] = (prevByCategory[cat] || 0) + (t.value || 0);
+    });
+
+    // Last 3 months averages
+    const last3Totals = {};
+    for (let i = 1; i <= 3; i++) {
+      const d = subMonths(new Date(currentYear, currentMonth), i);
+      const key = toMonthKey(d);
+      const tx = transactions.filter(t => t.date?.startsWith(key) && t.type === 'expense');
+      tx.forEach(t => {
+        const cat = t.category || 'Outros';
+        last3Totals[cat] = (last3Totals[cat] || 0) + (t.value || 0);
+      });
+    }
+    Object.keys(last3Totals).forEach(cat => { last3Totals[cat] /= 3; });
+
+    // 1. Spending anomaly (priority 1)
+    for (const [cat, current] of currentEntries) {
+      const avg = last3Totals[cat];
+      if (avg > 0 && current > avg * 2) {
+        const multiplier = (current / avg).toFixed(1);
+        result.push({
+          id: `anomaly-${cat}`,
+          icon: 'warning',
+          title: `Gasto anômalo em ${cat}`,
+          description: `Gasto em ${cat} está ${multiplier}x acima da média dos últimos 3 meses.`,
+          type: 'anomaly',
+        });
+        break;
+      }
+    }
+
+    // 2. Top category change (priority 2)
+    for (const [cat, current] of currentEntries) {
+      const prev = prevByCategory[cat];
+      if (prev > 0) {
+        const change = ((current - prev) / prev) * 100;
+        if (change > 30) {
+          result.push({
+            id: `change-${cat}`,
+            icon: 'trending_up',
+            title: `Aumento em ${cat}`,
+            description: `Seus gastos em ${cat} aumentaram ${Math.round(change)}% em relação ao mês anterior.`,
+            type: 'change',
+          });
+          break;
+        }
+      }
+    }
+
+    // 3. Budget adherence (priority 3)
+    const monthBudgets = budgets.filter(b => b.month === monthKey);
+    if (monthBudgets.length > 0) {
+      const overBudget = monthBudgets.filter(b => {
+        const spent = expenseTx.filter(t => t.category === b.category).reduce((s, t) => s + t.value, 0);
+        return spent > b.limit;
+      });
+      if (overBudget.length > 0) {
+        result.push({
+          id: 'budget-over',
+          icon: 'account_balance_wallet',
+          title: 'Orçamentos ultrapassados',
+          description: `${overBudget.length} orçamento(s) ultrapassado(s) este mês: ${overBudget.map(b => b.category).join(', ')}.`,
+          type: 'anomaly',
+        });
+      } else {
+        result.push({
+          id: 'budget-ok',
+          icon: 'check_circle',
+          title: 'Orçamentos dentro do limite',
+          description: 'Todos os seus orçamentos estão dentro do limite este mês. Continue assim!',
+          type: 'positive',
+        });
+      }
+    }
+
+    // 4. Savings rate (priority 4)
+    const monthIncome = currentMonthTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.value || 0), 0);
+    const monthInvestment = currentMonthTx.filter(t => t.type === 'investment').reduce((s, t) => s + (t.value || 0), 0);
+    if (monthIncome > 0) {
+      const savingsRate = (monthInvestment / monthIncome) * 100;
+      let savingsType = 'neutral';
+      if (savingsRate >= 20) savingsType = 'positive';
+      else if (savingsRate >= 10) savingsType = 'change';
+      else savingsType = 'anomaly';
+      result.push({
+        id: 'savings-rate',
+        icon: 'savings',
+        title: 'Taxa de poupança',
+        description: `Sua taxa de poupança é de ${savingsRate.toFixed(1)}% este mês.`,
+        type: savingsType,
+      });
+    }
+
+    // 5. Top merchant (priority 5)
+    const descCount = {};
+    currentMonthTx.forEach(t => {
+      const d = t.description || 'Sem descrição';
+      descCount[d] = (descCount[d] || 0) + 1;
+    });
+    const topDesc = Object.entries(descCount).sort((a, b) => b[1] - a[1])[0];
+    if (topDesc && topDesc[1] >= 2) {
+      result.push({
+        id: 'top-merchant',
+        icon: 'store',
+        title: 'Transação mais frequente',
+        description: `Sua transação mais frequente este mês é '${topDesc[0]}' (${topDesc[1]} vezes).`,
+        type: 'neutral',
+      });
+    }
+
+    return result.slice(0, 3);
+  }, [transactions, budgets, goals, currentMonth, currentYear]);
+
+  const typeColors = {
+    anomaly: 'border-l-red-500',
+    change: 'border-l-amber-500',
+    positive: 'border-l-emerald-500',
+    neutral: 'border-l-blue-500',
+  };
+
+  const iconColors = {
+    anomaly: 'text-red-500',
+    change: 'text-amber-500',
+    positive: 'text-emerald-500',
+    neutral: 'text-blue-500',
+  };
+
+  if (insights.length === 0) {
+    return (
+      <p className="text-muted-foreground text-sm text-center py-4">
+        Continue registrando transações para receber insights personalizados.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {insights.map(insight => (
+        <div
+          key={insight.id}
+          className={cn(
+            "bg-surface border border-surface-border p-card-padding border-l-4",
+            typeColors[insight.type]
+          )}
+        >
+          <div className="flex items-start gap-3">
+            <MsIcon name={insight.icon} size={24} className={cn("shrink-0 mt-0.5", iconColors[insight.type])} />
+            <div>
+              <h4 className="font-title text-title">{insight.title}</h4>
+              <p className="font-body-sm text-body-sm text-muted-foreground mt-1">{insight.description}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
@@ -225,6 +411,18 @@ export default function Dashboard() {
         return (
           <DashSection id="metas" title="Metas Ativas" color="bg-amber-500" defaultOpen={false}>
             <GoalsSection goals={goals} transactions={transactions} />
+          </DashSection>
+        );
+      case 'insights':
+        return (
+          <DashSection id="insights" title="Insights Financeiros" color="bg-primary" defaultOpen={true}>
+            <InsightsSection
+              transactions={transactions}
+              budgets={budgets}
+              goals={goals}
+              currentMonth={currentMonth}
+              currentYear={currentYear}
+            />
           </DashSection>
         );
       default: return null;
