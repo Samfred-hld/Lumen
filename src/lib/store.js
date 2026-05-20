@@ -8,7 +8,7 @@ export { getCards, saveCards, fetchCards, addCard, updateCard, deleteCard } from
 export { getRules, saveRules, fetchRules, addRule, deleteRule, suggestCategoryFromRules } from './store/rules';
 
 // ── Templates ──
-export { getTemplates, saveTemplates, fetchTemplates, addTemplate, deleteTemplate, syncTemplatesToCloud } from './store/templates';
+export { getTemplates, saveTemplates, fetchTemplates, addTemplate, updateTemplate, deleteTemplate, syncTemplatesToCloud } from './store/templates';
 
 // ── Settings ──
 export {

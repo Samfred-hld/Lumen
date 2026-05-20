@@ -48,6 +48,24 @@ export async function addTemplate(tpl) {
   }
 }
 
+export async function updateTemplate(id, updates) {
+  try {
+    const { data, error } = await supabase
+      .from('templates')
+      .update(updates)
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
+    await fetchTemplates();
+    return data || [];
+  } catch (err) {
+    console.error('[Store] Erro em updateTemplate:', err);
+    toast({ title: 'Erro ao atualizar template', variant: 'destructive' });
+    return [];
+  }
+}
+
 export async function deleteTemplate(id) {
   try {
     const { error } = await supabase
