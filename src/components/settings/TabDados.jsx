@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cloud, Wand2, Download, Upload, FileText, Receipt, History, ChevronDown, ChevronRight, Trash2, Check, AlertCircle } from 'lucide-react';
+import { Download, Upload, FileText, Receipt, History, ChevronDown, ChevronRight, Trash2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

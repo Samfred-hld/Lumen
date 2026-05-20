@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, Plus, ChevronLeft, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus, CreditCard, Settings } from 'lucide-react';
 import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey, getGoalProgress } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
@@ -11,7 +10,6 @@ import { useTransactions, useBudgets, useGoals, useCards } from '@/hooks/useData
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { lsGet, lsSet, getDashSections, getSalaryConfig, setOnboarded, fetchOnboarded, isOnboarded } from '@/lib/store';
-import { getCategoryIcon } from '@/lib/categories';
 import { checkDueDateNotifications } from '@/lib/notifications';
 import { KpiCard, getDelta } from '@/components/dashboard/KpiCard';
 import DashSection from '@/components/dashboard/DashSection';

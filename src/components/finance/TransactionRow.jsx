@@ -2,9 +2,8 @@
 // LÚMEN — Transaction Row Component
 // ══════════════════════════════════════════
 import React from 'react';
-import { Pencil, Trash2, Copy, Repeat, Layers } from 'lucide-react';
+import { Pencil, Trash2, Copy } from 'lucide-react';
 import { formatCurrency, formatSmartDate, isToday } from '@/lib/financeUtils';
-import { getCategoryColor } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import SwipeToDelete from '@/components/ui/swipe-to-delete';
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, TrendingDown, TrendingUp, QrCode, CreditCard, Banknote, FileText, Barcode, ArrowRightLeft, History, Bookmark, Settings } from 'lucide-react';
+import { Plus, TrendingDown, TrendingUp, QrCode, CreditCard, Banknote, ArrowRightLeft, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCategories } from '@/lib/categories';
 import { suggestCategoryFromRules, getQuickDraft, saveQuickDraft, clearQuickDraft } from '@/lib/store';

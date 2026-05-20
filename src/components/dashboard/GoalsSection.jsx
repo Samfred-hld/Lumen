@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/financeUtils';
 import { getGoalProgress } from '@/lib/financeUtils';
 

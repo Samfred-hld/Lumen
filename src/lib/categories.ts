@@ -4,7 +4,7 @@
 
 import { lsGet } from './store';
 
-export const DEFAULT_CATEGORIES = [
+export const DEFAULT_CATEGORIES: string[] = [
   // Renda
   'Salário',
   // Despesas do dia a dia
@@ -29,7 +29,7 @@ export const DEFAULT_CATEGORIES = [
   'Contas', 'Outros',
 ];
 
-export const CATEGORY_ICONS = {
+export const CATEGORY_ICONS: Record<string, string> = {
   'Salário': 'payments',
   'Alimentação': 'restaurant',
   'Compras online': 'shopping_cart',
@@ -65,7 +65,7 @@ export const CATEGORY_ICONS = {
   'Outros': 'more_horiz',
 };
 
-export const CAT_COLORS = {
+export const CAT_COLORS: Record<string, string> = {
   'Salário': '#10b981',
   'Alimentação': '#f59e0b',
   'Compras online': '#8b5cf6',
@@ -101,22 +101,22 @@ export const CAT_COLORS = {
   'Outros': '#94a3b8',
 };
 
-export const MONTH_NAMES = [
+export const MONTH_NAMES: string[] = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
 
-export const MONTH_SHORT = [
+export const MONTH_SHORT: string[] = [
   'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
   'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
 ];
 
-export const DAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+export const DAY_NAMES: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 // Get all categories (default + custom from cloud sync or localStorage)
-export function getCategories() {
+export function getCategories(): string[] {
   try {
-    const extra = lsGet('extraCats', []);
+    const extra: string[] = (lsGet as any)('extraCats', []) || [];
     return [...DEFAULT_CATEGORIES, ...extra];
   } catch {
     return DEFAULT_CATEGORIES;
@@ -124,22 +124,22 @@ export function getCategories() {
 }
 
 // Get Material Symbol icon name for a category
-export function getCategoryIcon(cat) {
+export function getCategoryIcon(cat: string): string {
   return CATEGORY_ICONS[cat] || 'more_horiz';
 }
 
 // Get Material Symbol name for category (alias — same mapping)
-export function getCategoryMsIcon(cat) {
+export function getCategoryMsIcon(cat: string): string {
   return CATEGORY_ICONS[cat] || 'more_horiz';
 }
 
 // Get color for a category
-export function getCategoryColor(cat) {
+export function getCategoryColor(cat: string): string {
   return CAT_COLORS[cat] || '#94a3b8';
 }
 
 // Brand labels for credit cards
-export const CARD_BRANDS = [
+export const CARD_BRANDS: { value: string; label: string }[] = [
   { value: 'visa', label: 'Visa' },
   { value: 'mastercard', label: 'Mastercard' },
   { value: 'elo', label: 'Elo' },
@@ -147,7 +147,7 @@ export const CARD_BRANDS = [
   { value: 'other', label: 'Outro' },
 ];
 
-export function getCardBrandLabel(brand) {
+export function getCardBrandLabel(brand: string): string {
   const found = CARD_BRANDS.find(b => b.value === brand);
   return found ? found.label : 'CC';
 }

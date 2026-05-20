@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TrendingUp, TrendingDown, Wallet, Receipt, FileText, CalendarClock, ChevronDown, ChevronRight, Download } from 'lucide-react';
+import { FileText, Download } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import MsIcon from '@/components/ui/ms-icon';
-import { formatCurrency, groupByCategory, calcTotals, getLast6Months, getCurrentMonthKey, filterByMonth, getMonthKey, toMonthKey } from '@/lib/financeUtils';
+import { formatCurrency, groupByCategory, calcTotals, getLast6Months, getMonthKey, toMonthKey } from '@/lib/financeUtils';
 import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
 import {
-  ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, Area, AreaChart
+  ResponsiveContainer, PieChart, Pie, Cell, Tooltip,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Area, AreaChart
 } from 'recharts';
-import { CHART_COLORS, CHART_TOOLTIP_STYLE, AXIS_STYLE, GRID_STYLE } from '@/lib/chartTheme';
+import { CHART_TOOLTIP_STYLE, AXIS_STYLE, GRID_STYLE } from '@/lib/chartTheme';
 import { cn } from '@/lib/utils';
 import { useTransactions, useBudgets } from '@/hooks/useData';
 import CashFlowForecast from '@/components/finance/CashFlowForecast';

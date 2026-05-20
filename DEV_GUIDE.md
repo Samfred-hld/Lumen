@@ -1,6 +1,6 @@
-# DEV_GUIDE — Rattio (Lúmen)
+# DEV_GUIDE — Lúmen
 
-Guia de desenvolvimento para o projeto Rattio. Consulte `design_lumen.md` para a referência completa do design system.
+Guia de desenvolvimento para o projeto Lúmen. Consulte `design_lumen.md` para a referência completa do design system.
 
 ---
 
@@ -11,17 +11,27 @@ Guia de desenvolvimento para o projeto Rattio. Consulte `design_lumen.md` para a
 | Framework | React 18 + Vite |
 | Styling | Tailwind CSS 3 + design tokens customizados |
 | Icons | **Material Symbols Outlined** (não lucide-react) |
-| State | React hooks + localStorage |
-| Data | Base44 SDK (`@base44/sdk`) |
+| State | React hooks + localStorage + TanStack React Query v5 |
+| Data | **Supabase** (`@supabase/supabase-js`) — PostgreSQL, Auth, Realtime |
 | Routing | react-router-dom v6 |
 | Forms | react-hook-form + zod |
 | Charts | recharts |
+
+---
+
+## ⚠️ Migração em andamento: Base44 → Supabase
+
+Este projeto está migrando do Base44 para o Supabase. Consulte `.planning/ROADMAP.md` Fase 0 para o plano completo.
+
+**Status atual:** Iniciando migração — Base44 ainda ativo, Supabase sendo configurado em paralelo.
+
+---
 
 ## Setup
 
 ```bash
 npm install
-cp .env.example .env.local   # configurar VITE_BASE44_APP_ID e VITE_BASE44_APP_BASE_URL
+cp .env.example .env.local   # configurar VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY
 npm run dev
 ```
 

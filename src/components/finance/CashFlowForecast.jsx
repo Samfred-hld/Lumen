@@ -4,11 +4,10 @@
 
 import React, { useState } from 'react';
 import { CalendarClock, ChevronDown, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, filterByMonth, calcTotals, getLast6Months, getCurrentMonthKey, getMonthKey, toMonthKey } from '@/lib/financeUtils';
-import { CAT_COLORS, MONTH_NAMES } from '@/lib/categories';
+import { MONTH_NAMES } from '@/lib/categories';
 import {
   ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip
 } from 'recharts';

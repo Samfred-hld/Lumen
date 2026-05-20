@@ -1,6 +1,5 @@
 import React from 'react';
 import { Lightbulb, DollarSign, FileText, CreditCard, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { getSalaryConfig, getTemplates, getFinancings, getSuggestionsLog, setSuggestionApplied } from '@/lib/store';
 import { getMonthKey } from '@/lib/financeUtils';
 

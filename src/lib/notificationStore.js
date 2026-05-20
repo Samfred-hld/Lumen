@@ -15,7 +15,7 @@ export {
 } from './notifications';
 
 // Legacy alias: generateBudgetNotifications used in Layout.jsx
-import { createNotification, getNotifications as _getNotifications } from './notifications';
+import { createNotification } from './notifications';
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('pt-BR', {

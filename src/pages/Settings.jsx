@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/financeUtils';
 import { MONTH_NAMES } from '@/lib/categories';
-import { lsSet, addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig, getTheme, setTheme } from '@/lib/store';
+import { addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig, getTheme, setTheme } from '@/lib/store';
 import { getCategories } from '@/lib/categories';
 import { useCards, useTransactions, useBudgets, useGoals } from '@/hooks/useData';
 import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react';
