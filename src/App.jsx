@@ -11,6 +11,7 @@ import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
 import Investments from './pages/Investments';
+import Recurring from './pages/Recurring';
 import Planejamento from './pages/Planejamento';
 import CalendarPage from './pages/CalendarPage';
 import Reports from './pages/Reports';
@@ -85,6 +86,7 @@ const AppRoutes = () => {
         <Route path="/budgets" element={<ErrorBoundary><Budgets /></ErrorBoundary>} />
         <Route path="/goals" element={<ErrorBoundary><Goals /></ErrorBoundary>} />
         <Route path="/investments" element={<ErrorBoundary><Investments /></ErrorBoundary>} />
+        <Route path="/recurring" element={<ErrorBoundary><Recurring /></ErrorBoundary>} />
         <Route path="/calendar" element={<ErrorBoundary><CalendarPage /></ErrorBoundary>} />
         <Route path="/reports" element={<ErrorBoundary><Reports /></ErrorBoundary>} />
         <Route path="/settings" element={<ErrorBoundary><SettingsPage /></ErrorBoundary>} />

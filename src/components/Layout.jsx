@@ -27,9 +27,10 @@ const NAV_ITEMS = [
   { path: '/transactions', label: 'Transações', icon: 'receipt_long', shortcut: '2' },
   { path: '/planejamento', label: 'Planejamento', icon: 'account_balance', shortcut: '3' },
   { path: '/investments', label: 'Investimentos', icon: 'trending_up', shortcut: '4' },
-  { path: '/calendar', label: 'Calendário', icon: 'calendar_today', shortcut: '5' },
-  { path: '/reports', label: 'Relatórios', icon: 'bar_chart', shortcut: '6' },
-  { path: '/settings', label: 'Configurações', icon: 'settings', shortcut: '7' },
+  { path: '/recurring', label: 'Recorrentes', icon: 'repeat', shortcut: '5' },
+  { path: '/calendar', label: 'Calendário', icon: 'calendar_today', shortcut: '6' },
+  { path: '/reports', label: 'Relatórios', icon: 'bar_chart', shortcut: '7' },
+  { path: '/settings', label: 'Configurações', icon: 'settings', shortcut: '8' },
 ];
 
 const BOTTOM_NAV = [
@@ -66,7 +67,7 @@ function ShortcutsModal({ open, onClose }) {
     { keys: '/', desc: 'Buscar transações' },
     { keys: '←', desc: 'Mês anterior' },
     { keys: '→', desc: 'Próximo mês' },
-    { keys: '1-7', desc: 'Navegar para página' },
+    { keys: '1-8', desc: 'Navegar para página' },
     { keys: '?', desc: 'Mostrar atalhos' },
     { keys: 'Esc', desc: 'Fechar modal' },
   ];
@@ -229,7 +230,7 @@ export default function Layout() {
       setShowGlobalSearch(true);
       return;
     }
-    if (e.key >= '1' && e.key <= '7') {
+    if (e.key >= '1' && e.key <= '8') {
       const idx = parseInt(e.key) - 1;
       if (NAV_ITEMS[idx]) { e.preventDefault(); navigate(NAV_ITEMS[idx].path); }
       return;
