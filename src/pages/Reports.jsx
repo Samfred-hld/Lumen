@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { useTransactions, useBudgets } from '@/hooks/useData';
 import CashFlowForecast from '@/components/finance/CashFlowForecast';
 import Pagination from '@/components/ui/pagination';
+import ReportsSkeleton from '@/components/reports/ReportsSkeleton';
 
 
 export default function Reports() {
@@ -24,8 +25,8 @@ export default function Reports() {
   const DETAIL_PAGE_SIZE = 20;
   const reportRef = useRef(null);
 
-  const { data: transactions = [] } = useTransactions();
-  const { data: budgets = [] } = useBudgets();
+  const { data: transactions = [], isLoading: txLoading } = useTransactions();
+  const { data: budgets = [], isLoading: budgetsLoading } = useBudgets();
 
   const now = new Date();
 
@@ -155,6 +156,10 @@ export default function Reports() {
   const rvTotalOrcado = realVsPlanned.reduce((s, r) => s + r.orcado, 0);
   const rvTotalReal = realVsPlanned.reduce((s, r) => s + r.realizado, 0);
   const rvTotalDesvio = rvTotalReal - rvTotalOrcado;
+
+  if ((txLoading || budgetsLoading) && transactions.length === 0) {
+    return <ReportsSkeleton />;
+  }
 
   const rvChartData = realVsPlanned.map(r => ({
     name: r.category.length > 12 ? r.category.slice(0, 11) + '…' : r.category,

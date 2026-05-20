@@ -23,6 +23,7 @@ import * as XLSX from 'xlsx';
 import TransactionRow from '@/components/finance/TransactionRow';
 import TransactionInlineForm from '@/components/finance/TransactionInlineForm';
 import { KpiCard } from '@/components/dashboard/KpiCard';
+import TransactionsSkeleton from '@/components/finance/TransactionsSkeleton';
 
 export default function Transactions() {
   const [searchParams] = useSearchParams();
@@ -52,7 +53,7 @@ export default function Transactions() {
 
   const importingRef = useRef(false);
   const qc = useQueryClient();
-  const { data: transactions = [], refetch } = useTransactions(2000, importingRef);
+  const { data: transactions = [], isLoading, refetch } = useTransactions(2000, importingRef);
   const { data: goals = [] } = useGoals();
   const { data: cards = [] } = useCards();
 
@@ -332,6 +333,10 @@ export default function Transactions() {
   }, []);
 
   const TYPE_LABEL = { income: 'Receita', expense: 'Despesa', investment: 'Investimento', all: 'Todos' };
+
+  if (isLoading && transactions.length === 0) {
+    return <TransactionsSkeleton />;
+  }
 
   const handleExportExcel = () => {
     const rows = filtered.map(t => ({

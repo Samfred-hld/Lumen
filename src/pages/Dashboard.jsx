@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { formatCurrency, filterByMonth, calcTotals, groupByCategory, getCurrentMonthKey, getMonthKey, getGoalProgress } from '@/lib/financeUtils';
 import { useTransactionModal } from '@/lib/transactionModalStore';
@@ -18,6 +18,7 @@ import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
 import GoalsSection from '@/components/dashboard/GoalsSection';
 import MsIcon from '@/components/ui/ms-icon';
+import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 
 export default function Dashboard() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
@@ -29,15 +30,17 @@ export default function Dashboard() {
     const raw = getDashSections();
     return Array.isArray(raw) ? raw : [];
   });
+  const onboardingDismissed = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     async function checkOnboarding() {
+      if (onboardingDismissed.current) return;
       if (isOnboarded()) { checkDueDateNotifications(); return; }
       const cloudResult = await fetchOnboarded();
       if (cancelled) return;
       if (cloudResult && cloudResult !== 'false') { setOnboarded(); checkDueDateNotifications(); return; }
-      const timer = setTimeout(() => { if (!cancelled) setShowOnboarding(true); }, 800);
+      const timer = setTimeout(() => { if (!cancelled && !onboardingDismissed.current) setShowOnboarding(true); }, 800);
       return () => clearTimeout(timer);
     }
     checkOnboarding();
@@ -377,63 +380,7 @@ export default function Dashboard() {
                 : null;
 
   if (txLoading && transactions.length === 0 && goals.length === 0 && budgets.length === 0 && cards.length === 0) {
-    return (
-      <>
-        <section className="py-xl mb-md">
-          <p className="font-label-caps text-label-caps text-on-surface-variant tracking-[0.15em] mb-xs">DISPONÍVEL ESTE MÊS</p>
-          <div className="h-[60px] w-64 shimmer rounded" />
-          <div className="h-[1px] w-full bg-editorial-rule mt-md" />
-        </section>
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm md:gap-md mb-xl">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-surface border border-surface-border p-card-padding">
-              <div className="h-[3px] w-full shimmer mb-sm" />
-              <div className="h-3 w-24 shimmer rounded mb-sm" />
-              <div className="h-8 w-32 shimmer rounded" />
-            </div>
-          ))}
-        </section>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl mb-xl">
-          <section className="lg:col-span-8">
-            <div className="flex items-center justify-between mb-md pb-xs border-b border-surface-border">
-              <div className="h-5 w-40 shimmer rounded" />
-              <div className="h-4 w-20 shimmer rounded" />
-            </div>
-            <div className="flex flex-col">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="grid grid-cols-12 gap-md px-xs py-md border-b border-surface-border items-center">
-                  <div className="col-span-6 flex items-center gap-sm">
-                    <div className="w-8 h-8 rounded-full shimmer" />
-                    <div className="h-4 w-32 shimmer rounded" />
-                  </div>
-                  <div className="col-span-3"><div className="h-4 w-16 shimmer rounded" /></div>
-                  <div className="col-span-3 flex justify-end"><div className="h-4 w-20 shimmer rounded" /></div>
-                </div>
-              ))}
-            </div>
-          </section>
-          <section className="lg:col-span-4">
-            <div className="bg-surface border border-surface-border p-lg">
-              <div className="h-5 w-40 shimmer rounded mb-lg" />
-              <div className="flex flex-col items-center justify-center mb-xl">
-                <div className="w-48 h-48 rounded-full shimmer" />
-              </div>
-              <div className="space-y-md">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="flex flex-col gap-xs">
-                    <div className="flex justify-between">
-                      <div className="h-3 w-32 shimmer rounded" />
-                      <div className="h-3 w-16 shimmer rounded" />
-                    </div>
-                    <div className="h-1 w-full shimmer rounded" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        </div>
-      </>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -466,7 +413,7 @@ export default function Dashboard() {
       </div>
 
       <TransactionModal open={showModal} onClose={() => setShowModal(false)} onSave={handleSave} goals={goals} defaultType={defaultType} />
-      <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} />
+      <OnboardingModal open={showOnboarding} onClose={() => { onboardingDismissed.current = true; setOnboarded(); setShowOnboarding(false); }} />
       <DashCustomizeModal open={showCustomize} onClose={() => setShowCustomize(false)} onUpdate={(s) => setDashSections(s)} />
     </>
   );
