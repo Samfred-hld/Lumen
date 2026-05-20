@@ -242,7 +242,7 @@ Plans:
 - [x] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
 - [x] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
 - [x] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
-- [ ] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
+- [x] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
 **UI hint:** yes
 
 ---
@@ -292,7 +292,7 @@ Plans:
 - [x] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
 - [x] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
 - [x] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
-- [ ] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
+- [x] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
 **UI hint:** yes
 
 ---
