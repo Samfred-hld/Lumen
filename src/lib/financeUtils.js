@@ -74,6 +74,7 @@ export function getGoalProgress(goal, transactions) {
   if (mode === 'manual') {
     return goal.currentValue || 0;
   }
+  if (!transactions) return 0;
   // linked mode: sum transactions linked to this goal
   return transactions
     .filter(t => t.goalId === goal.id)
