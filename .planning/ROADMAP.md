@@ -47,7 +47,7 @@ Lúmen is a **production financial management app** for Brazilian users with:
 ## Phases
 
 - [x] **Phase 0: Base44 → Supabase Migration** — Replace Base44 BaaS with Supabase (auth, database, real-time, edge functions)
-- [ ] **Phase 1: Foundation Hardening** — Tests, TypeScript strict mode, linting, CI safeguards, monitoring
+- [x] **Phase 1: Foundation Hardening** — Tests, TypeScript strict mode, linting, CI safeguards, monitoring
 - [ ] **Phase 2: UI Consolidation** — Unify design system, consolidate duplicated components, fix UI-REVIEW issues
 - [ ] **Phase 3: Feature Gaps** — Investment tracking, recurring transactions UI, budget comparison, search, notifications
 - [ ] **Phase 4: Polish & Platform** — PWA, offline-first, user profile, analytics, remaining gaps
@@ -235,7 +235,14 @@ The codebase has accumulated fragmentation during rapid feature development. Thr
 6. All 8 pages render with uniform padding (`px-lg py-xl`); TransactionRow uses a single responsive render path
 7. Between auth completion and data arrival, skeleton placeholders display instead of zero-value flashes
 
-**Plans:** 7 (TBD)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Icon migration: create iconMap.js + migrate 22 custom files from lucide-react to MsIcon
+- [ ] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
+- [ ] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
+- [ ] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
+- [ ] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
 **UI hint:** yes
 
 ---
@@ -278,7 +285,14 @@ Several P0/P1 features are missing that limit the app's value. Users cannot mana
 6. Goals page shows a timeline visualization with overdue/at-risk highlighting
 7. Dashboard shows ≥3 automated insights (top category change, savings rate, spending anomaly)
 
-**Plans:** 7 (TBD)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Icon migration: create iconMap.js + migrate 22 custom files from lucide-react to MsIcon
+- [ ] 02-02-PLAN.md — FAB consolidation + TransactionRow responsive fix + hardcoded color cleanup
+- [ ] 02-03-PLAN.md — BudgetCard + GoalCard extraction + shadcn Card migration
+- [ ] 02-04-PLAN.md — Planejamento decomposition + page padding standardization + KPI consistency
+- [ ] 02-05-PLAN.md — Skeleton loading states + OnboardingModal caching fix
 **UI hint:** yes
 
 ---
@@ -328,8 +342,8 @@ The app is fully online-dependent — if Base44 is unreachable, the app shows an
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Base44 → Supabase | 9/9 | ✓ Complete | 2026-05-19 |
-| 1. Foundation Hardening | 0/4 | Not started | - |
-| 2. UI Consolidation | 0/7 | Not started | - |
+| 1. Foundation Hardening | 4/4 | ✓ Complete | 2026-05-19 |
+| 2. UI Consolidation | 0/5 | Plans created | - |
 | 3. Feature Gaps | 0/7 | Not started | - |
 | 4. Polish & Platform | 0/6 | Not started | - |
 
