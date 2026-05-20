@@ -13,6 +13,31 @@ import { useMonthNavigation } from '@/hooks/useMonthNavigation';
 import { useBudgets, useTransactions, useGoals } from '@/hooks/useData';
 import { GoalModal, DepositModal } from '@/pages/PlanejamentoModals';
 
+function Sparkline({ data, color = '#10b981', width = 80, height = 24 }) {
+  if (!data || data.length === 0 || data.every(v => v === 0)) return <span className="text-muted-foreground">-</span>;
+  const max = Math.max(...data, 1);
+  const padding = 2;
+  const effectiveWidth = width - padding * 2;
+  const effectiveHeight = height - padding * 2;
+  const points = data.map((v, i) => {
+    const x = padding + (i / (data.length - 1)) * effectiveWidth;
+    const y = padding + effectiveHeight - (v / max) * effectiveHeight;
+    return `${x},${y}`;
+  }).join(' ');
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="shrink-0">
+      <polyline
+        points={points}
+        stroke={color}
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function Planejamento() {
   const { month: currentMonth, year: currentYear, navigate } = useMonthNavigation();
   const monthKey = getMonthKey(currentYear, currentMonth);
@@ -174,6 +199,7 @@ export default function Planejamento() {
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Orçamento</th>
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Gasto</th>
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">% Usado</th>
+                    <th className="text-center py-3 px-4 font-medium text-muted-foreground">Tendência</th>
                     <th className="text-center py-3 px-4 font-medium text-muted-foreground">Status</th>
                   </tr>
                 </thead>
@@ -184,6 +210,18 @@ export default function Planejamento() {
                     const color = CAT_COLORS[b.category] || '#94a3b8';
                     const statusColor = pct > 100 ? 'text-red-500' : pct > 80 ? 'text-amber-500' : 'text-emerald-500';
                     const statusIcon = pct > 100 ? 'error' : pct > 80 ? 'warning' : 'check_circle';
+                    // Calculate last 6 months of spending for sparkline
+                    const sparkData = [];
+                    for (let i = 5; i >= 0; i--) {
+                      let m = currentMonth - i;
+                      let y = currentYear;
+                      if (m < 0) { m += 12; y--; }
+                      const prefix = getMonthKey(y, m);
+                      const monthSpent = transactions
+                        .filter(t => t.type === 'expense' && t.category === b.category && t.date && t.date.startsWith(prefix))
+                        .reduce((s, t) => s + (t.value || 0), 0);
+                      sparkData.push(monthSpent);
+                    }
                     return (
                       <tr key={b.id} className="border-b border-surface-border last:border-0 hover:bg-surface-container-low/50 transition-colors">
                         <td className="py-3 px-4">
@@ -195,6 +233,11 @@ export default function Planejamento() {
                         <td className="text-right py-3 px-4 font-mono-number tabular-nums">{formatCurrency(b.limit)}</td>
                         <td className="text-right py-3 px-4 font-mono-number tabular-nums">{formatCurrency(spent)}</td>
                         <td className="text-right py-3 px-4 font-mono-number tabular-nums">{pct.toFixed(0)}%</td>
+                        <td className="text-center py-3 px-4">
+                          <div className="flex justify-center">
+                            <Sparkline data={sparkData} color={color} />
+                          </div>
+                        </td>
                         <td className="text-center py-3 px-4">
                           <MsIcon name={statusIcon} size={18} className={statusColor} />
                         </td>
@@ -211,10 +254,14 @@ export default function Planejamento() {
                       {(() => { const totalLimit = monthBudgets.reduce((s, b) => s + (b.limit || 0), 0); const totalSpent = monthBudgets.reduce((s, b) => s + monthTx.filter(t => t.type === 'expense' && t.category === b.category).reduce((a, t) => a + (t.value || 0), 0), 0); return totalLimit > 0 ? `${(totalSpent / totalLimit * 100).toFixed(0)}%` : '0%'; })()}
                     </td>
                     <td className="text-center py-3 px-4">-</td>
+                    <td className="text-center py-3 px-4">-</td>
                   </tr>
                 </tfoot>
               </table>
             </div>
+          )}
+          {monthBudgets.length > 0 && (
+            <p className="text-xs text-muted-foreground text-center">Tendência: últimos 6 meses</p>
           )}
         </div>
       )}
