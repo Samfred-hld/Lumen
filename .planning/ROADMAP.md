@@ -292,7 +292,7 @@ Plans:
 - [x] 03-02-PLAN.md — Budget comparison dashboard with sparklines
 - [x] 03-03-PLAN.md — Investment tracking v1 (portfolio page with allocation pie chart)
 - [x] 03-04-PLAN.md — Notification preferences + Bill reminders + Dashboard insights
-- [ ] 03-05-PLAN.md — Recurring transactions page + Route/navigation wiring
+- [x] 03-05-PLAN.md — Recurring transactions page + Route/navigation wiring
 **UI hint:** yes
 
 ---
