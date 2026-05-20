@@ -9,6 +9,8 @@ import GlobalSearch from '@/components/GlobalSearch';
 import FAB from '@/components/ui/fab';
 import { useTransactionModal } from '@/lib/transactionModalStore';
 import { useAuth } from '@/lib/AuthContext';
+import OfflineBar from '@/components/pwa/OfflineBar';
+import InstallBanner from '@/components/pwa/InstallBanner';
 
 // Material Symbols icon component
 function MsIcon({ name, className, size = 24, filled = false }) {
@@ -401,11 +403,21 @@ export default function Layout() {
         </div>
       </header>
 
+      {/* ═══ Offline Status Bar ═══ */}
+      <div className={cn("fixed top-header-height right-0 z-40 md:w-[calc(100%-264px)]", collapsed && "md:w-[calc(100%-76px)]")}>
+        <OfflineBar />
+      </div>
+
       {/* ═══ Main Content ═══ */}
       <div className={cn("flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300", collapsed ? "md:ml-sidebar-collapsed" : "md:ml-sidebar-w")}>
         <main className="flex-1 overflow-y-auto pt-header-height pb-mobile-nav-height md:pb-xl px-lg md:px-xl max-w-[1600px] mx-auto w-full" role="main">
           <Outlet />
         </main>
+      </div>
+
+      {/* ═══ PWA Install Banner ═══ */}
+      <div className="fixed bottom-mobile-nav-height left-0 right-0 z-50 md:hidden">
+        <InstallBanner />
       </div>
 
       {/* ═══ Mobile Bottom Nav ═══ */}
