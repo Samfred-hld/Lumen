@@ -4,11 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/financeUtils';
 import { MONTH_NAMES } from '@/lib/categories';
-import { addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig, getTheme, setTheme } from '@/lib/store';
+import { addCard, updateCard, deleteCard, getRules, addRule, deleteRule, getSalaryConfig, saveSalaryConfig } from '@/lib/store';
 import { getCategories } from '@/lib/categories';
 import { useCards, useTransactions, useBudgets, useGoals } from '@/hooks/useData';
 
@@ -16,6 +15,7 @@ import TabPersonalizacao from '@/components/settings/TabPersonalizacao';
 import TabAutomacao from '@/components/settings/TabAutomacao';
 import TabDados from '@/components/settings/TabDados';
 import TabNotificacoes from '@/components/settings/TabNotificacoes';
+import ThemeSelector from '@/components/settings/ThemeSelector';
 import MsIcon from '@/components/ui/ms-icon';
 
 // ═══ Card Modal ═══
@@ -131,7 +131,6 @@ function CardStatementModal({ open, onClose, card, transactions }) {
 
 // ═══ Main Settings Page ═══
 export default function SettingsPage() {
-  const [darkMode, setDarkMode] = useState(() => getTheme() === 'dark');
   const [activeTab, setActiveTab] = useState('personalizacao');
   const [showCardModal, setShowCardModal] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
@@ -154,12 +153,6 @@ export default function SettingsPage() {
   const { data: budgets = [] } = useBudgets();
   const { data: goals = [] } = useGoals();
 
-  const toggleTheme = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    setTheme(next ? 'dark' : 'light');
-  };
-
   const handleSaveCard = (data) => {
     if (editingCard) updateCard(editingCard.id, data); else addCard(data);
     setShowCardModal(false); setEditingCard(null);
@@ -177,11 +170,7 @@ export default function SettingsPage() {
           <h1 className="text-2xl font-bold">Configurações</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Cartões, categorias, regras, backup e preferências</p>
         </div>
-        <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-          <MsIcon name="light_mode" size={14} className={cn("transition-colors", !darkMode ? 'text-amber-500' : 'text-muted-foreground')} />
-          <Switch checked={darkMode} onCheckedChange={toggleTheme} />
-          <MsIcon name="dark_mode" size={14} className={cn("transition-colors", darkMode ? 'text-blue-400' : 'text-muted-foreground')} />
-        </div>
+        <ThemeSelector />
       </div>
 
       {importMsg && (

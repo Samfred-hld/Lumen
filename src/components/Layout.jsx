@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { getTheme, setTheme } from '@/lib/store';
+import { useThemePreference } from '@/hooks/useThemePreference';
 import { useBudgets, useTransactions } from '@/hooks/useData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getNotifications, markAsRead, markAllAsRead, getUnreadCount, generateBudgetNotifications } from '@/lib/notificationStore';
@@ -203,17 +203,14 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [theme, setThemeState] = useState(() => getTheme());
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
+  const { preference, setPreference } = useThemePreference();
 
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setThemeState(next);
-    setTheme(next);
-    announce(next === 'dark' ? 'Modo escuro ativado' : 'Modo claro ativado');
+  const cycleTheme = () => {
+    const cycle = { light: 'dark', dark: 'auto', auto: 'light' };
+    const next = cycle[preference] || 'light';
+    setPreference(next);
+    const labels = { dark: 'Modo escuro ativado', light: 'Modo claro ativado', auto: 'Tema automático ativado' };
+    announce(labels[next] || '');
   };
 
   // ═══ Global Keyboard Shortcuts ═══
@@ -347,20 +344,20 @@ export default function Layout() {
             </Link>
 
             <button
-              onClick={toggleTheme}
+              onClick={cycleTheme}
               className={cn(
                 "flex items-center w-full px-lg py-md text-white/60 hover:text-white hover:bg-white/5 transition-all group border-t border-white/5",
                 collapsed && "justify-center"
               )}
             >
-              <MsIcon 
-                name={theme === 'dark' ? 'light_mode' : 'dark_mode'} 
-                size={20} 
-                className="mr-md group-hover:rotate-12 transition-transform" 
+              <MsIcon
+                name={preference === 'auto' ? 'brightness_auto' : preference === 'dark' ? 'light_mode' : 'dark_mode'}
+                size={20}
+                className="mr-md group-hover:rotate-12 transition-transform"
               />
               {!collapsed && (
                 <span className="font-body-md">
-                  {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+                  {preference === 'auto' ? 'Automático' : preference === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
                 </span>
               )}
             </button>
