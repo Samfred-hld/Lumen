@@ -33,6 +33,7 @@ const NAV_ITEMS = [
   { path: '/calendar', label: 'Calendário', icon: 'calendar_today', shortcut: '6' },
   { path: '/reports', label: 'Relatórios', icon: 'bar_chart', shortcut: '7' },
   { path: '/settings', label: 'Configurações', icon: 'settings', shortcut: '8' },
+  { path: '/profile', label: 'Perfil', icon: 'person', shortcut: '9' },
 ];
 
 const BOTTOM_NAV = [
@@ -229,7 +230,7 @@ export default function Layout() {
       setShowGlobalSearch(true);
       return;
     }
-    if (e.key >= '1' && e.key <= '8') {
+    if (e.key >= '1' && e.key <= '9') {
       const idx = parseInt(e.key) - 1;
       if (NAV_ITEMS[idx]) { e.preventDefault(); navigate(NAV_ITEMS[idx].path); }
       return;

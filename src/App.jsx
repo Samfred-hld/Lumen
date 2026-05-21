@@ -16,6 +16,7 @@ import Planejamento from './pages/Planejamento';
 import CalendarPage from './pages/CalendarPage';
 import Reports from './pages/Reports';
 import SettingsPage from './pages/Settings';
+import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -90,6 +91,7 @@ const AppRoutes = () => {
         <Route path="/calendar" element={<ErrorBoundary><CalendarPage /></ErrorBoundary>} />
         <Route path="/reports" element={<ErrorBoundary><Reports /></ErrorBoundary>} />
         <Route path="/settings" element={<ErrorBoundary><SettingsPage /></ErrorBoundary>} />
+        <Route path="/profile" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
