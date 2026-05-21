@@ -17,7 +17,7 @@ export default function Profile() {
         <EmailUpdateForm />
       </ProfileSection>
 
-      <ProfileSection icon="security" title="Seguranca">
+      <ProfileSection icon="security" title="Segurança">
         <PasswordChangeForm />
       </ProfileSection>
 
