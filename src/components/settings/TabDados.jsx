@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import MsIcon from '@/components/ui/ms-icon';
-import { getChangelog, addChangelogEntry, clearAllData, getExtraCats, getRules, getSalaryConfig, addCard, saveExtraCats, saveRules, saveSalaryConfig, lsSet } from '@/lib/store';
+import { getChangelog, addChangelogEntry, clearAllData, getExtraCats, getRules, getSalaryConfig, addCard, saveExtraCats, saveRules, saveSalaryConfig } from '@/lib/store';
 import BackupSection from '@/components/settings/BackupSection';
 
 // ═══ Section wrapper ═══
@@ -45,12 +45,6 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
     const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `lumen_transacoes_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(url);
   };
 
-  const handleExportJSON = () => {
-    const data = { version: 1, exportedAt: new Date().toISOString(), transactions, budgets, goals, cards, categories: getExtraCats(), rules: getRules(), salaryConfig: getSalaryConfig(), changelog: getChangelog() };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `lumen_backup_${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url);
-  };
-
   const handleExportPDF = async () => {
     try {
       const { jsPDF } = await import('jspdf');
@@ -71,23 +65,6 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
     } catch (e) { console.error('PDF error:', e); }
   };
 
-  const handleImportJSON = (e) => {
-    const file = e.target.files?.[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        if (data.cards) { for (const c of data.cards) addCard(c); }
-        if (data.categories) { saveExtraCats(data.categories); }
-        if (data.rules) { saveRules(data.rules); }
-        if (data.salaryConfig) { saveSalaryConfig(data.salaryConfig); }
-        if (data.changelog) lsSet('changelog', data.changelog);
-        setImportMsg('Backup restaurado com sucesso! Seus dados locais foram atualizados.');
-        setTimeout(() => setImportMsg(''), 5000);
-      } catch { setImportMsg('Erro ao importar. Verifique o formato JSON.'); setTimeout(() => setImportMsg(''), 3000); }
-    };
-    reader.readAsText(file); e.target.value = '';
-  };
 
   return (
     <>
