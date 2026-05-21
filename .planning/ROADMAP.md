@@ -332,7 +332,15 @@ The app is fully online-dependent — if Base44 is unreachable, the app shows an
 5. Dark mode automatically follows system preference with manual override option
 6. Automated accessibility audit shows zero critical or serious WCAG 2.1 AA violations
 
-**Plans:** 6 (TBD)
+**Plans:** 6 plans
+
+Plans:
+- [x] 04-01-PLAN.md — PWA + offline-first support (service worker, install prompt, offline queue)
+- [x] 04-02-PLAN.md — User profile & account management (Profile page, password change, account deletion)
+- [x] 04-03-PLAN.md — Dark mode scheduling + Settings consolidation
+- [x] 04-04-PLAN.md — Data backup/restore (JSON export/import, zod validation)
+- [x] 04-05-PLAN.md — CI pipeline + print stylesheet + PageNotFound PT + env docs
+- [x] 04-06-PLAN.md — WCAG 2.1 AA accessibility audit gap closure (axe-core, touch targets, focus traps)
 **UI hint:** yes
 
 ---
@@ -345,7 +353,7 @@ The app is fully online-dependent — if Base44 is unreachable, the app shows an
 | 1. Foundation Hardening | 4/4 | ✓ Complete | 2026-05-19 |
 | 2. UI Consolidation | 5/5 | Complete | 2026-05-20 |
 | 3. Feature Gaps | 5/5 | Complete | 2026-05-20 |
-| 4. Polish & Platform | 5/5 | Complete | 2026-05-20 |
+| 4. Polish & Platform | 6/6 | Complete | 2026-05-21 |
 
 ---
 
