@@ -43,7 +43,7 @@ export default function TabPersonalizacao({ cards, onEditCard, onDeleteCard, onS
   return (
     <>
       {/* ── Credit Cards ── */}
-      <Section icon="credit_card" title="Cartões de Crédito" actions={<Button size="sm" variant="outline" onClick={onNewCard}><Plus size={12} className="mr-1" />Novo Cartão</Button>}>
+      <Section icon="credit_card" title="Cartões de Crédito" actions={<Button size="sm" variant="outline" onClick={onNewCard}><MsIcon name="add" size={12} className="mr-1" />Novo Cartão</Button>}>
         {cards.length === 0 ? <p className="text-muted-foreground text-sm text-center py-4">Nenhum cartão cadastrado</p> : (
           <div className="space-y-2">
             {cards.map(c => (

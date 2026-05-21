@@ -509,7 +509,7 @@ export default function CSVImport({ open, onClose, onImport, transactions = [], 
               )}
               {missingCount > 0 && (
                 <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-300 gap-1">
-                  <AlertTriangle size={10} /> {missingCount} série(s) com parcela(s) anterior(es) faltando
+                  <MsIcon name="warning" size={10} /> {missingCount} série(s) com parcela(s) anterior(es) faltando
                 </Badge>
               )}
               {instCount > 0 && (

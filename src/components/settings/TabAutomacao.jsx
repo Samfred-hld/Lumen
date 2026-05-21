@@ -39,7 +39,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
   return (
     <>
       {/* ── Rules ── */}
-      <Section icon="auto_fix_high" title="Regras de Categorização Automática" actions={<Button size="sm" variant="outline" onClick={onNewRule}><Plus size={12} className="mr-1" />Nova Regra</Button>}>
+      <Section icon="auto_fix_high" title="Regras de Categorização Automática" actions={<Button size="sm" variant="outline" onClick={onNewRule}><MsIcon name="add" size={12} className="mr-1" />Nova Regra</Button>}>
         <p className="text-xs text-muted-foreground mb-3">Quando uma transação contiver a palavra-chave, será categorizada automaticamente.</p>
         {rules.length === 0 ? <p className="text-muted-foreground text-sm text-center py-3">Nenhuma regra cadastrada</p> : (
           <div className="space-y-1.5">
@@ -102,7 +102,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
       </Section>
 
       {/* ── Payment Methods ── */}
-      <Section icon="account_balance_wallet" title="Meios de Pagamento" actions={<Button size="sm" variant="outline" onClick={() => setShowPMModal(true)}><Plus size={12} className="mr-1" />Novo</Button>}>
+      <Section icon="account_balance_wallet" title="Meios de Pagamento" actions={<Button size="sm" variant="outline" onClick={() => setShowPMModal(true)}><MsIcon name="add" size={12} className="mr-1" />Novo</Button>}>
         <p className="text-xs text-muted-foreground mb-3">Formas de pagamento padrão: Débito, Dinheiro, Pix, Transferência, Crédito. Adicione as suas.</p>
         {customPMs.length === 0 ? <p className="text-muted-foreground text-sm text-center py-3">Nenhum meio personalizado</p> : (
           <div className="space-y-1.5">
@@ -118,7 +118,7 @@ export default function TabAutomacao({ rules, salaryConfig, setSalaryConfig, onS
       </Section>
 
       {/* ── Templates ── */}
-      <Section icon="layers" title="Templates de Transação" actions={<Button size="sm" variant="outline" onClick={() => { setEditingTemplate(null); setShowTemplateModal(true); }}><Plus size={12} className="mr-1" />Novo</Button>}>
+      <Section icon="layers" title="Templates de Transação" actions={<Button size="sm" variant="outline" onClick={() => { setEditingTemplate(null); setShowTemplateModal(true); }}><MsIcon name="add" size={12} className="mr-1" />Novo</Button>}>
         <p className="text-xs text-muted-foreground mb-3">Modelos para lançamentos recorrentes. Use no Quick Entry ou gere automaticamente.</p>
         {templates.length === 0 ? <p className="text-muted-foreground text-sm text-center py-3">Nenhum template cadastrado</p> : (
           <div className="space-y-1.5">
