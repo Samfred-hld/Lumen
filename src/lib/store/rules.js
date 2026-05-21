@@ -2,6 +2,7 @@ import { supabase } from '@/api/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { matchCorrelation } from '../autoCorrelations';
 import { getLocal, setLocal } from './helpers';
+import { toCamelCase } from '@/lib/utils';
 
 export function getRules() { return getLocal('rules', []); }
 
@@ -13,9 +14,10 @@ export async function fetchRules() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    setLocal('rules', data || []);
+    const mapped = toCamelCase(data || []);
+    setLocal('rules', mapped);
     setLocal('rules_syncedAt', Date.now());
-    return data || [];
+    return mapped;
   } catch (err) {
     console.error('[Store] Erro em fetchRules:', err);
     return getRules();

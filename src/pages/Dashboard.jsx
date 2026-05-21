@@ -19,6 +19,7 @@ import ChartsSection from '@/components/dashboard/ChartsSection';
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown';
 import GoalsSection from '@/components/dashboard/GoalsSection';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 
 // ═══ Insights Section Component ═══
@@ -277,7 +278,7 @@ export default function Dashboard() {
   }, [budgets, currentYear, currentMonth]);
 
   const handleSave = async (data) => {
-    await supabase.from('transactions').insert(data).select().single();
+    await supabase.from('transactions').insert(toSnakeCase(data)).select().single();
     refetchTx();
     setShowModal(false);
   };

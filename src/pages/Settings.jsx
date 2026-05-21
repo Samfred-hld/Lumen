@@ -23,7 +23,7 @@ function CardModal({ open, onClose, onSave, card }) {
   const [form, setForm] = useState({ name: '', color: '#3b82f6', limit: '', closingDay: '', dueDay: '', brand: 'other' });
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
   useEffect(() => {
-    if (card) setForm({ name: card.name || '', color: card.color || '#3b82f6', limit: card.limit?.toString() || '', closingDay: card.closingDay?.toString() || '', dueDay: card.dueDay?.toString() || '', brand: card.brand || 'other' });
+    if (card) setForm({ name: card.name || '', color: card.color || '#3b82f6', limit: card.limit?.toString() || '', closingDay: (card.closing_day ?? card.closingDay)?.toString() || '', dueDay: (card.due_day ?? card.dueDay)?.toString() || '', brand: card.brand || 'other' });
     else setForm({ name: '', color: '#3b82f6', limit: '', closingDay: '', dueDay: '', brand: 'other' });
   }, [card, open]);
   const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#1e293b'];
@@ -154,7 +154,10 @@ export default function SettingsPage() {
   const { data: goals = [] } = useGoals();
 
   const handleSaveCard = (data) => {
-    if (editingCard) updateCard(editingCard.id, data); else addCard(data);
+    if (editingCard) {
+      const row = { name: data.name, color: data.color, limit: parseFloat(data.limit) || 0, closing_day: parseInt(data.closingDay) || 1, due_day: parseInt(data.dueDay) || 10, brand: data.brand || 'other' };
+      updateCard(editingCard.id, row);
+    } else { addCard(data); }
     setShowCardModal(false); setEditingCard(null);
   };
 

@@ -1,6 +1,7 @@
 import { supabase } from '@/api/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { getLocal, setLocal } from './helpers';
+import { toCamelCase, toSnakeCase } from '@/lib/utils';
 
 export function getTemplates() { return getLocal('templates', []); }
 
@@ -12,9 +13,10 @@ export async function fetchTemplates() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    setLocal('templates', data || []);
+    const mapped = toCamelCase(data || []);
+    setLocal('templates', mapped);
     setLocal('templates_syncedAt', Date.now());
-    return data || [];
+    return mapped;
   } catch (err) {
     console.error('[Store] Erro em fetchTemplates:', err);
     return getTemplates();
@@ -52,7 +54,7 @@ export async function updateTemplate(id, updates) {
   try {
     const { data, error } = await supabase
       .from('templates')
-      .update(updates)
+      .update(toSnakeCase(updates))
       .eq('id', id)
       .select();
 

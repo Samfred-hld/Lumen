@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -139,10 +140,11 @@ export default function CalendarPage() {
   };
 
   const handleSaveTx = async (data) => {
+    const row = toSnakeCase(data);
     if (editingTx) {
-      await supabase.from('transactions').update(data).eq('id', editingTx.id);
+      await supabase.from('transactions').update(row).eq('id', editingTx.id);
     } else {
-      await supabase.from('transactions').insert({ ...data, date: newTxDate || data.date }).select().single();
+      await supabase.from('transactions').insert({ ...row, date: newTxDate || row.date }).select().single();
     }
     refetch();
     setEditingTx(null);

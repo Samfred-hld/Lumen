@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/api/supabaseClient';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -140,7 +141,7 @@ export default function Budgets() {
   const monthTx = filterByMonth(transactions, currentYear, currentMonth);
 
   const handleSave = async (data) => {
-    const payload = { ...data, month: monthKey };
+    const payload = toSnakeCase({ ...data, month: monthKey });
     if (editing) await supabase.from('budgets').update(payload).eq('id', editing.id);
     else await supabase.from('budgets').insert(payload).select().single();
     refetch();

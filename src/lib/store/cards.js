@@ -1,6 +1,7 @@
 import { supabase } from '@/api/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { getLocal, setLocal } from './helpers';
+import { toCamelCase, toSnakeCase } from '@/lib/utils';
 
 export function getCards() {
   return getLocal('cards', []);
@@ -14,9 +15,10 @@ export async function fetchCards() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    setLocal('cards', data || []);
+    const mapped = toCamelCase(data || []);
+    setLocal('cards', mapped);
     setLocal('cards_syncedAt', Date.now());
-    return data || [];
+    return mapped;
   } catch (err) {
     console.error('[Store] Erro em fetchCards:', err);
     return getCards();

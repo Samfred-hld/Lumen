@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { KpiCard } from '@/components/dashboard/KpiCard';
 import GoalCard from '@/components/finance/GoalCard';
@@ -74,10 +75,11 @@ export default function Investments() {
   );
 
   const handleSave = async (data) => {
+    const row = toSnakeCase(data);
     if (editing) {
-      await supabase.from('goals').update(data).eq('id', editing.id);
+      await supabase.from('goals').update(row).eq('id', editing.id);
     } else {
-      await supabase.from('goals').insert(data).select().single();
+      await supabase.from('goals').insert(row).select().single();
     }
     refetchGoals();
     setShowModal(false);
@@ -92,7 +94,7 @@ export default function Investments() {
   const handleDeposit = async (amount) => {
     const goal = depositGoal;
     const current = getGoalProgress(goal, transactions);
-    await supabase.from('goals').update({ currentValue: current + amount }).eq('id', goal.id);
+    await supabase.from('goals').update({ current_value: current + amount }).eq('id', goal.id);
     refetchGoals();
     setDepositGoal(null);
   };

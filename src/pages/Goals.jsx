@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/api/supabaseClient';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -402,8 +403,9 @@ export default function Goals() {
   const { data: transactions = [], refetch: refetchTx } = useTransactions(500);
 
   const handleSave = async (data) => {
-    if (editing) await supabase.from('goals').update(data).eq('id', editing.id);
-    else await supabase.from('goals').insert(data).select().single();
+    const row = toSnakeCase(data);
+    if (editing) await supabase.from('goals').update(row).eq('id', editing.id);
+    else await supabase.from('goals').insert(row).select().single();
     refetch();
     setShowModal(false);
     setEditing(null);
@@ -417,7 +419,7 @@ export default function Goals() {
   const handleDeposit = async (amount) => {
     const goal = depositGoal;
     const current = getGoalProgress(goal, transactions);
-    await supabase.from('goals').update({ currentValue: current + amount }).eq('id', goal.id);
+    await supabase.from('goals').update({ current_value: current + amount }).eq('id', goal.id);
     refetch();
     setDepositGoal(null);
   };

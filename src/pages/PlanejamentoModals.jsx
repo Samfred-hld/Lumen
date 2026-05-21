@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
+import { toSnakeCase } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -45,7 +46,7 @@ export function GoalModal({ open, onClose, onSave, goal, defaultInvestmentType =
   }, [goal, open, reset, defaultInvestmentType]);
 
   const onSubmit = (data) => {
-    onSave({ ...data, color, progressMode, investmentType: investmentType || null, currentValue: progressMode === 'manual' && data.currentValue !== undefined ? data.currentValue : null });
+    onSave(toSnakeCase({ ...data, color, progressMode, investmentType: investmentType || null, currentValue: progressMode === 'manual' && data.currentValue !== undefined ? data.currentValue : null }));
   };
 
   return (

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useSearchParams } from 'react-router-dom';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import TransactionModal from '@/components/finance/TransactionModal';
 import CSVImport from '@/components/finance/CSVImport';
 import InstallmentConfirm from '@/components/finance/InstallmentConfirm';
@@ -124,11 +125,12 @@ export default function Transactions() {
   }, [filterType]);
 
   const handleSave = async (data) => {
+    const row = toSnakeCase(data);
     if (editing) {
-      await supabase.from('transactions').update(data).eq('id', editing.id);
+      await supabase.from('transactions').update(row).eq('id', editing.id);
       addChangelogEntry({ action: 'update', entityType: 'transação', entityName: data.description });
     } else {
-      await supabase.from('transactions').insert(data).select().single();
+      await supabase.from('transactions').insert(row).select().single();
       addChangelogEntry({ action: 'create', entityType: 'transação', entityName: data.description });
     }
     refetch();
@@ -307,7 +309,7 @@ export default function Transactions() {
 
   const handleDuplicate = async (t) => {
     const { id, createdAt, ...rest } = t;
-    await supabase.from('transactions').insert({
+    await supabase.from('transactions').insert(toSnakeCase({
       ...rest,
       date: new Date().toISOString().split('T')[0],
       isInstallment: false,
@@ -315,7 +317,7 @@ export default function Transactions() {
       installmentCurrent: null,
       installmentSeriesId: null,
       installmentTotalValue: null,
-    }).select().single();
+    })).select().single();
     addChangelogEntry({ action: 'create', entityType: 'transação', entityName: `(duplicada) ${t.description}` });
     refetch();
   };

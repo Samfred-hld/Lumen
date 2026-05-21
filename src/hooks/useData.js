@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/api/supabaseClient';
 import { useSupabaseRealtime } from './useSupabaseRealtime';
+import { toCamelCase } from '@/lib/utils';
 
 export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
   useSupabaseRealtime('transactions', 'transactions', pauseSubscribeRef);
@@ -14,7 +15,7 @@ export function useTransactions(limit = 2000, pauseSubscribeRef = null) {
         .order('date', { ascending: false })
         .limit(limit);
       if (error) throw error;
-      return data || [];
+      return toCamelCase(data || []);
     },
     staleTime: 30_000,
     gcTime: 5 * 60_000,
@@ -31,7 +32,7 @@ export function useBudgets() {
         .from('budgets')
         .select('*');
       if (error) throw error;
-      return data || [];
+      return toCamelCase(data || []);
     },
     staleTime: 30_000,
     gcTime: 5 * 60_000,
@@ -48,7 +49,7 @@ export function useGoals() {
         .from('goals')
         .select('*');
       if (error) throw error;
-      return data || [];
+      return toCamelCase(data || []);
     },
     staleTime: 30_000,
     gcTime: 5 * 60_000,
@@ -65,7 +66,7 @@ export function useCards() {
         .from('cards')
         .select('*');
       if (error) throw error;
-      return data || [];
+      return toCamelCase(data || []);
     },
     staleTime: 30_000,
     gcTime: 5 * 60_000,

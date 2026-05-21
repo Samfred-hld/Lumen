@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import MsIcon from '@/components/ui/ms-icon';
+import { toSnakeCase } from '@/lib/utils';
 import { CAT_MATERIAL_ICONS } from '@/lib/iconMap';
 import BudgetCard from '@/components/finance/BudgetCard';
 import GoalCard from '@/components/finance/GoalCard';
@@ -70,14 +71,14 @@ export default function Planejamento() {
     for (const [cat, val] of Object.entries(budgetValues).filter(([, v]) => parseFloat(v) > 0)) {
       const limit = parseFloat(val); const existing = monthBudgets.find(b => b.category === cat);
       if (existing) { if (existing.limit !== limit) await supabase.from('budgets').update({ limit }).eq('id', existing.id); }
-      else await supabase.from('budgets').insert({ category: cat, limit, month: monthKey, isRecurring: false }).select().single();
+      else await supabase.from('budgets').insert({ category: cat, limit, month: monthKey, is_recurring: false }).select().single();
     }
     for (const b of monthBudgets) { if (!budgetValues[b.category] || parseFloat(budgetValues[b.category]) <= 0) await supabase.from('budgets').delete().eq('id', b.id); }
     refetchBudgets(); setShowBudgetManager(false);
   };
-  const handleSaveGoal = async (data) => { if (editingGoal) await supabase.from('goals').update(data).eq('id', editingGoal.id); else await supabase.from('goals').insert(data).select().single(); refetchGoals(); setShowGoalModal(false); setEditingGoal(null); };
+  const handleSaveGoal = async (data) => { const row = toSnakeCase(data); if (editingGoal) await supabase.from('goals').update(row).eq('id', editingGoal.id); else await supabase.from('goals').insert(row).select().single(); refetchGoals(); setShowGoalModal(false); setEditingGoal(null); };
   const handleDeleteGoal = async (id) => { await supabase.from('goals').delete().eq('id', id); refetchGoals(); };
-  const handleDeposit = async (amount) => { const g = depositGoal; await supabase.from('goals').update({ currentValue: getGoalProgress(g, transactions) + amount }).eq('id', g.id); refetchGoals(); setDepositGoal(null); };
+  const handleDeposit = async (amount) => { const g = depositGoal; await supabase.from('goals').update({ current_value: getGoalProgress(g, transactions) + amount }).eq('id', g.id); refetchGoals(); setDepositGoal(null); };
 
   return (
     <div className="space-y-xl">

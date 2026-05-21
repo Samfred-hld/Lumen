@@ -146,8 +146,8 @@ async function migrateToEntities() {
             name: c.name || '',
             color: c.color || '#3b82f6',
             limit: parseFloat(c.limit) || 0,
-            closingDay: parseInt(c.closingDay) || 1,
-            dueDay: parseInt(c.dueDay) || 10,
+            closing_day: parseInt(c.closingDay) || 1,
+            due_day: parseInt(c.dueDay) || 10,
             brand: c.brand || 'other',
           });
           results.cards++;
@@ -188,7 +188,7 @@ async function migrateToEntities() {
             description: t.description || '',
             value: parseFloat(t.value) || 0,
             category: t.category || '',
-            paymentMethod: t.paymentMethod || '',
+            payment_method: t.paymentMethod || '',
             type: t.type || 'expense',
           });
           results.templates++;
@@ -330,8 +330,8 @@ async function migrateCardsToCloud() {
         name,
         color: c.color || '#3b82f6',
         limit: parseFloat(c.limit) || 0,
-        closingDay: parseInt(c.closingDay) || 1,
-        dueDay: parseInt(c.dueDay) || 10,
+        closing_day: parseInt(c.closingDay) || 1,
+        due_day: parseInt(c.dueDay) || 10,
         brand: c.brand || 'other',
       });
       existingNames.add(name.toLowerCase());
