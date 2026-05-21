@@ -50,7 +50,7 @@ Lúmen is a **production financial management app** for Brazilian users with:
 - [x] **Phase 1: Foundation Hardening** — Tests, TypeScript strict mode, linting, CI safeguards, monitoring
 - [ ] **Phase 2: UI Consolidation** — Unify design system, consolidate duplicated components, fix UI-REVIEW issues
 - [ ] **Phase 3: Feature Gaps** — Investment tracking, recurring transactions UI, budget comparison, search, notifications
-- [ ] **Phase 4: Polish & Platform** — PWA, offline-first, user profile, analytics, remaining gaps
+- [x] **Phase 4: Polish & Platform** — PWA, offline-first, user profile, analytics, remaining gaps
 
 ---
 
@@ -343,9 +343,9 @@ The app is fully online-dependent — if Base44 is unreachable, the app shows an
 |-------|----------------|--------|-----------|
 | 0. Base44 → Supabase | 9/9 | ✓ Complete | 2026-05-19 |
 | 1. Foundation Hardening | 4/4 | ✓ Complete | 2026-05-19 |
-| 2. UI Consolidation | 0/5 | Plans created | - |
-| 3. Feature Gaps | 0/5 | Plans created | - |
-| 4. Polish & Platform | 0/6 | Not started | - |
+| 2. UI Consolidation | 5/5 | Complete | 2026-05-20 |
+| 3. Feature Gaps | 5/5 | Complete | 2026-05-20 |
+| 4. Polish & Platform | 5/5 | Complete | 2026-05-20 |
 
 ---
 
