@@ -13,7 +13,7 @@ function isClearing() {
   try { return localStorage.getItem('lumen_clearing') === '1'; } catch { return false; }
 }
 
-// Entidades que precisam existir no Base44
+// Entidades que precisam existir no Supabase
 const REQUIRED_ENTITIES = [
   { name: 'Transaction', fields: ['description', 'date', 'value', 'type', 'category', 'paymentMethod', 'isFixed', 'cardId', 'goalId', 'notes', 'isInstallment', 'installmentIndex', 'installmentTotal', 'installmentSeriesId', 'installmentCount', 'installmentCurrent', 'installmentTotalValue', 'invoiceMonth', 'source'] },
   { name: 'Budget', fields: ['category', 'limit', 'month', 'isRecurring'] },
@@ -136,7 +136,7 @@ async function migrateToEntities() {
   // ── Cards ──
   try {
     if (!await entityExists('Card')) {
-      results.errors.push('Card: schema not created in Base44 — skipping');
+      results.errors.push('Card: schema not created in Supabase — skipping');
     } else {
       const cards = getLocal('cards') || [];
       const { data: existing } = await supabase.from('cards').select('*').limit(1000);
@@ -159,7 +159,7 @@ async function migrateToEntities() {
   // ── Rules ──
   try {
     if (!await entityExists('Rule')) {
-      results.errors.push('Rule: schema not created in Base44 — skipping');
+      results.errors.push('Rule: schema not created in Supabase — skipping');
     } else {
       const rules = getLocal('rules') || [];
       const { data: existing } = await supabase.from('rules').select('*').limit(1000);
@@ -178,7 +178,7 @@ async function migrateToEntities() {
   // ── Templates ──
   try {
     if (!await entityExists('Template')) {
-      results.errors.push('Template: schema not created in Base44 — skipping');
+      results.errors.push('Template: schema not created in Supabase — skipping');
     } else {
       const templates = getLocal('templates') || [];
       const { data: existing } = await supabase.from('templates').select('*').limit(1000);
@@ -200,7 +200,7 @@ async function migrateToEntities() {
   // ── Settings (salaryConfig, theme, dashSections, etc.) ──
   try {
     if (!await entityExists('Setting')) {
-      results.errors.push('Setting: schema not created in Base44 — skipping');
+      results.errors.push('Setting: schema not created in Supabase — skipping');
     } else {
       const settingKeys = ['salaryConfig', 'theme', 'dashSections', 'onboarded', 'lastRecurringGen', 'suggestionsLog', 'financings'];
       for (const key of settingKeys) {
@@ -266,7 +266,7 @@ async function run() {
       status.UserConfig = { exists: true };
     } else {
       console.log('❌ Falha ao criar UserConfig:', createResult.error);
-      console.log('👉 Peça ao Base44: "crie a entidade UserConfig com campos key (string) e value (text)"');
+      console.log('👉 Crie a tabela user_configs no Supabase com campos key (text) e value (jsonb)');
     }
   }
 
@@ -285,7 +285,7 @@ async function run() {
 export const lumenSetup = { run, testEntity, createEntity, migrateConfigs, migrateToEntities, migrateCardsToCloud, pullFromCloud, deduplicateCards, deduplicateRules, deduplicateTemplates, deduplicateAll };
 
 /**
- * Migra cartões do localStorage para a entidade Card no Base44.
+ * Migra cartões do localStorage para a tabela cards no Supabase.
  * Upsert por campo `name` para evitar duplicatas.
  */
 async function migrateCardsToCloud() {
@@ -351,7 +351,7 @@ async function migrateCardsToCloud() {
 }
 
 /**
- * Remove cartões duplicados do Base44, mantendo o mais recente de cada nome.
+ * Remove cartões duplicados do Supabase, mantendo o mais recente de cada nome.
  * Pode ser chamado via console: lumenSetup.deduplicateCards()
  */
 async function deduplicateCards() {
@@ -412,7 +412,7 @@ async function deduplicateCards() {
 }
 
 /**
- * Remove regras duplicadas do Base44, mantendo a mais recente de cada keyword.
+ * Remove regras duplicadas do Supabase, mantendo a mais recente de cada keyword.
  */
 async function deduplicateRules() {
   let allRules;
@@ -457,7 +457,7 @@ async function deduplicateRules() {
 }
 
 /**
- * Remove templates duplicados do Base44, mantendo o mais recente de cada descrição.
+ * Remove templates duplicados do Supabase, mantendo o mais recente de cada descrição.
  */
 async function deduplicateTemplates() {
   let allTpls;

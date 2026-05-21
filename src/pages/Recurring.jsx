@@ -337,7 +337,7 @@ export default function Recurring() {
       {templates.length > 0 && (
         <div className="bg-surface border border-surface-border p-3 flex items-start gap-2 text-xs text-muted-foreground">
           <MsIcon name="info" size={16} className="shrink-0 mt-0.5" />
-          <p>As transações recorrentes são geradas automaticamente todo mês pela função generateRecurring.</p>
+          <p>As transações recorrentes são geradas automaticamente todo mês pela Edge Function generate-recurring.</p>
         </div>
       )}
 

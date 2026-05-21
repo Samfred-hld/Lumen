@@ -239,7 +239,7 @@ export default function Dashboard() {
   const { data: rawBudgets } = useBudgets();
   const { data: rawCards } = useCards();
 
-  // Defensive: ensure arrays (Base44 SDK may return null instead of [])
+  // Defensive: ensure arrays (Supabase may return null instead of [])
   const transactions = Array.isArray(rawTransactions) ? rawTransactions : [];
   const goals = Array.isArray(rawGoals) ? rawGoals : [];
   const budgets = Array.isArray(rawBudgets) ? rawBudgets : [];
