@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/financeUtils';
 import MsIcon from '@/components/ui/ms-icon';
 import { getChangelog, addChangelogEntry, clearAllData, getExtraCats, getRules, getSalaryConfig, addCard, saveExtraCats, saveRules, saveSalaryConfig, lsSet } from '@/lib/store';
+import BackupSection from '@/components/settings/BackupSection';
 
 // ═══ Section wrapper ═══
 function Section({ icon, title, children, actions }) {
@@ -90,46 +91,27 @@ export default function TabDados({ transactions, budgets, goals, cards, importMs
 
   return (
     <>
-      {/* ── Export / Import ── */}
-      <Section icon="download" title="Exportar / Importar Dados">
+      {/* ── Export Dados ── */}
+      <Section icon="download" title="Exportar Dados">
         <p className="text-xs text-muted-foreground mb-4">
-          Mantenha seus dados seguros. Você pode exportar seu histórico em formato CSV (para Excel/Google Sheets), gerar um relatório em PDF ou criar um Backup completo em JSON para restaurar futuramente.
+          Exporte seu histórico em formato CSV (para Excel/Google Sheets) ou gere um relatório em PDF.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-3 p-4 rounded-md border border-surface-border bg-surface-low">
-            <h4 className="text-sm font-semibold text-on-surface flex items-center gap-2">
-              <MsIcon name="download" size={16} className="text-muted-foreground" /> Exportar Dados
-            </h4>
-            <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportCSV}>
-                <MsIcon name="description" size={14} className="mr-2 text-emerald-600" /> CSV (Planilha)
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportJSON}>
-                <MsIcon name="description" size={14} className="mr-2 text-blue-600" /> JSON (Backup Completo)
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportPDF}>
-                <MsIcon name="receipt" size={14} className="mr-2 text-red-600" /> PDF (Relatório Mensal)
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-3 p-4 rounded-md border border-surface-border bg-surface-low flex flex-col">
-            <h4 className="text-sm font-semibold text-on-surface flex items-center gap-2">
-              <MsIcon name="upload" size={16} className="text-muted-foreground" /> Importar Backup
-            </h4>
-            <p className="text-xs text-muted-foreground flex-1">
-              Restaure todo o seu histórico enviando o arquivo JSON gerado pela exportação de backup completo.
-            </p>
-            <label className="block mt-auto w-full">
-              <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" id="import-json-settings" />
-              <Button size="sm" className="w-full" asChild>
-                <label htmlFor="import-json-settings" className="cursor-pointer inline-flex items-center justify-center">
-                  <MsIcon name="upload" size={14} className="mr-2" /> Restaurar Arquivo JSON
-                </label>
-              </Button>
-            </label>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportCSV}>
+            <MsIcon name="description" size={14} className="mr-2 text-emerald-600" /> CSV (Planilha)
+          </Button>
+          <Button variant="outline" size="sm" className="w-full justify-start bg-surface hover:bg-surface-low" onClick={handleExportPDF}>
+            <MsIcon name="receipt" size={14} className="mr-2 text-red-600" /> PDF (Relatório Mensal)
+          </Button>
         </div>
+      </Section>
+
+      {/* ── Backup e Restauração ── */}
+      <Section icon="backup" title="Backup e Restauração">
+        <p className="text-xs text-muted-foreground mb-4">
+          Faça um backup completo dos seus dados em JSON ou restaure a partir de um arquivo de backup anterior.
+        </p>
+        <BackupSection transactions={transactions} budgets={budgets} goals={goals} cards={cards} />
       </Section>
 
       {/* ── Changelog ── */}
