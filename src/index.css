@@ -939,3 +939,38 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ═══ Print Stylesheet — Reports Page ═══ */
+@media print {
+  aside,
+  nav,
+  .fixed,
+  [role="dialog"],
+  button:not(.print-keep) {
+    display: none !important;
+  }
+
+  body {
+    overflow: visible;
+  }
+
+  main, .flex-1 {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  canvas, svg {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+}
