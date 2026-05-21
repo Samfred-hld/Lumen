@@ -113,6 +113,14 @@ export async function restoreBackupData(data, onProgress) {
   const totalItems = steps.reduce((sum, s) => sum + s.items.length, 0);
   let processed = 0;
 
+  // Delete existing data first (restore replaces all)
+  for (const step of steps) {
+    const { error: deleteError } = await supabase.from(step.table).delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (deleteError) {
+      throw new Error(`Erro ao limpar ${step.label}: ${deleteError.message}`);
+    }
+  }
+
   for (const step of steps) {
     if (step.items.length === 0) continue;
 

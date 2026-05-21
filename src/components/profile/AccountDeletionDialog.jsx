@@ -55,7 +55,7 @@ export default function AccountDeletionDialog() {
             Excluir conta
           </AlertDialogTitle>
           <AlertDialogDescription className="text-body-lg">
-            Sua conta será desativada por 30 dias. Após esse período, todos os seus dados serão permanentemente excluídos. Digite sua senha para confirmar.
+            Sua conta será desativada por 30 dias. Após esse período, todos os seus dados serão permanentemente excluídos.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

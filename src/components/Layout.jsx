@@ -70,7 +70,7 @@ function ShortcutsModal({ open, onClose }) {
     { keys: '/', desc: 'Buscar transações' },
     { keys: '←', desc: 'Mês anterior' },
     { keys: '→', desc: 'Próximo mês' },
-    { keys: '1-8', desc: 'Navegar para página' },
+    { keys: '1-9', desc: 'Navegar para página' },
     { keys: '?', desc: 'Mostrar atalhos' },
     { keys: 'Esc', desc: 'Fechar modal' },
   ];
