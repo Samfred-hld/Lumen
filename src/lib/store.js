@@ -13,7 +13,7 @@ export { getTemplates, saveTemplates, fetchTemplates, addTemplate, updateTemplat
 // ── Settings ──
 export {
   getSalaryConfig, fetchSalaryConfig, saveSalaryConfig,
-  getTheme, fetchTheme, setTheme,
+  getTheme, fetchTheme, setTheme, applyThemeToDOM,
   getChangelog, addChangelogEntry,
   getPaymentMethods, getCustomPaymentMethods, saveCustomPaymentMethods, fetchPaymentMethods,
   getExtraCats, saveExtraCats, fetchExtraCats,

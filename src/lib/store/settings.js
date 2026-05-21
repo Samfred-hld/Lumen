@@ -53,6 +53,20 @@ export async function saveSalaryConfig(c) {
 
 // ── Theme ──
 export function getTheme() { return getLocal('theme', 'light'); }
+
+function resolveThemeValue(preference) {
+  if (preference === 'auto') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return preference;
+}
+
+export function applyThemeToDOM(preference) {
+  const resolved = resolveThemeValue(preference);
+  document.documentElement.setAttribute('data-theme', resolved);
+  document.documentElement.classList.toggle('dark', resolved === 'dark');
+}
+
 export async function fetchTheme() {
   const cloud = await getSettingFromCloud('theme');
   if (cloud) { setLocal('theme', cloud); return cloud; }
@@ -60,8 +74,7 @@ export async function fetchTheme() {
 }
 export async function setTheme(t) {
   setLocal('theme', t);
-  document.documentElement.setAttribute('data-theme', t);
-  document.documentElement.classList.toggle('dark', t === 'dark');
+  applyThemeToDOM(t);
   await setSettingToCloud('theme', t);
 }
 

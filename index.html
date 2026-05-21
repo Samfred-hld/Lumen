@@ -12,6 +12,25 @@
     <title>Lúmen — Controle Financeiro</title>
   </head>
   <body>
+    <script>
+      try {
+        var pref = 'light';
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && /rattio_.*theme/.test(k)) {
+            try { pref = JSON.parse(localStorage.getItem(k)); } catch {}
+            break;
+          }
+        }
+        if (!pref) pref = 'light';
+        if (pref === 'dark' || (pref === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch {}
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
